@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何安装松弛的(非官方)黑暗模式</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何安装松弛的(非官方)黑暗模式</h2></div><div class="content"><img class="content_img" src="/image/52/524e8de968c33e80f241bee925fe8b58.png" /><p>SLACK仍然没有暗模式。它们有黑色的主题，但它们只允许您自定义侧边栏的颜色，而将主窗口保留为白色。随着MacOS Mojave和Windows10系统范围的黑暗模式的发布，Slake感觉非常格格不入。</p><p>这种方法是非官方的，涉及到在Slake的源文件中挖掘。这很容易做到，但是因为每次更新都会被覆盖，所以您必须多次执行此操作。</p><p>下载主题</p><p>因为Slake运行在Electron上，这是一个开发桌面Node.js应用程序的框架，你可以像编辑网站的CSS一样编辑它的样式。但是Slake的CSS文件隐藏在源代码中，因此您必须加载您自己的主题。</p><p>最受欢迎的真正黑暗模式主题是Widget的松弛黑色主题。由于Electron跨平台共享代码，因此此主题也适用于Windows和Linux。不过，我们发现MacOS Mojave上的主题有一些问题，所以如果它不起作用，你可以试试这个分支，它说它只适用于MacOS，但也可能适用于Windows用户。</p><p>修补松弛</p><img class="content_img" src="/image/1f/1fafd4b1e6d8626ff63ab5dfb42fc45d.png" /><p>这一部分，每次Slake更新时，您都必须重新做一次。在MacOS上，你可以通过右击应用程序本身并选择“显示软件包内容”来进入Slake的源目录。在Windows上，您可以在以下位置找到它：~\AppData\Local\Slak\。</p><p>然后，导航几个文件夹到resources/app.asar.unpack/src/static/。您将需要找到ssb-interop.js文件，您将在其中编辑代码。确保Slake已关闭，在您喜欢的文本编辑器中打开该文件，然后滚动到底部：</p><img class="content_img" src="/image/f9/f9ab59dcef1ea5cd2f0f880eb07f5d35.png" /><p>将以下代码复制并粘贴到ssb-interop.js文件的最末尾：</p><code>// First make sure the wrapper app is loaded
+document.addEventListener("DOMContentLoaded", function() {
+
+   // Then get its webviews
+   let webviews = document.querySelectorAll(".TeamView webview");
+
+   // Fetch our CSS in parallel ahead of time
+   const cssPath = 'https://cdn.rawgit.com/widget-/slack-black-theme/master/custom.css';
+   let cssPromise = fetch(cssPath).then(response => response.text());
+
+   let customCustomCSS = `
+   :root {
+      /* Modify these to change your theme colors: */
+      --primary: #09F;
+      --text: #CCC;
+      --background: #080808;
+      --background-elevated: #222;
+   }
+   `
+
+   // Insert a style tag into the wrapper view
+   cssPromise.then(css => {
+      let s = document.createElement('style');
+      s.type = 'text/css';
+      s.innerHTML = css + customCustomCSS;
+      document.head.appendChild(s);
+   });
+
+   // Wait for each webview to load
+   webviews.forEach(webview => {
+      webview.addEventListener('ipc-message', message => {
+         if (message.channel == 'didFinishLoading')
+            // Finally add the CSS into the webview
+            cssPromise.then(css => {
+               let script = `
+                     let s = document.createElement('style');
+                     s.type = 'text/css';
+                     s.id = 'slack-custom-css';
+                     s.innerHTML = \`${css + customCustomCSS}\`;
+                     document.head.appendChild(s);
+                     `
+               webview.executeJavaScript(script);
+            })
+      });
+   });
+});
+</code><p>您可能希望复制此文件并将其保存在不同的位置，这样就不必每次都编辑代码。这样，您只需将其拖入目录即可覆盖最新版本：</p><img class="content_img" src="/image/0e/0ec52811342648e90bce183f3d412799.png" /><p>完成后，重新打开Slake，几秒钟后就会进入黑暗模式。加载屏幕仍然是白色的，但主应用程序窗口将更好地与系统的其余部分融合：</p><img class="content_img" src="/image/e1/e1d9d657f1e10bd8fecde1a47f199042.png" /><p>添加您自己的主题</p><p>如果你不喜欢它的外观，你可以用你想要的任何样式编辑CSS。这段代码所做的全部工作就是从https://cdn.rawgit.com/widget-/slack-black-theme/master/custom.css；加载自定义样式。您可以下载该文件，使用您的更改进行编辑，然后用您自己的代码替换该url。保存，重新启动Slake，您所做的更改将可见。如果您不了解CSS，或者只想做一个小更改，在加载CSS之前定义了四个颜色变量，因此您可以使用自己的颜色编辑这些变量。</p><div class="item_info"><span class="item_key"><a href="/tag/slake/">slake</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/主题/">主题</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14401.html">如何在Slake中启用经典降价文本格式</a><li><a href="/story/14224.html">个性化您的Slack帐户的10种方法</a><li><a href="/story/14080.html">如何免费创建自己的松弛工作空间</a><li><a href="/story/13788.html">每日新闻综述：Sack的新桌面App更硬、更好、更快、更强</a><li><a href="/story/13705.html">什么是松弛，为什么人们喜欢它？</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

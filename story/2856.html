@@ -1,0 +1,27 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上使用Gmail或SMTP设置电子邮件提醒</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上使用Gmail或SMTP设置电子邮件提醒</h2></div><div class="content"><img class="content_img" src="/image/7a/7a6de6b702477f2dd955abf047e35223.jpg" /><p>当然，这项技术是针对真正的服务器的，但是如果您家里有一台Linux机器作为家庭服务器，那么您也可以在那里使用它。事实上，由于许多家庭ISP屏蔽了常规的出站电子邮件，您可能会发现这种技术是确保您仍然可以收到管理电子邮件的好方法，即使是从您的家庭服务器也是如此。</p><p>概述 / 综述</p><p>为机器配置电子邮件发送功能会立即给我们带来这样的结果，即系统的许多管理问题和严重警报将自动发送给该系统的指定管理员。最值得注意的示例是，cron作业执行错误属于这一类，因此，一旦发生备份等计划作业出现问题，将立即通知管理员，包括报告中的标准错误(Stderr)输出。我们还将能够合并来自bash脚本的电子邮件。</p><p>别担心-它通常不会给你发送太多的垃圾信息，如果它变得令人讨厌，你可以直接取消它的配置。</p><p>在基于Debian的系统上，除了许多与电子邮件相关的非常通用的程序外，还有ssmtp软件包，如果您想要做的所有事情就是让一个代理使用另一个电子邮件服务器(MTA)发送电子邮件，而不必设置整个Postfix或Sendmail配置来执行此操作，则ssmtp包非常适合。</p><p>前提条件和假设</p><p>在开始之前，您需要确保满足所有这些条件：</p><p>
+您有一台SMTP服务器，可以从您的机器接收电子邮件并将其发送给收件人(即您的公司交换机或Gmail)。
+您拥有能够在该服务器上发送电子邮件的用户的凭据(即邮箱或Gmail帐户)。
+这个过程已经在*基于Debian的系统(Lenny、Ubuntu和Mint)上使用和测试过，所以如果您不是在这些发行版中的任何一个上，您的里程数可能会有所不同。
+你会看到我使用VIM作为编辑程序，这只是因为我习惯了…。您可以使用您喜欢的任何其他编辑器。</p><p>*它也在DD-WRT上使用和测试，但只会在未来的文章中介绍(更新：未来不是很有趣吗？)。这是由于这种嵌入式平台所需的设置和配置变化。</p><p>布设</p><p>要安装ssmtp(Simple S.M.T.P)软件包，请使用以下命令：</p><p>然后编辑配置文件：</p><p>根据需要调整和添加以下参数：</p><p>
+
+root=用户名@gmail.com。
+把邮局局长的电子邮件改成机器管理员的电子邮件。
+
+mailHub=smtp.gmail.com：587。
+您的邮件服务器在我们的示例中是Gmail，因此我们必须将端口指定为587，对于常规SMTP服务器，这通常不是必需的。
+
+主机名=用户名@gmail.com。
+通常情况下，软件包设置会自动填写机器的名称，如果机器有邮箱，这应该没问题，但如果没有邮箱，或者名称与邮箱不同，请进行相应的调整。
+
+UseSTARTTLS=YES。
+启用TLS以实现安全会话通信。
+
+AuthUser=用户名。
+发送邮箱的用户名。
+
+AuthPass=密码。
+发送邮箱的密码。
+
+FromLineOverride=是。
+发送主机名而不是root[root@hostname.FQDN]。</p><p>要使默认(根)“From”字段成为服务器名称，请编辑/etc/ssmtp/revaliases文件：</p><p>并在其中添加所需的翻译，在我们的Gmail示例中为：</p><p>令人难以置信的是，要启用该功能，您只需执行以下操作。从现在开始，当有事情发生时，机器会给你发电子邮件。</p><p>正在确认设置</p><p>让我们通过发送电子邮件来测试我们的ssmtp设置是否正确：</p><p>“-vvv”打开详细输出，所以不要惊慌…。这是为了以防万一您遇到任何问题，您将有某种类型的输出到Google进行搜索。
+如果一切顺利，你应该会在几秒钟内收到电子邮件。</p><p>我们将在以后的文章中展示此设置的脚本化示例。</p><img class="content_img" src="/image/8e/8ed944b5f6ad4e7b227425c3a8156c6e.jpg" /><p>祝您的电子邮件不会跳跃：)</p><p></p><div class="item_info"><span class="item_key"><a href="/tag/电子邮件/">电子邮件</a></span><span class="item_key"><a href="/tag/服务器/">服务器</a></span><span class="item_key"><a href="/tag/机器/">机器</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14432.html">如何在Outlook中的电子邮件上方显示快速操作按钮</a><li><a href="/story/14253.html">如何动态自定义您的Gmail地址</a><li><a href="/story/14158.html">如何在Outlook中读取邮件标题</a><li><a href="/story/14054.html">如何将电子邮件保存到硬盘</a><li><a href="/story/13941.html">如果您收到网络钓鱼电子邮件，应该怎么办？</a><li><a href="/story/13937.html">如何在Outlook联系人组中隐藏电子邮件地址</a><li><a href="/story/13909.html">如何将旧电子邮件帐户导入Gmail</a><li><a href="/story/13866.html">如何在Microsoft Outlook中设置POP3或IMAP帐户</a><li><a href="/story/13677.html">如何在Gmail中禁用动态电子邮件</a><li><a href="/story/13676.html">如何阻止超人(和其他应用程序)跟踪您打开的电子邮件</a><li><a href="/story/13663.html">为什么我会从自己的电子邮件地址收到垃圾邮件？</a><li><a href="/story/13651.html">使用Outlook Mail App滑动操作快速处理邮件</a><li><a href="/story/13409.html">整理电子邮件的最佳方式：将它们存档</a><li><a href="/story/13321.html">预览您的电子邮件安全吗？</a><li><a href="/story/13274.html">电子邮件轰炸如何使用垃圾邮件隐藏攻击</a><li><a href="/story/13214.html">忘掉收件箱零号：用俄亥俄州来对你的电子邮件进行分类</a><li><a href="/story/12721.html">如何配置iPhone和iPad的邮件设置</a><li><a href="/story/12391.html">如何在Outlook中为电子邮件添加过期日期(以及它们的用途)</a><li><a href="/story/12301.html">如何配置iPhone和iPad的邮件设置</a><li><a href="/story/11561.html">如何阻止合法电子邮件被标记为垃圾邮件</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

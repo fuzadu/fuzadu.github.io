@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux终端显示日期和时间(并在Bash脚本中使用)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux终端显示日期和时间(并在Bash脚本中使用)</h2></div><div class="content"><p>date命令可以在Bash shell中找到，它是大多数Linux发行版甚至MacOS中的默认shell。本教程将向您展示如何在命令行上掌握日期，以及如何在shell脚本中使用它来做更多事情，而不仅仅是打印时间。</p><p>运行date命令可查看此信息。它打印您所在时区的当前日期和时间：</p><code>date</code><img class="content_img" src="/image/37/373e333a258e72e6a281fa874f800a2d.png" /><p>默认格式看起来有点傻。为什么不在月和日之后打印年份，而是在时区后面的末尾标记年份呢？不要害怕：如果是控制您想要的输出格式，DATE会毫不犹豫地交付给您。到目前为止，您可以传递40多个选项来指示它精确地按照您的需要格式化其输出。</p><p>要使用任何选项，请键入日期、空格、加号+和包括前导百分号的选项。%c选项(区域设置格式的日期和时间)使日期和时间以与您的区域设置相关联的规范化格式打印。*您的区域设置由您在安装操作系统时提供的地理和文化信息设置。区域控制着诸如货币符号、纸张大小、时区和其他文化规范之类的东西。</p><code>date +%c</code><img class="content_img" src="/image/f0/f000efefefb699042d2bcd7aae3d3c8f.png" /><p>现在，在产出中，年份似乎处于更自然的位置。</p><p>您可以一次传递几个日期选项。选项序列称为格式字符串。要查看日期名称(%A)、月份日期(%d)和月份名称(%B)，请使用以下命令：</p><code>date +%A%d%B</code><img class="content_img" src="/image/88/88fa4b371ed6326f73c7bcba83007502.png" /><p>这很管用，但很难看。没问题，只要我们用引号将整个格式字符串括起来，我们就可以包括空格。请注意，+超出了引号。</p><code>date +"%A %d %B"</code><img class="content_img" src="/image/19/196163cdeb98c04466d4c1d5e1711d31.png" /><p>您可以将文本添加到格式字符串，如下所示：</p><code>date +"Today is: %A %d %B"</code><img class="content_img" src="/image/07/071348ed0382eecc5327fc3a23c80ea8.png" /><p>在Date手册页上上下滚动寻找您想要的选项很快就会变得令人厌烦。我们已将选项分组，以帮助您更轻松地找到绕过这些选项的方法。</p><p>显示日期和时间的选项</p><p>
+%c：以您的区域设置格式(包括时区)打印日期和时间。</p><img class="content_img" src="/image/37/373e333a258e72e6a281fa874f800a2d.png" /><p>显示日期的选项</p><p>
+%D：以mm/dd/yy格式打印日期。
+%F：以yyyy-mm-dd格式打印日期。
+%x：以您的区域设置格式打印日期。</p><img class="content_img" src="/image/a2/a21abad7fac5c90c3912beb344d52d89.png" /><p>显示日期的选项</p><p>
+%a：打印日期名称，缩写为Mon、Tue、Wed等。
+%A：打印日期的全名，星期一、星期二、星期三等。
+%u：打印星期几，其中星期一=1，星期二=2，星期三=3，依此类推。
+%w：打印一周中的第几天，其中周日=0，周一=1，周二=2，依此类推。
+%d：打印每月的日期，前导为零(01，02…。09)如果需要。
+%e：打印每月的日期，并带有前导空格(‘1’，‘2’…。‘9’)如果需要。注意：撇号不打印。
+%j：打印一年中的某一天，如果需要，最多可包含两个前导零。</p><img class="content_img" src="/image/c4/c4c1dbac97a2991f40cd505d8a9483a5.png" /><p>显示周的选项</p><p>
+%U：打印一年中的周号，将星期日视为一周的第一天。例如，一年中的第三周，一年中的第二十周，等等。
+%V：打印一年中的ISO周号，将星期一视为一周的第一天。
+%W：一年中的第几周，将星期一视为一周的第一天。</p><img class="content_img" src="/image/50/505028f7416b8a40a73e9d1d7d0814c4.png" /><p>显示月份的选项</p><p>
+%b或%h：打印缩写为Jan、Feb、Mar等的月份名称。
+%B：打印月份、1月、2月、3月等的全名。
+%m：打印月份数字，如果需要01，02，03…，则带有前导零。12.</p><img class="content_img" src="/image/cf/cfb128a576bcb1875ad6cb2ff6668146.png" /><p>显示年份的选项</p><p>
+%C：打印不含年份的世纪。2019年，它将印刷20张。
+%y：将年份打印为两位数。2019年，它将印刷19张。
+%Y：将年份打印为四位数。</p><img class="content_img" src="/image/9c/9c63276c7eff086c5c37e3e335890379.png" /><p>显示时间的选项</p><p>
+%T：将时间打印为hh：mm：ss。
+%R：使用24小时制将小时和分钟打印为不带秒的hh：mm。
+%r：根据您的区域设置，使用12小时制和上午或下午指示器打印时间。
+%X：根据您的区域设置，使用24小时制打印时间。据称。请注意，在测试期间，此选项的行为与%r完全相同，如下所示。在为英国地区配置并设置为GMT的Linux机器上，它使用24小时制时钟打印时间，没有AM或PM指示器，这与预期不谋而合。</p><img class="content_img" src="/image/34/34e08e7d8d955e94a6e3f1c1e3697ebb.png" /><p>用于显示当前小时的选项</p><p>
+%H：打印小时00，01，02…。23.。
+%i：使用12小时制00，01，02…打印小时。12，如果需要，带有前导零。</p><img class="content_img" src="/image/8a/8af8643d0cde3455b2d26051657776ca.png" /><p>显示分钟数的选项</p><p>
+%M：打印分钟，01，02，03，…。59，如果需要，带有前导零。</p><img class="content_img" src="/image/fb/fb5d41953aa492d02dc3885a72c6b89d.png" /><p>显示秒的选项</p><p>
+%s：打印自Unix纪元开始1970-01-01 00：00：00以来的秒数。
+%S：打印秒，01，02，03…。59，如果需要，带有前导零。
+%N：打印纳秒。</p><img class="content_img" src="/image/4a/4add960cee150cb63ab6e51a869e9fc9.png" /><p>用于显示时区信息的选项</p><p>
+%z：打印您的时区和UTC之间的时差。
+%：z：打印您的时区和UTC之间的时差，并在小时和分钟之间加上：。请注意%符号和z之间的：。
+%：：Z：打印您的时区和UTC之间的时差，并在小时、分钟和秒之间加上：。请注意%符号和z之间的：：。
+%Z：打印字母时区名称。</p><img class="content_img" src="/image/18/185a191b33be5dcbffb55e13329f1c97.png" /><p>与格式设置相关的选项</p><p>
+%p：以大写打印AM或PM指示符。
+%P：以小写打印上午或下午指示符。请注意这两个选项的怪异之处。小写的p表示大写输出，大写的P表示小写输出。
+%t：打印制表符。
+%n：打印新行。</p><img class="content_img" src="/image/d3/d38af1fe54ac866b7f2caa2b0a481aaa.png" /><p>用于修改其他选项的选项</p><p>可以在%和其他选项的选项字母之间插入这些修饰符，以修改其显示。例如，%-S将删除个位数秒值的前导零。</p><p>
+-：单个连字符可防止对单个数字值进行零填充。
+_：单个下划线为单位值添加前导空格。
+0：为单位值提供前导零。
+^：如果可能，使用大写(并非所有选项都考虑此修饰符)。
+#：如果可能，使用与选项默认大小写相反的大小写(并不是所有选项都遵守此修饰符)。</p><img class="content_img" src="/image/d5/d521f442490f3d33da2f227aec0c7d5b.png" /><p>又有两个整洁的小把戏</p><p>要获取文件的最后修改时间，请使用-r(引用)选项。请注意，这使用-(连字符)而不是%符号，并且它不需要+符号。在您的主文件夹中尝试此命令：</p><code>date -r .bashrc</code><img class="content_img" src="/image/74/745b983cba49035b6bcc9e78b8f6e6cb.png" /><p>TZ设置允许您在单个命令的持续时间内更改时区。</p><code>TZ=GMT date +%c</code><img class="content_img" src="/image/32/32455574f2ef5308fa75b1fdcb45c35c.png" /><p>在脚本中使用日期</p><p>启用Bash shell脚本打印时间和日期非常简单。创建一个包含以下内容的文本文件，并将其保存为gd.sh。</p><code>#!/bin/bash
+
+TODAY=$(date +"Today is %A, %d of %B")
+TIMENOW=$(date +"The local time is %r")
+TIME_UK=$(TZ=BST date +"The time in the UK is %r")
+
+echo $TODAY
+echo $TIMENOW
+echo $TIME_UK</code><p>键入以下命令以设置执行权限并使脚本可执行。</p><code>chmod +x gd.sh</code><p>使用以下命令运行脚本：</p><code>./gd.sh</code><img class="content_img" src="/image/be/be6b90672c05bfa298bcdec598f3eeb1.png" /><p>我们可以使用date命令来提供时间戳。显示的脚本将创建一个以时间戳作为其名称的目录。然后，它会将当前文件夹中的所有文本文件复制到该目录中。通过定期运行此脚本，我们可以拍摄文本文件的快照。随着时间的推移，我们将建立一系列文件夹，其中包含不同版本的文本文件。</p><p>请注意，这不是一个健壮的备份系统，它只是为了说明目的。</p><p>创建一个包含以下内容的文本文件，并将其保存为snapshot.sh。</p><code>#!/bin/bash
+
+# obtain the date and time
+date_stamp=$(date +"%F-%H-%M-%S")
+
+# make a directory with that name
+mkdir "$date_stamp"
+
+# copy the files from the current folder into it
+cp *.txt "$date_stamp"
+
+# all done, report back and exit
+echo "Text files copied to directory: "$date_stamp</code><p>键入以下命令以设置执行权限并使脚本可执行。</p><code>chmod +x snapshot.sh</code><p>使用以下命令运行脚本：</p><code>./snapshot.sh</code><img class="content_img" src="/image/32/3260f4434bebe7c5c748975327f68e45.png" /><p>您将看到已经创建了一个目录。其名称是脚本执行的日期和时间。在该目录内是文本文件的副本。</p><p>只要有一点思考和创造力，即使是不起眼的日期命令也能发挥作用。</p><div class="item_info"><span class="item_key"><a href="/tag/打印/">打印</a></span><span class="item_key"><a href="/tag/选项/">选项</a></span><span class="item_key"><a href="/tag/日期/">日期</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14532.html">如何在Google Sheets中打印特定选定的单元格</a><li><a href="/story/14386.html">如何在Windows 10中打印照片</a><li><a href="/story/14378.html">如何在Excel中打印特定选定的单元格</a><li><a href="/story/14361.html">如何打印Outlook文件夹中的电子邮件列表</a><li><a href="/story/14290.html">如何在Windows 10中检查打印文档历史记录</a><li><a href="/story/13778.html">如何在没有广告和其他杂物的情况下打印网页</a><li><a href="/story/12427.html">为什么照片在我打印时看起来不一样？</a><li><a href="/story/11645.html">我可以用手机或相机打印多大的照片？</a><li><a href="/story/10766.html">如何打印文本消息对话</a><li><a href="/story/9856.html">如何从iOS打印到Google云打印机</a><li><a href="/story/9147.html">如何在没有轨迹更改标记的情况下打印Word文档</a><li><a href="/story/9105.html">如何在Excel中重复每个打印页面上的特定行或列</a><li><a href="/story/8617.html">如何在Word中打印文档属性</a><li><a href="/story/8570.html">如何在Excel中打印网格线和行与列标题</a><li><a href="/story/6315.html">无线打印说明：AirPrint、Google Cloud Print、iPrint、ePrint等</a><li><a href="/story/5768.html">您需要了解的有关从Android手机或平板电脑打印的所有信息</a><li><a href="/story/5745.html">如何(以及为什么)开始使用Google Cloud Print</a><li><a href="/story/5729.html">如何在Windows 8中打印PDF文件和电子邮件</a><li><a href="/story/5269.html">如何节约墨水，让网站打印效果更好</a><li><a href="/story/4661.html">提示框中：打印和玩游戏、DIY管道监视器安装和Android计时器</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

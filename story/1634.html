@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何修复Ubuntu 9.10中的声音问题</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何修复Ubuntu 9.10中的声音问题</h2></div><div class="content"><p>许多用户在从Ubuntu 9.04升级到9.10时遇到了音频问题。本操作指南将向您展示如何解决其中一些音频问题，包括：</p><p>
+Flash视频中没有音频。
+打开Flash视频后，音频完全停止。
+完全没有音频。
+音频从插入计算机前面的扬声器中播放，但不能从耳机中播放(转到步骤5)。</p><p>Ubuntu音频快速入门</p><p>默认情况下，Ubuntu9.10使用两个互补的程序通过扬声器或耳机发出声音。</p><p>
+肌萎缩侧索硬化症。
+高级Linux声音架构(ALSA)提供对声卡的直接访问。
+ALSA的一个问题是一次只有一个程序可以向ALSA输出声音。正因为如此，ubuntu包含了第二个名为…的程序。
+脉冲音频。
+PulseAudio是一个声音服务器，它从所有应用程序中提取音频数据并将其传递到ALSA。
+PulseAudio可以让你做一些很酷的事情，比如单独控制每个应用程序的音量水平，并通过网络将音频流式传输到另一台计算机。</p><p>Ubuntu9.10中的一个常见问题是，当应用程序尝试直接使用ALSA，而不是像它应该使用的那样通过PulseAudio。以下步骤将解决该问题。</p><p>步骤1：安装一些实用程序</p><p>在这一步中，我们将安装侏儒ALSA混音器和默认声音选择器。</p><p>要安装Gnome ALSA Mixer，请打开终端并键入：</p><p>安装默认声音选择器稍微复杂一些。它曾经位于alsa-utils包中，但在Ubuntu9.10中被删除了。幸运的是，一位乐于助人的Ubuntu论坛用户提供了安装该实用程序的指导。</p><p>
+下载旧版本的alsa-utils(确保选择正确的体系结构：i386用于32位系统，AMD64用于64位系统)。
+打开终端窗口。
+导航到保存.deb文件的目录。
+执行以下命令：</p><p>此时，您应该在System&gt;Preferences中有一个名为Default Sound Card的实用程序。</p><img class="content_img" src="/image/58/58243735d44a857303a9f9c6bdbe263e.png" /><p>步骤2：更新PulseAudio和ALSA</p><p>要确保您拥有最新版本的PulseAudio和ALSA，请打开终端并执行以下命令。</p><p>如果这些软件包尚未安装，则将上述命令中的“升级”替换为“安装”，然后再次运行它们。</p><p>如果您的软件包已经更新，您将看到类似以下内容。</p><img class="content_img" src="/image/31/319d683e04c1b9612d73e902899aa0bc.png" /><p>步骤3：选择PulseAudio作为默认声卡</p><p>打开您在步骤1中安装的默认声卡实用程序。它将位于System&gt;Preferences(系统&gt;首选项)中。</p><img class="content_img" src="/image/78/7877f5144a043b39bf2141277e742b3a.png" /><p>选择PulseAudio。单击退出。</p><p>步骤4：重新启动</p><p>保存已打开的所有内容，然后重新启动计算机。</p><p>步骤5：设置音量</p><p>打开Gnome ALSA混音器，它在应用程序&gt;声音和视频中。</p><img class="content_img" src="/image/e3/e3b60b3de9326c99c4d9b942d6336dc9.png" /><p>确保没有任何静音，并将音量设置在舒适的水平。在大多数情况下，您可以将其设置为最大值，因为大多数播放音频的应用程序都有自己的音量控制。尤其要确保主卷和PCM卷未静音。</p><img class="content_img" src="/image/b8/b8794d6cd26469143d9084ed9d97e759.png" /><p>请注意，如果您的主板同时具有音频插头和音频插头，则电脑背面和前面的音频插头都有单独的音量控制。将一个设置为静音，而不是另一个，这可能就是为什么音频可以从扬声器中播放出来，而不是从插入计算机前面的耳机中播放出来的原因。</p><p>步骤6：测试音频</p><p>打开您最喜欢的音乐播放应用程序(我们偏爱Rhythmbox)。确保音量控制在合理的水平。放一首歌吧。你听到了吗？如果没有，请继续执行步骤7。</p><p>打开您最喜欢的Web浏览器。打开YouTube视频。你听到YouTube视频和你的音乐了吗？如果是，则音频工作正常！</p><p>如果没有，请继续执行步骤7。</p><p>步骤7：获取最新版本的ALSA</p><p>如果音频仍然不能工作，或者不能用于多个应用程序，那么您可能需要更新到最新版本的ALSA。</p><p>同样，一个乐于助人的Ubuntu论坛用户提供了一个简单的方法来做到这一点。</p><p>
+下载ALSA升级脚本(需要论坛注册)。
+打开一个航站楼。
+导航到保存.tar文件的目录。
+执行以下命令：</p><p>步骤8：重新启动并测试</p><p>保存已打开的所有内容，然后重新启动计算机。</p><p>一旦你回到Ubuntu，按照第6步的描述测试你的音频，如果你的音频仍然不能工作，还有一个最后的办法…</p><p>步骤9：切换到Open Sound System</p><p>ALSA被设计为替代被称为开放式声音系统(OSS)的类似程序。尽管许多发行版采用了ALSA，但OSS的开发仍在继续，目前的版本完全能够在Ubuntu中提供高质量的声音。</p><p>切换到OSS本身就是一篇文章。幸运的是，Ubuntu社区维护着这样一篇文章。</p><p>结束 / 结尾 / 结论 / 推论</p><p>希望通过遵循这些步骤，您可以让声音在Ubuntu9.10中正常工作。请在评论中让我们知道这些步骤是否对您有效！</p><div class="item_info"><span class="item_key"><a href="/tag/alsa/">alsa</a></span><span class="item_key"><a href="/tag/音频/">音频</a></span><span class="item_key"><a href="/tag/步骤/">步骤</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

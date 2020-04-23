@@ -1,0 +1,88 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Windows上将Caps Lock用作修改键</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Windows上将Caps Lock用作修改键</h2></div><div class="content"><p>Caps Lock键占据了主要的键盘空间，但它并没有发挥应有的作用。这个简单的自动热键脚本将把Caps Lock变成一个修改键，这样你就可以用它来实现可自定义的快捷键。</p><p>基础</p><p>此脚本将允许您按Caps Lock+G从Windows中的任何位置快速搜索文本，或按Caps Lock+D查找单词的字典定义。当然，这些快捷键是可自定义的。</p><p>最棒的是，这个聪明的脚本仍然允许您正常使用Caps Lock。您可以通过快速按两次来打开和关闭Caps Lock。如果不这样做，Caps Lock将充当快捷键的修改键。</p><p>自动热键101</p><p>AutoHotkey是一个免费的Windows应用程序，它位于后台并运行脚本。您可以自己编写这些脚本，也可以下载它们。脚本通常等待按键并执行操作。通过这种方式，自动热键是在Windows中重新映射关键点或为关键点指定不同操作的快捷方式。</p><p>例如，我们已经向您展示了如何使用自动热键禁用Windows键，从而防止它打开“开始”菜单并使您退出全屏PC游戏。不需要撬开键盘上的键帽。</p><p>安装AutoHotkey并获取脚本</p><p>下载AutoHotkey并安装以开始。接下来，下载CapsLock修改器脚本。</p><p>从ZIP存档文件中提取AHK脚本文件，并将其放入计算机上的任何文件夹中。要使用AutoHotkey运行它，请右键单击该脚本，然后选择“运行脚本”。</p><img class="content_img" src="/image/ba/ba4eeb8e8217f7278b65d7fd655eacc5.png" /><p>该脚本现在正在后台运行。要打开和关闭Caps Lock(大写锁定)，请快速双击Caps Lock(大写锁定)键。</p><p>如果不双击，Caps Lock只起到修改键的作用。使用脚本中内置的函数，您可以在Windows中的任何位置使用以下快捷方式：</p><p>
+按Caps Lock+d查找所选单词的词典定义。
+按Caps Lock+g在Windows中的任意位置搜索Google以查找所选文本。
+按Caps Lock+t在同义词库中查找所选单词。
+按Caps Lock+w在维基百科上搜索所选文本。</p><p>想要更多捷径吗？您可以通过稍微了解AutoHotkey脚本来创建自己的脚本。</p><p>要控制自动热键，请在通知区域中查找自动热键图标-它有一个绿色背景，上面有一个白色的H。要停止运行脚本，只需右键单击AutoHotkey图标并选择“退出”即可。</p><img class="content_img" src="/image/26/26292c02317fda925c2daab48bb45ee9.png" /><p>相关：如何编写自动热键脚本</p><p>它怎麽工作?</p><p>如果您想要查看脚本的功能，请右键单击它，然后选择“编辑脚本”。这将在记事本中打开脚本，您可以检查其代码。剧本很简短，很容易理解。我们建议您在未查看并理解陌生脚本之前，不要下载和运行这些脚本。</p><p>这个剧本是戴夫·凯洛格寄给我们的。下面是脚本的神奇部分，它使Caps Lock在按下两次时充当修改键：</p><code>CapsLock::
+KeyWait, CapsLock ; Wait forever until Capslock is released.
+KeyWait, CapsLock, D T0.2 ; ErrorLevel = 1 if CapsLock not down within 0.2 seconds.
+if ((ErrorLevel = 0) && (A_PriorKey = "CapsLock") ) ; Is a double tap on CapsLock?
+{
+SetCapsLockState, % GetKeyState("CapsLock","T") ? "Off" : "On" ; Toggle the state of CapsLock LED
+}
+return</code><p>此位等待查看是否按下Caps Lock(大写锁定)两次，并将Caps Lock(大写锁定)设置为ON或OFF。否则，脚本捕获Caps Lock并将其用作修改器快捷键。</p><p>脚本的其余部分包含快捷操作和有用的剪贴板函数，该函数可保存剪贴板的内容并将其还原。该部分非常必要，因为修改器函数使用剪贴板对选定的文本执行操作。</p><p>想在不下载的情况下查看完整的脚本吗？这里是：</p><code>#NoEnv                      ; Recommended for performance and compatibility with future AutoHotkey releases.
+; #Warn                     ; Enable warnings to assist with detecting common errors.
+#SingleInstance FORCE       ; Skip invocation dialog box and silently replace previously executing instance of this script.
+SendMode Input              ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+
+
+;================================================================================================
+;  CapsLock processing.  Must double tap CapsLock to toggle CapsLock mode on or off.
+;================================================================================================
+; Must double tap CapsLock to toggle CapsLock mode on or off.
+CapsLock::
+    KeyWait, CapsLock                                                   ; Wait forever until Capslock is released.
+    KeyWait, CapsLock, D T0.2                                           ; ErrorLevel = 1 if CapsLock not down within 0.2 seconds.
+    if ((ErrorLevel = 0) && (A_PriorKey = "CapsLock") )                 ; Is a double tap on CapsLock?
+        {
+        SetCapsLockState, % GetKeyState("CapsLock","T") ? "Off" : "On"  ; Toggle the state of CapsLock LED
+        }
+return
+
+
+
+;================================================================================================
+; Hot keys with CapsLock modifier.  See https://autohotkey.com/docs/Hotkeys.htm#combo
+;================================================================================================
+; Get DEFINITION of selected word.    
+CapsLock & d::
+    ClipboardGet()
+    Run, http://www.google.com/search?q=define+%clipboard%     ; Launch with contents of clipboard
+    ClipboardRestore()
+Return
+
+; GOOGLE the selected text.
+CapsLock & g::
+    ClipboardGet()
+    Run, http://www.google.com/search?q=%clipboard%             ; Launch with contents of clipboard
+    ClipboardRestore()
+Return
+
+; Do THESAURUS of selected word
+CapsLock & t::
+    ClipboardGet()
+    Run http://www.thesaurus.com/browse/%Clipboard%             ; Launch with contents of clipboard
+    ClipboardRestore()
+Return
+
+; Do WIKIPEDIA of selected word
+CapsLock & w::
+    ClipboardGet()
+    Run, https://en.wikipedia.org/wiki/%clipboard%              ; Launch with contents of clipboard
+    ClipboardRestore()
+Return
+
+;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+;================================================================================================
+; Clipboard helper functions.
+;================================================================================================
+ClipboardGet()
+{
+    OldClipboard:= ClipboardAll                         ;Save existing clipboard.
+    Clipboard:= ""
+    Send, ^c                                            ;Copy selected test to clipboard
+    ClipWait 0
+    If ErrorLevel
+        {
+        MsgBox, No Text Selected!
+        Return
+        }
+}
+
+
+ClipboardRestore()
+{
+    Clipboard:= OldClipboard
+}
+</code><p>我们以前见过自动热键脚本将Caps Lock变成一个修改键，但从来没有一个脚本让Caps Lock保持切换状态，如果你双击它的话。它非常聪明。再次感谢戴夫·凯洛格把它寄给我们。</p><div class="item_info"><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/lock/">lock</a></span><span class="item_key"><a href="/tag/caps/">caps</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/13819.html">如何将GUI添加到Linux Shell脚本</a><li><a href="/story/13415.html">如何在Linux上使用yes命令</a><li><a href="/story/13180.html">如何使用脚本编辑器为Google应用程序增压</a><li><a href="/story/13147.html">如何在进程退出时自动关闭MacOS终端</a><li><a href="/story/11555.html">如何在Windows中自动键入带双空格的句点</a><li><a href="/story/10454.html">如何在Windows 10上创建和运行Bash Shell脚本</a><li><a href="/story/7708.html">如何配置Windows以更轻松地使用PowerShell脚本</a><li><a href="/story/7704.html">如何使用批处理文件使PowerShell脚本更易于运行</a><li><a href="/story/7410.html">愚蠢的极客小把戏：如何让你的电脑与你对话</a><li><a href="/story/7370.html">在Windows上使窗口始终在最上面的3种最佳方法</a><li><a href="/story/6987.html">如何用PowerShell生成随机姓名和电话号码</a><li><a href="/story/4528.html">如何在Ubuntu上交换两个和三个手指触摸板轻击动作</a><li><a href="/story/3339.html">使用此简单脚本通过右键单击将文件上载到FTP站点</a><li><a href="/story/3166.html">Shell脚本初学者指南2：for循环</a><li><a href="/story/3146.html">Shell脚本初学者指南：基础知识</a><li><a href="/story/3024.html">如何在Ubuntu中使用热键关闭显示器</a><li><a href="/story/2913.html">使用自动热键脚本的初学者指南</a><li><a href="/story/2843.html">构建您自己的自动文件更新系统</a><li><a href="/story/2841.html">轻松保留所有网络计算机上本地文件的镜像备份</a><li><a href="/story/2839.html">使用简单的脚本诊断Linux服务器负载问题</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

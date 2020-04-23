@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>通过学习这30多个键绑定来成为Vi大师</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>通过学习这30多个键绑定来成为Vi大师</h2></div><div class="content"><img class="content_img" src="/image/b3/b3ab3d06344ee752244bbbcf457183a5.png" /><p>VI是大多数Linux系统上都包含的功能强大的文本编辑器。很多人信赖vi，一旦了解了它的键绑定，就会发现它比任何其他编辑器都要快。您甚至可以在Bash中使用vi密钥绑定。</p><p>我们已经介绍了面向初学者的vi入门。如果您已经有一段时间没有使用vi了，那么您可能想看看这篇文章，了解一下基本知识。</p><p>模式切换</p><p>简单地说，vi是一个模态编辑器-有插入模式和标准命令模式。在插入模式下，vi的功能类似于普通文本编辑器。在命令模式下，您可以利用这些键绑定。</p><p>
+i-进入插入模式。
+退出-退出插入模式。如果您已经处于命令模式，则Esc不执行任何操作，因此您可以按Esc以确保您处于命令模式。</p><img class="content_img" src="/image/61/61d9213a7b5d9d00fa9ebcd6720defbc.png" /><p>移动光标</p><p>VI在命令模式下使用hjkl键移动光标。早期的计算机系统并不总是有箭头键，所以取而代之的是这些键。这些键盘快捷键的一个优点是，您不必将手指从主行移开即可使用它们。</p><p>
+H-向左移动光标。
+J-向下移动光标。
+K-向上移动光标。
+L-向右移动光标。</p><p>您还可以使用搜索命令快速移动光标。</p><p>
+/-键入a/，后跟要查找的一些文本，然后按Enter键将光标快速移动到文件中的文本位置。例如，如果文件中有单词iguana，请键入/iguana并按Enter键快速移动光标。
+？-LIKE/，但向后搜索。
+f-键入f，后跟任何字符，以将光标快速移动到当前行中该字符的下一个匹配项。例如，如果一行上有“Hello world”行，并且光标位于该行的开头，则键入fo可移动到Hello中的o。再次键入fo以移动到世界中的o。
+f-类似于f，但向后搜索。
+%-在行上最近的()、[]或{}个字符之间跳转。</p><p>使用以下命令快速移动到文件中的位置：</p><p>
+H-将光标移动到文件中最高(顶部)行。
+m-将光标移动到文件的中间行。
+L-将光标移动到文件中的最低(底部)行。
+#G-键入数字，然后键入G转到文件中的该行。例如，键入4G并按Enter键移动到文件中的第四行。</p><p>在单词之间移动：</p><p>
+往前移一个字。
+#w-向前移动一些单词。例如，2w向前移动了两个单词。
+后退一个词。
+#b-后移一些单词。例如，3b后移三个单词。
+E-移动到当前单词的末尾。</p><img class="content_img" src="/image/8b/8b0130cbfa0822ef85f24ea1b9af437a.png" /><p>复制和粘贴</p><p>VI将抄袭行为称为“猛烈攻击”。</p><p>
+v-按v键并移动光标以选择一段文本。
+Y-复制(Yank)所选文本。
+P-粘贴在光标上。
+对选定文本进行X剪切。如果未选择文本，则剪切光标下的字符。
+r-键入r，然后键入另一个字符以替换光标下的字符。</p><p>组合命令</p><p>一些命令-包括上面的y和v命令以及d(删除)命令-接受光标运动命令。</p><p>例如，按d删除某些文本时，在输入光标移动命令之前不会发生任何操作。例如：</p><p>
+dw-删除下一个单词。
+DB-删除上一个单词。
+取消删除到当前单词的末尾。
+DL-删除文件中光标下方的所有文本。
+D/unicorn-按Enter键后，删除当前文件中光标与单词“unicorn”之间的所有文本。
+DD-删除整行。</p><p>如您所见，将命令与光标移动命令组合在一起是非常强大的。</p><img class="content_img" src="/image/80/8022b9d588b9da76118f4956d3541a02.png" /><p>重复和撤消</p><p>VI的重复命令非常强大，因为它可以重复复杂的组合命令。</p><p>
+U-撤消。
+。-那个。重复上一个完整命令。“插入”命令在这里也起到命令的作用。例如，键入iunicorn，然后按Escape键。然后，您可以使用。在光标处插入单词unicorn的键。</p><p>额外好处：在Bash中使用Vi键绑定</p><p>一旦您掌握了vi密钥绑定，您可能希望在系统的其他地方使用它们。没问题-您可以将Bash shell设置为使用vi样式的键绑定。</p><p>通过在Bash终端中运行以下命令，在当前会话中尝试此功能：</p><p>Bash将以插入模式启动-按Escape进入命令模式并使用这些键绑定。</p><p>如果您喜欢这样，可以将该命令添加到您的~/.bashrc文件中，它将在您每次登录时自动运行。使用vi.bashrc命令在vi中打开和编辑文件。</p><img class="content_img" src="/image/08/0878b7a22a3b851867c7a75d58c93def.png" /><p>这并不是vi的键绑定的完整列表，但它应该可以帮助您伸展vi的翅膀并学习飞行。哈佛网站上的这份关键绑定列表更完整，包含的信息也更多，尽管它没有那么有条理，也更难一下子消化。</p><div class="item_info"><span class="item_key"><a href="/tag/命令/">命令</a></span><span class="item_key"><a href="/tag/vi/">vi</a></span><span class="item_key"><a href="/tag/光标/">光标</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14507.html">如何在Linux上使用HISTORY命令</a><li><a href="/story/14466.html">如何在Linux上使用at和Batch来调度命令</a><li><a href="/story/14448.html">如何在Linux上使用Which命令</a><li><a href="/story/14037.html">如何在Linux上创建别名和Shell函数</a><li><a href="/story/14013.html">Bash你需要知道的15个特殊字符</a><li><a href="/story/14001.html">如何在Linux上使用管道</a><li><a href="/story/13779.html">如何在Linux上使用rev命令</a><li><a href="/story/13739.html">如何监控Linux命令的进度(使用pv和Progress)</a><li><a href="/story/13610.html">如何使用Linux type命令</a><li><a href="/story/13258.html">37个您应该知道的重要Linux命令</a><li><a href="/story/13196.html">如何更改默认的crontab编辑器</a><li><a href="/story/12887.html">Alexa、Siri和Google听不懂你说的话</a><li><a href="/story/11899.html">如何将命令输出保存到Bash中的文件(也称为Linux和MacOS终端)</a><li><a href="/story/11854.html">如何在Windows命令提示符下使用命令历史记录</a><li><a href="/story/11367.html">如何从Windows10的Bash Shell运行Windows程序</a><li><a href="/story/11359.html">Linux下如何用一条命令将一个文件复制到多个目录</a><li><a href="/story/11073.html">如何从Windows快捷方式运行命令提示符命令</a><li><a href="/story/11042.html">如何使用一个Linux命令删除多个子目录</a><li><a href="/story/10923.html">如何在Linux中用一条命令创建一个新目录并对其进行更改</a><li><a href="/story/10778.html">MacOS中的十大终端技巧</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

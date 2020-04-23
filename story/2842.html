@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>一旦锁定的文件处于解锁状态，即可轻松替换该文件</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>一旦锁定的文件处于解锁状态，即可轻松替换该文件</h2></div><div class="content"><p>如果您试图在某些Windows文件(如程序或Word文档)正在使用时对其进行更新，则会收到标准的“拒绝访问，文件正在使用”错误。虽然这背后的原因很明显，但如果您需要更新另一个用户当前正在使用的小可执行文件，这可能会相当烦人。在这些情况下，除了其他选择外，您还有以下选择，所有这些选择都会占用您宝贵的时间：</p><p>
+跟踪并联系当前使用该文件的用户，告诉他们关闭/保存其工作等，然后应用更新。
+不要立即应用更新，只需记住在用户不在系统中时再应用。
+安排一些实用程序在下次重新启动时替换它。</p><p>那么，我们为您提供了另一个解决方案：您通过发送到菜单调用的脚本，该脚本执行以下操作：</p><p>
+尝试删除旧文件。
+如果旧文件被锁定，脚本将等待20秒。转到步骤1。
+如果旧文件未锁定，则用新文件替换旧文件。转到步骤4。
+可以选择在该过程完成后注销。</p><p>这样，您只需执行REPLACE命令，而脚本将负责其余的工作。这可以帮助您避免跟踪用户或在系统上安装不必要的实用程序。</p><p>设置和使用</p><p>该脚本可以放在系统上的任何位置。然后，您需要做的就是在SendTo文件夹中创建它的快捷方式：</p><img class="content_img" src="/image/08/08eed2c585cb0da68fd9b10384d4b7d9.png" /><p>要启动替换过程，请选择旧文件和新文件，然后右键单击要替换的旧文件/文件来调用发送到选项。</p><img class="content_img" src="/image/68/6873b9f06698a1ec4b5ee575dd3be314.png" /><p>该脚本将准确显示将要发生的情况，并向您显示替换完成后注销的选项。</p><img class="content_img" src="/image/31/31841c959a9c6d04851745296ad2d3e5.png" /><p>脚本将连续尝试删除旧文件，同时在两次尝试之间等待几秒钟。</p><img class="content_img" src="/image/0f/0f1882ec09c4e2a7d254c099eb9366a7.png" /><p>您所要做的就是运行进程，每当您的所有用户都退出时，该文件就会被替换。</p><p>保障措施</p><p>该脚本有几个内置的保护措施：</p><p>
+旧文件和新文件都清楚地显示出来，因此您可以确切地知道将会发生什么。
+您可以随时关闭命令窗口以停止操作(当然，假设尚未执行替换)。
+当您调用“发送到”命令时，该脚本将确保您只选择了两个文件。例如，如果您选择1或3个文件，您将收到一条通知消息，并且不会发生任何事情。</p><p>剧本</p><code>@ECHO OFF
+TITLE Replace Locked File
+ECHO Replace Locked File
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+SETLOCAL EnableExtensions
+
+REM Validation.
+SET Error=1
+IF {%2}=={} (
+   ECHO Two files must be selected to run the replace.
+   GOTO End
+)
+IF NOT {%3}=={} (
+   ECHO More than 2 files were selected so I am not sure what to do.
+   GOTO End
+)
+
+SET Error=0
+SET OldFile="%~f1"
+SET NewFile="%~f2"
+SET LogOffWhenDone=0
+
+REM Show what will happen so you have a chance to cancel out.
+ECHO Old File: %OldFile%
+ECHO ---------
+ECHO New File: %NewFile%
+ECHO.
+ECHO You can cancel replacing the Old File with the New File by closing now.
+ECHO.
+
+REM Log off prompt. If you do not want to see this, you can delete these lines.
+ECHO Automatically log off once the replace process has completed?
+ECHO Enter 'Y' to automatically log off or enter anything else to not.
+SET /P LogOffWhenDone=
+
+:DoReplace
+DEL /F /Q %OldFile%
+IF NOT EXIST %OldFile% (
+   MOVE %NewFile% %OldFile%
+   ECHO File replaced successfully.
+   GOTO End
+)
+ECHO.
+ECHO The Old File is still locked. Waiting a few moments to try again.
+TIMEOUT /T 20
+GOTO DoReplace
+
+   
+:End
+IF {%Error%}=={1} (
+   ECHO Instructions for use:
+   ECHO 1. Select the two files in Windows Explorer.
+   ECHO 2. Right click on the Old File and go Send To - Replace Locked File
+   ECHO.
+   ECHO The file you right clicked on will be replaced with the other selected file.
+   ECHO.
+   ECHO Stopping without doing anything. Press any key to close.
+   TIMEOUT /T 15
+)
+IF /I {%LogOffWhenDone%}=={Y} (
+   ECHO.
+   ECHO Option to Log Off when completed was selected.
+   ECHO You will be logged off shortly.
+   SHUTDOWN /L
+)
+ENDLOCAL
+</code><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从SysadminGeek.com下载ReplaceFile脚本</p><div class="item_info"><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/替换/">替换</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14797.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14796.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14627.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14624.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14550.html">如何在Linux上使用Tail命令</a><li><a href="/story/14514.html">您想知道的关于Linux上的inode的所有信息</a><li><a href="/story/14471.html">如何在Google Drive中更改文件所有者</a><li><a href="/story/14454.html">如何在Linux上使用stat命令</a><li><a href="/story/14347.html">如何使用cURL从Linux命令行下载文件</a><li><a href="/story/14306.html">如何创建USB驱动器的映像</a><li><a href="/story/14240.html">如何在Linux上使用LESS命令</a><li><a href="/story/14188.html">如何最终确定和撤销对共享Google文件的访问</a><li><a href="/story/14167.html">如何共享指向您的Google文件的“复制”链接</a><li><a href="/story/14164.html">如何将Google文档、工作表或幻灯片文件共享为网页</a><li><a href="/story/14127.html">如何在iPhone和iPad上将文件复制和备份到外部存储</a><li><a href="/story/14024.html">如何快速搜索Google Drive</a><li><a href="/story/13983.html">如何在Linux上使用chown命令</a><li><a href="/story/13968.html">如何将音乐复制到Android手机</a><li><a href="/story/13912.html">你能在Windows PC或Android手机上使用AirDrop吗？</a><li><a href="/story/13883.html">如何在PowerPoint演示文稿中使用iTunes音乐</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

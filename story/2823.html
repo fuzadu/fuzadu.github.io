@@ -1,0 +1,101 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>设置戴尔服务器硬件警报的电子邮件通知</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>设置戴尔服务器硬件警报的电子邮件通知</h2></div><div class="content"><p>所有戴尔服务器都附带Dell OpenManage Server Administrator软件，该软件能够监控和显示系统级别指示器。此外，通过Alert Management(警报管理)选项卡，您可以配置在触发警报时执行的操作。遗憾的是，没有对所有事件应用统一通知的工具，因此我们将提供一个脚本，该脚本配置所有警报操作，以便发送电子邮件通知您相应的事件。虽然您可以手动设置这些设置，但拥有一个脚本是理想的，因为您可以轻松地在多个服务器上部署它。</p><p>它是如何工作的</p><p>剧本很简单。有一个设置命令，它将每个警报设置为“执行应用程序”，而应用程序本身就是脚本。当脚本运行时，它只是生成一封电子邮件(通过使用Blat工具)，其中包含触发的计算机名称、日期、时间和警报。</p><p>在运行脚本之前：</p><img class="content_img" src="/image/7f/7f386ba121ed53a605fa7b80c1cdee5e.png" /><p>运行脚本后：</p><img class="content_img" src="/image/75/753e98223dec902eafd5794b7235a0d2.png" /><p>所有警报都使用电子邮件通知脚本：</p><img class="content_img" src="/image/10/106a02971f1149cac00738001f56481d.png" /><p>要求</p><p>当然，您需要安装Dell OpenManage Server Assistant。如果您的系统没有提供此软件，可以通过戴尔支持网站下载。</p><p>此外，您还需要在系统上配置BLAT，这是一个命令行电子邮件程序。要配置Blat，只需下载二进制文件并将其解压(总共3个：blat.exe、blat.dll、blat.lib)到系统PATH变量中的某个位置，如Windowssystem32文件夹。然后从命令行运行：</p><p>适当更换邮件服务器和发件人电子邮件地址。在大多数情况下，您只需要运行此命令，但如果您的服务器有特殊配置(备用端口等)，您可以在Blat的网站上看到完整的安装选项。</p><p>电子邮件警报通知设置</p><p>一旦您有了这些要求，您就可以使用脚本了。编辑脚本以包括要通知的电子邮件地址(‘ToEmail’变量)。如果您的服务器需要身份验证才能进行中继，则必须将这些参数添加到脚本中记录的Blat命令。</p><p>要设置Server Assistant警报以使用脚本，只需运行安装程序：</p><p>确认您想要使用此脚本作为您的警报操作，您已经全部设置好了。作为设置的一部分，会触发示例警报，以便您可以确保电子邮件到达目标收件人。</p><p>剧本</p><code>@ECHO OFF
+TITLE Dell Hardware Email Alert
+ECHO Dell Hardware Email Alert
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+REM Sends email alerts when Dell hardware warnings are triggered.
+REM This script should _not_ be in a path which contains spaces.
+REM
+REM Usage:
+REM DellAlert {/SETUP | Alert message}
+REM    /SETUP   Configure Dell Server Assistant to use this script for alerts.
+REM    Alert Message
+REM             Message to send.
+REM
+REM Requires:
+REM Blat : (command line emailer) is configured and working on the current system.
+REM        If your email server requires authentication to relay, see comments below.
+
+REM Email address(es) to send alerts to (comma separated)
+SET ToEmail=myaddress@email.com
+
+SETLOCAL EnableExtensions
+
+IF /I {%1}=={/SETUP} GOTO Setup
+IF NOT {%1}=={} GOTO Alert
+GOTO End
+
+:Alert
+SET Log="%TEMP%DellAlert.txt"
+
+DATE /T > %Log%
+TIME /T >> %Log%
+ECHO Dell Alert Tripped! >> %Log%
+ECHO %* >> %Log%
+
+REM If your email server requires autentication to relay,
+REM add the following to the end of the line below:
+REM -u UserName -pw Password
+BLAT %Log% -to %ToEmail% -subject "%ComputerName% Hardware Alert"
+
+IF EXIST %Log% DEL /F /Q %Log%
+GOTO End
+
+:Setup
+ECHO This will replace all the current Dell Server Assistant alerts with a call
+ECHO to this script. To confirm you want to continue, enter YES (case sensitive).
+SET /P Confirm=
+IF NOT {%Confirm%}=={YES} GOTO End
+
+SET ScriptPath=%~dpnx0
+ECHO Configuring alerts to use: %ScriptPath%
+
+omconfig system alertaction event=powersupply execappath="%ScriptPath% power supply failure"
+omconfig system alertaction event=powersupplywarn execappath="%ScriptPath% power supply warning"
+omconfig system alertaction event=tempwarn execappath="%ScriptPath% temperature warning"
+omconfig system alertaction event=tempfail execappath="%ScriptPath% temperature failure"
+omconfig system alertaction event=fanwarn execappath="%ScriptPath% fan speed warning"
+omconfig system alertaction event=fanfail execappath="%ScriptPath% fan speed failure"
+omconfig system alertaction event=voltwarn execappath="%ScriptPath% voltage warning"
+omconfig system alertaction event=voltfail execappath="%ScriptPath% voltage failure"
+omconfig system alertaction event=intrusion execappath="%ScriptPath% chassis intrusion"
+omconfig system alertaction event=redundegrad execappath="%ScriptPath% redundancy degraded"
+omconfig system alertaction event=redunlost execappath="%ScriptPath% redundancy lost"
+omconfig system alertaction event=memprefail execappath="%ScriptPath% memory pre-failure"
+omconfig system alertaction event=memfail execappath="%ScriptPath% memory failure"
+omconfig system alertaction event=hardwarelogwarn execappath="%ScriptPath% hardware log warning"
+omconfig system alertaction event=hardwarelogfull execappath="%ScriptPath% hardware log full"
+omconfig system alertaction event=processorwarn execappath="%ScriptPath% processor warning"
+omconfig system alertaction event=processorfail execappath="%ScriptPath% processor failure"
+omconfig system alertaction event=watchdogasr execappath="%ScriptPath% watchdog asr"
+omconfig system alertaction event=batterywarn execappath="%ScriptPath% battery warning"
+omconfig system alertaction event=batteryfail execappath="%ScriptPath% battery failure"
+omconfig system alertaction event=systempowerwarn execappath="%ScriptPath% system power warning"
+omconfig system alertaction event=systempowerfail execappath="%ScriptPath% system power failure"
+
+omconfig system alertaction event=storagesyswarn execappath="%ScriptPath% storage system warning"
+omconfig system alertaction event=storagesysfail execappath="%ScriptPath% storage system failure"
+omconfig system alertaction event=storagectrlwarn execappath="%ScriptPath% storage controller warning"
+omconfig system alertaction event=storagectrlfail execappath="%ScriptPath% storage controller failure"
+omconfig system alertaction event=pdiskwarn execappath="%ScriptPath% physical disk warning"
+omconfig system alertaction event=pdiskfail execappath="%ScriptPath% physical disk failure"
+omconfig system alertaction event=vdiskwarn execappath="%ScriptPath% virtual disk warning"
+omconfig system alertaction event=vdiskfail execappath="%ScriptPath% virtual disk failure"
+omconfig system alertaction event=enclosurewarn execappath="%ScriptPath% enclosure warning"
+omconfig system alertaction event=enclosurefail execappath="%ScriptPath% enclosure failure"
+omconfig system alertaction event=storagectrlbatterywarn execappath="%ScriptPath% storage controller battery warning"
+omconfig system alertaction event=storagectrlbatteryfail execappath="%ScriptPath% storage controller battery failure"
+
+ECHO.
+ECHO Sending sample alert to:
+ECHO %ToEmail%
+CALL :Alert Testing Dell hardware alert warnings...
+ECHO.
+PAUSE
+GOTO End
+
+:End
+ENDLOCAL</code><p>脚本修改/维护</p><p>提供的脚本中的事件警报来自我们的一台戴尔服务器。根据您的戴尔服务器硬件和Server Assistant版本的不同，警报可能会有所不同。通常，您可以在运行安装脚本时判断事件是否对您的服务器无效(例如，如果您没有戴尔RAID控制器)，因为某些存储事件创建项目将失败。</p><p>上述脚本中的事件触发器是通过从命令提示符运行以下命令获得的：</p><p>此命令列出所有事件关键字以及相应警报的说明。要添加其他警报，请运行上面的命令并将缺少的条目添加到脚本的设置部分，然后使用/setup开关重新运行脚本。</p><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从SysadminGeek.com下载戴尔服务器电子邮件警报脚本</p><p>下载Blat命令行电子邮件程序</p><p>戴尔支持网站</p><div class="item_info"><span class="item_key"><a href="/tag/警报/">警报</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/blat/">blat</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14246.html">如何掌握Google Alerts</a><li><a href="/story/11505.html">如何使用MyQ在车库门打开时接收警报</a><li><a href="/story/9172.html">如何禁用智能手机上的紧急警报</a><li><a href="/story/8210.html">如何禁用Wii U游戏板上的警报</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

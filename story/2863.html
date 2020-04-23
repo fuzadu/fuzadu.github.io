@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Ubuntu上设置网络链路聚合(802.3ad)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Ubuntu上设置网络链路聚合(802.3ad)</h2></div><div class="content"><img class="content_img" src="/image/67/6732854f89c99c5efbebbda678294959.jpg" /><p>您是否需要在仅使用单个IP地址的情况下将大量数据同时传输到多个客户端？通过使用“链路聚合”，我们可以将系统上的几个独立网卡连接到一个巨大的网卡中。</p><p>概述 / 综述</p><p>链路聚合旨在为您提供增加可用网络带宽和恢复能力的选项，而无需完全更改您的基础设施来实现此目的(这样做需要付出一定的成本)。</p><p>除此之外，作为系统管理员，我们通常对服务器上运行的应用程序的内部工作几乎没有影响。因此，如果到了需要为应用程序增加可用网络带宽的时候，我们可能会面临系统的彻底重新设计。您可能知道，更改客户端-服务器交互、资助来自应用程序供应商的有针对性的功能请求或升级到新一代网络设备，要么是大量的工作，要么需要预算，或者两者兼而有之。因此，在您花费时间和$$之前一秒钟，请考虑使用“链路聚合”技术的结果，因为这是在基础架构级别(操作系统、网卡和交换机)完成的，因此应用程序可以完全不受更改的影响，同时突然获得多个网络连接的组合带宽。</p><img class="content_img" src="/image/2c/2cb35bd89e7dc1673a0f7751f84dabd0.png" /><p>伦吉斯·克里希南摄</p><p>先决条件</p><p>
+本指南是使用Ubuntu server9.10x64编写的，因此假设您也有一个基于Debian的系统可以使用。
+您的系统有多个网卡。
+你会看到我使用VIM作为编辑程序，这只是因为我习惯了…。您可以使用您喜欢的任何其他编辑器。</p><p>Linux方面的事情</p><p>我们将使用“ifenslave”(接口奴役)包，它能够获取系统的网卡并在黑暗中绑定它们。需要注意的一件事是，虽然在Windows上这种类型的配置是在网卡的驱动程序级别进行的，因此仅限于该卡上可用的接口，但是使用ifenslave软件包可以获取系统中的任何网卡并将其绑定(假设它们具有相同的速度等级，即1000Mb/s)。</p><p>在本指南中，我们将在交换机(使用LACP)和服务器上设置链路以使用802.3ad标准，但值得一提的是，“ifenslave”包启用了不需要交换机协作的聚合模式。不过，我还没有亲自用过，所以我不能担保。请记住这一点，以防您无法让网络基础设施进行协作，或者如果您的网卡没有对“ethtool”的驱动程序支持。</p><p>安装ifenslave软件包</p><p>这个过程是在Ubuntu9.10上创建的，Ubuntu9.10在“ifenslave”包中有一个突出的错误，在启动时不会调出绑定的界面(这里有记录)。如果您在10.10发行版上安装ifenslave，您将自动获得修复了错误的版本。但是，对于那些没有运行最新最棒版本的用户，您需要手动安装较新版本的ifenslave软件包。</p><p>*感谢亚历山大·尤斯金(Alexander Usykin)帮助解决这一问题。</p><p>要正常安装软件包(适用于10.10及以上用户)：</p><p>要手动安装较新的版本，请下载适合您的操作系统(x86或x64)的版本，将其放入tmp目录，然后使用dpkg命令进行安装。</p><p>对于32位操作系统：</p><p>对于64位操作系统：</p><p>配置绑定接口</p><p>既然已经安装了ifenslave软件包，我们就可以配置绑定接口了。为此，请编辑接口配置文件：</p><p>注释掉将成为焊接一部分的所有接口，并添加以下内容：</p><code>auto bond0
+iface bond0 inet dhcp
+        bond-slaves all
+        bond-mode 4
+        bond-miimon 100
+        bond-primary eth1 eth2 eth3 eth4 eth0</code><p>上面的示例将绑定设置为：使用模式4(802.3ad)，从DHCP获取IP，并将服务器上的所有NIC用于绑定(相关服务器具有来自四头NIC和板载NIC的4个接口)。</p><p>基础设施方面的事情</p><p>正如概述中所述，我们在本指南中使用的是“模式4”(802.3ad)，因此我们必须将接收端的交换机设置为在连接服务器的端口上使用聚合。</p><p>现在很明显，我不能详细介绍所有可以想到的设备配置，所以我将举两个例子，希望它能给您足够的帮助，让您在查找特定设备的供应商文档或Google上的信息时能够继续下去。</p><p>杜松J-腹板</p><p>本部分介绍如何使用J-Web管理GUI将Juniper设备上的接口(端口)配置为使用“链路聚合”(LACP)。</p><p>注意：我使用EX3200进行以下详细的屏幕截图和说明，但是J-web与其他使用Junos的Juniper设备非常相似。</p><p>取消与接口的关联</p><p>此步骤是必要的，因为Juniper设备上的每个接口都与名为“unit0”的默认VLAN相关联。虽然Juniper确实有关于如何配置链路聚合的文档，但我发现缺少这第一个也是最基本的步骤。如果不执行此步骤，文档描述的其余步骤将根本不起作用，您将摸不着头脑，不知道缺少了什么。</p><p>感谢Juniper支持人员(最终)提供此GUI解决方案。</p><p>
+在J-web主屏幕上，单击配置。
+然后单击“CLI工具”。
+选择“指向并单击CLI”。
+然后点击“接口”标题附近的“编辑”。
+
+选择您希望成为聚合一部分的接口，然后单击其旁边的“编辑”。
+
+
+在“单位”部分下，删除如图所示的关联。
+
+单击OK。
+对您希望成为聚合一部分的所有接口重复此操作。
+完成后，使用“Commit”应用更改。</p><p>将接口分组为聚合</p><p>现在接口已经解除关联，我们可以通过“分组”它们来创建聚合链路。</p><p>
+在J-web主屏幕上，单击“接口”。
+然后点击[链路聚合]。
+选择“添加”。
+
+当弹出窗口出现时，选择“活动”。
+点击“添加”。
+
+在子弹出窗口中，选择将成为链接一部分的接口(按住Ctrl键可选择多个)。
+单击“确定”，直到所有配置窗口都消失。
+好了。</p><p>惠普网络管理的ProCurve交换机</p><p>以下是针对HP ProCurve网络管理设备的说明，是对Juniper说明的补充。</p><p>HP 1800G</p><p>
+单击“Trunks”。
+点击“LACP Setup”(LACP设置)。
+选中您希望能够聚合的端口的复选框，在本例中我使用了端口3和4。
+
+
+单击页面底部的应用。
+好了。</p><p>HP 1810G</p><p>
+单击“Trunks”。
+单击“Trunk Configuration”(中继配置)。
+选中“创建”复选框。
+为链接指定一个名称。
+单击“应用”。
+
+点击“中继会员资格”。
+从下拉列表中选择“Trunk id”，在我们的示例中使用“Trunk2”。
+单击您希望成为聚合一部分的端口，在我们的示例中，我们使用了端口11和12。
+单击“应用”。
+
+通过转到“维护”使更改成为永久性的。
+然后进入“保存配置”子菜单。
+单击“保存配置”按钮。
+
+好了。</p><img class="content_img" src="/image/2c/2cb35bd89e7dc1673a0f7751f84dabd0.png" /><div class="item_info"><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/接口/">接口</a></span><span class="item_key"><a href="/tag/聚合/">聚合</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14584.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14577.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14572.html">如何使用Jouralctl读取Linux系统日志</a><li><a href="/story/14555.html">2020年CES最佳：我们今年看到的所有最好的东西</a><li><a href="/story/14467.html">如何在Windows 10上切换到本地用户帐户</a><li><a href="/story/14450.html">如何在Excel中将一长列变为多列</a><li><a href="/story/14438.html">如何在iPhone上创建和使用Memoji和Animoji</a><li><a href="/story/14426.html">如何使用Google Sheets中的查询功能</a><li><a href="/story/14419.html">如何在Linux中获取文件或目录的大小</a><li><a href="/story/14377.html">如何在Google Sheets中使用AND和OR函数</a><li><a href="/story/14353.html">如何使用触摸板、鼠标或键盘右键单击任何Mac</a><li><a href="/story/14296.html">如果您的Windows 10键盘或鼠标无法工作，该怎么办</a><li><a href="/story/14262.html">iPhone11上的Deep Fusion摄像头是什么？</a><li><a href="/story/14257.html">如何在Linux上编写fstab文件</a><li><a href="/story/14202.html">什么是利特语，你是如何使用它的？</a><li><a href="/story/14168.html">刚刚更新到iOS 13吗？立即更改这八个设置</a><li><a href="/story/14142.html">为什么您应该登录Google、Facebook或Apple</a><li><a href="/story/14130.html">如何在Windows 10中的每个显示器上设置不同的墙纸</a><li><a href="/story/14121.html">如何在Linux上使用chroot命令</a><li><a href="/story/14036.html">如何在Chrome中从图像中抓取文本</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

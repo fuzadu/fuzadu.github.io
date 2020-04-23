@@ -1,0 +1,145 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何将GUI添加到Linux Shell脚本</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何将GUI添加到Linux Shell脚本</h2></div><div class="content"><img class="content_img" src="/image/40/400797dd6de14d8bd79bb38fec3fd7e5.png" /><p>您可以在Bash脚本中使用GUI窗口、滑块、单选按钮、进度条等。了解如何使用zenity工具箱并对您的Bash脚本进行整容。我们会教你怎么做的。</p><p>Bash脚本是一种功能强大的编程语言，因为它内置于Bash shell中，所以任何人都可以轻松地使用它。这是一种很容易开始编程的语言。因为它是解释的，所以您不需要编译脚本。一旦您编辑了脚本文件并使其可执行，您就可以运行它了。这使得编码、运行和调试周期非常高效。</p><p>人们对Bash脚本有两个主要的抱怨，第一个是速度。因为Bash shell解释脚本中的命令，所以它们的执行速度不如编译后的代码。然而，这就像抱怨拖拉机没有汽车快一样，它们是用来做不同事情的。</p><p>不过，有两种速度。通常，您可以拼凑一个快速脚本并使用它来执行任务，这比用编译语言(如C)开发解决方案要快得多。</p><p>人们对Bash脚本的第二个抱怨是用户界面--它是一个终端窗口。当然，有时界面并不重要。如果唯一会使用脚本的人是它的作者，那么界面可能并不那么重要，对于执行后台和批处理类型处理的脚本来说也无关紧要。通常，这样的脚本不需要太多(如果有)用户交互。</p><p>在某些情况下，您确实需要比终端窗口更直观和更现代的东西。大多数人都熟悉图形用户界面(GUI)。为了给人们带来尽可能顺畅的体验，您必须从脚本中创建和使用GUI元素。</p><p>Zenity的应用</p><p>Zenity允许您在Bash脚本中合并各种图形界面元素。它是一个功能强大的工具包，可以给您的脚本带来现代的感觉和现代的、熟悉的外观。</p><p>Zenity预装在Ubuntu、Fedora和Manjaro发行版上。它是侏儒的一部分。如果你使用KDE，你可能会想要检查一下kDialog，尽管zenity确实可以在任何桌面环境上运行。</p><p>本文中的示例向您展示了如何从命令行创建不同的对话框窗口，如何在变量中捕获它们的返回值和用户选择，以及如何在脚本中使用对话框窗口。</p><p>最后，我们来看一个小应用程序，它利用了所有三种类型的对话窗口。</p><p>日历对话框窗口</p><p>日历对话框窗口允许用户选择日期。要创建Zenity，只需两个字的单个命令：</p><code>zenity --calendar</code><p>此时将显示日历对话框窗口。它具有标准日期选择器所具有的所有功能。您可以更改月和年，然后单击某一天以选择该日期。默认情况下，窗口出现时突出显示今天的日期。</p><img class="content_img" src="/image/75/75f07d934ad1d7f0ff2992a138cae29b.png" /><p>单击“确定”关闭对话框窗口并选择突出显示的日期。双击日期可以实现相同的功能。</p><p>如果您不想选择日期，请单击“取消”，按键盘上的“Esc”键，或关闭对话框窗口。</p><img class="content_img" src="/image/65/653f15308e9aa8b9b3b31c212726157f.png" /><p>在上面的示例中，选择了2019年8月19日。如果用户单击“OK”，日历将关闭，并在终端窗口中打印所选日期。</p><img class="content_img" src="/image/21/21dcc7f0f28e9d22a548d9d254d4bade.png" /><p>您可以忽略行，“GTKDialog映射没有暂态父级。这是令人气馁的。“</p><p>GTK代表GIMP工具包，它是用于开发GNOME界面的工具包。它最初是由GNU图像处理程序(GIMP)的作者设计的。GNU代表GNU‘s Not Unix。</p><p>GTK引擎警告Zenity的作者，他们以非标准的方式使用了GTK组件。</p><p>捕获日期值</p><p>将日期打印到终端对我们没有太大帮助。如果我们要从某个脚本调用此日历，则需要捕获选定的日期值，以便在脚本中对其执行一些有用的操作。我们还将稍微自定义日历。</p><p>我们将对日历使用以下选项。它们都必须与双破折号“-”标志一起使用：</p><p>
+-Text：指定要在日历中显示的文本字符串。它取代了默认的“从下面选择日期”。
+-title：设置日历对话框窗口的标题。
+-day：设置日历打开时选择的日期。
+-月：设置日历打开时选择的月份。
+-Year：设置日历打开时选择的年份。</p><p>我们使用一个名为ChosenDate的变量来捕获从日历返回的日期。我们使用ECHO$ChosenDate将该日期打印到终端窗口。</p><p>是的，我们在前面的示例中实现了相同的结果，但是在这里，我们将选定的日期存储在一个变量中。在上一个示例中，它被打印并被遗忘。</p><code>ChosenDate=$(zenity -- calendar --text "Choose a date" --title "How-To Geek Rota" --day 1 -- month 9 --year 2019); echo $ChosenDate</code><img class="content_img" src="/image/6f/6f37eee7b4af9819b68d0e7ed6d9dc6f.png" /><p>现在，日历显示我们的提示符和窗口标题。日期设置为我们选择的开始日期，而不是今天的日期。</p><img class="content_img" src="/image/54/54386ad4f691cab09bcf02f3bad285dc.png" /><p>我们还可以自定义在进行选择时返回的日期字符串的格式。*--date-format选项后面必须跟一个格式说明符。这是定义要包括在输出中的数据和格式的标记字符串。这些标记与与strftime()和C语言函数一起使用的标记相同，并且有大量的选择。</p><p>我们使用的令牌有：</p><p>
+%A：星期几的全名。
+%d：数字形式的月份日期。
+%m：以数字表示的月份。
+%y：以两位数表示的年份(无世纪)。</p><code>ChosenDate=$(zenity -- calendar --text "Choose a date" --title "How-To Geek Rota" --date-format="%A %d/%m/%y" --day 1 -- month 9 --year 2019); echo $ChosenDate</code><img class="content_img" src="/image/37/37a9cfdc0108efa3e682fda9828e2d6f.png" /><p>有人选择日期：</p><img class="content_img" src="/image/2d/2deb4321fe9aeba459b50759b3f68d4f.png" /><p>并且使用我们的格式返回日期。它显示星期几的名称，后跟按欧洲顺序排列的日期：日、月、年。</p><img class="content_img" src="/image/de/de18adeed4fd3d736746794e7fea8581.png" /><p>文件选择对话框窗口：选择文件</p><p>文件选择对话框窗口相当复杂。人们可以浏览文件系统，突出显示一个或多个文件，然后单击“确定”选择这些文件或完全取消选择。</p><p>Zenity提供了所有这些功能，甚至更多。而且它和日历对话框窗口一样易于使用。</p><p>我们将使用的新选项包括：</p><p>
+-file-select：告诉zenity我们要使用文件选择对话框窗口。
+-多个：允许用户选择多个文件。
+-file-filter：告诉文件对话框窗口要显示哪些文件类型。</p><code>zenity --file-selection --tile "How-To Geek" --multiple --file-filter='*.mm *.png *.page *.sh *.txt'</code><img class="content_img" src="/image/d6/d61ae2b2b637c49014b490f098172494.png" /><p>文件选择对话框窗口的功能与任何其他文件选择窗口相同。</p><img class="content_img" src="/image/70/70a1254352d7d76a03e876af356a1220.png" /><p>用户可以浏览文件系统并选择她选择的文件。</p><img class="content_img" src="/image/c6/c67b32223a8b8d5616d395a35e0b7c68.png" /><p>我们已经浏览到一个新目录，并选择了一个名为“button_throd.png”的文件。</p><p>当您单击“OK”时，文件选择对话框窗口关闭，并在终端窗口中打印文件名和路径。</p><img class="content_img" src="/image/4d/4d90afd667c3441031be160399370148.png" /><p>如果您需要在任何进一步的处理中使用该文件名，您可以在一个变量中捕获它，就像您对日历中的日期所做的那样。</p><p>文件选择对话框窗口：保存文件</p><p>如果我们增加一个选项，我们可以将文件选择对话窗口变成文件保存对话窗口。选项是--save。我们还将使用删除-确认-覆盖选项。这会提示用户确认他想要覆盖现有文件。</p><code>Response=$(zenity --file-selection --save --confirm-overwrite); echo $Response</code><img class="content_img" src="/image/80/80d0b01487d1f5df30c1cf7a728122d1.png" /><p>此时将出现文件保存对话框窗口。注意，有一个文本字段，用户可以在其中键入文件名。</p><img class="content_img" src="/image/87/87f89a2198c6d4b26d419f7484f2b276.png" /><p>用户可以浏览到他在文件系统中选择的位置，提供文件的名称，或者单击现有文件以覆盖它。</p><img class="content_img" src="/image/74/749fa35ba76e79db40bb351f826ecc9a.png" /><p>在上面的示例中，用户突出显示了一个现有文件。</p><p>当他单击“确定”时，将出现一个确认对话框窗口，要求他确认是否要替换现有文件。注意：警告对话框中会显示该文件的名称。正是这种对细节的关注让Zenity看起来很专业。</p><p>如果我们没有使用--confirm-overwrite选项，该文件将被静默覆盖。</p><img class="content_img" src="/image/73/73bff961367297220c1ec2b76f45462a.png" /><p>文件名存储在变量Response中，该变量打印到终端窗口。</p><img class="content_img" src="/image/27/2726c9622e846d5cd7fd25f8fd249e50.png" /><p>通知对话框窗口</p><p>凭借其灵活性，在脚本中包含灵活的通知对话框窗口是毫不费力的。您可以使用常用的对话框窗口为用户提供信息、警告、错误消息和问题。</p><p>要创建错误消息对话框窗口，请使用以下命令：</p><code>zenity --error --width 300 --text "Permission denied. Cannot write to the file."</code><p>我们使用的新选项包括：</p><p>
+-error：告诉zenity我们要使用错误对话框窗口。
+-width：设置窗口的初始宽度。</p><img class="content_img" src="/image/30/3055b63c40d2cc24608f0f4d7c0fad01.png" /><p>“错误”对话框窗口以指定的宽度出现。它使用标准的GTK错误图标。</p><img class="content_img" src="/image/41/415ba7c29687645444dc9254ebec4738.png" /><p>要创建信息对话框窗口，请使用以下命令：</p><code>zenity --info --width 300 --text "Update complete. Click OK to continue."</code><p>我们使用的新选项是--info，它告诉zenity创建一个信息对话框窗口。</p><img class="content_img" src="/image/3d/3d8a64b9dabd8b310ee2dc175cfb38aa.png" /><p>要创建问题对话框窗口，请使用以下命令：</p><code>zenity --question --width 300 --text "Are you happy to proceed?"; echo $?</code><p>我们正在使用的新选项是--Query，它告诉Zenity创建一个问题对话窗口。</p><img class="content_img" src="/image/57/578ad6b93f77dbef03a13cccb87eeb56.png" /><p>那块钱呢？是一个特殊参数。它保存最近执行的前台管道的返回值。一般而言，这是最近关闭的流程的值。零值表示“确定”，一个或多个值表示“取消”。</p><p>这是一种可以应用于任何Zenity对话框窗口的常规技术。通过在脚本中检查此值，可以确定应处理还是应忽略从对话框窗口返回的数据。</p><img class="content_img" src="/image/97/97c10a8f875e71c2a673f59dd986ff0c.png" /><p>我们单击了“Yes”，因此返回代码为零，表示“OK”。</p><img class="content_img" src="/image/62/62f7d124ff6e477500821f08c23bc0e1.png" /><p>要创建警告对话框窗口，请使用以下命令：</p><code>zenity --warning --title "Low Hard Drive Space" --width 300 --text "There may not be enough hard drive space to save the backup."</code><p>我们正在使用的新选项是--warning，它告诉zenity创建一个警告对话框窗口。</p><img class="content_img" src="/image/65/65fe8cd2e42d1ef24f8df41603a7e901.png" /><p>出现警告对话框窗口。这不是问题，所以它只有一个按钮。</p><img class="content_img" src="/image/9b/9b94b5ca7cc2ea651b381899fad1b033.png" /><p>进度对话框窗口</p><p>您可以使用zenity进度对话框窗口来显示进度条，指示您的脚本离完成有多近。</p><p>进度条根据从脚本通过管道传送到进度条的值前进。要演示该原理，可以使用以下命令：</p><code>(for i in $(seq 0 10 100); do echo $i; sleep 1; done)</code><img class="content_img" src="/image/e5/e57a659b0aabee0fecd17be5c9a4bafd.png" /><p>该命令按如下方式分解：</p><p>
+seq_s命令以10为步长逐步执行从0到100的序列。
+在每个步骤中，该值都存储在变量i中。这将打印到终端窗口。
+由于SLEEP 1命令，该命令暂停一秒钟。</p><p>我们可以在zenity进度对话框窗口中使用它来演示进度条。注意，我们通过管道将前一个命令的输出传输到zenity：</p><code>(for i in $(seq 0 10 100); do echo $i; sleep 1; done) | zenity --progress --title "How-To Geek" -- auto-close</code><img class="content_img" src="/image/c7/c7bac7a197362001b57d8671b75bf41f.png" /><p>我们使用的新选项包括：</p><p>
+-Progress：告诉zenity我们要使用进度对话框窗口。
+-自动关闭：当进度条达到100%时关闭对话框。</p><p>出现进度对话框窗口，条形图朝100%前进，每一步之间暂停一秒钟。</p><img class="content_img" src="/image/0a/0a6ee729bcea8a0176bef548e42300d6.png" /><p>我们可以使用通过管道将值传递到zenity的概念来将进度对话框窗口包括在脚本中。</p><p>在编辑器中输入此文本，并将其另存为“progress.sh”。</p><code>!/bin/bash
+
+function work-list () {
+
+echo "# First work item" 
+echo "25"
+sleep 1
+
+echo "# Second work item" 
+echo "50"
+sleep 1
+
+echo "# Third work item" 
+echo "75"
+sleep 1
+
+echo "# Last work item" 
+echo "100"
+sleep 1
+
+}
+
+work-list | zenity --progress --title "How-To Geek" --auto-close
+
+exit 0</code><p>以下是剧本的细目：</p><p>
+该脚本定义了一个名为work-list的函数。这是您放置命令和指令以执行实际工作的地方。将每个睡眠1命令替换为您的真实命令。
+Zenity接受回音“#.”线条，并在进度对话框窗口中显示它们。更改这些行的文本，以便它们向用户传递信息性消息。
+Zenity也会接受包含数字的回音线，如ECHO“25”，并设置进度条的值。
+工作列表函数被调用并通过管道传递到zenity。</p><p>使用此命令使脚本可执行：</p><code>chmod +x progress.sh</code><img class="content_img" src="/image/5c/5cc7122a15240389f1705d59951720d2.png" /><p>使用以下命令运行脚本：</p><code>./progress.sh</code><img class="content_img" src="/image/cb/cb15def407c2c5bbb7849abbb24bca48.png" /><p>脚本运行，并且文本消息随着脚本的每个阶段的执行而改变。进度条逐步向100%移动。</p><img class="content_img" src="/image/1d/1d6c99b6f7e67a2f22ad70d2f40edc26.png" /><p>缩放对话框窗口</p><p>缩放对话框窗口允许用户移动滑块来选择数值。这意味着她不能输入过高或过低的值。</p><p>我们正在使用的新选项包括：</p><p>
+-Scale：告知zenity我们要使用缩放对话框窗口。
+-min-value：设置比例的最小值。
+-max-value：设置刻度的最大值。
+-Step：设置使用箭头键时滑块的移动量。如果有人使用鼠标，这不会影响滑块的移动。
+-value：设置滑块的初始值和位置。</p><p>这是我们使用的命令：</p><code>Response=$(zenity --scale --title "How-To Geek" --text "Select magnification." --min-value=0 --max-value=30 --step=3 --value15); echo $Response</code><img class="content_img" src="/image/4d/4d0ae6c0eb9751edda8c031c54b64507.png" /><p>将出现滑块对话框窗口，并将滑块设置为15。</p><img class="content_img" src="/image/8b/8b8d2d9f0179ca8c1f2ddfb1d7565352.png" /><p>用户可以移动滑块以选择新值。</p><img class="content_img" src="/image/08/08f083168d49ca22a7d10fe48e9b44e2.png" /><p>当她单击“OK”时，该值被传递到变量Response，并打印到终端窗口。</p><img class="content_img" src="/image/a7/a734bd355dd02f141a11849fe44398ef.png" /><p>输入对话框窗口</p><p>输入对话框窗口允许用户输入文本。</p><p>我们正在使用的新选项包括：</p><p>
+-Entry：告诉zenity我们要使用一个Entry对话框窗口。
+-Entry-Text：如果要在文本输入字段中键入建议值，则可以使用此选项。我们用“”来强迫空场地。这不是严格要求，但我们希望记录该选项。</p><p>完整命令如下所示：</p><code>Response=$(zenity --entry --text "Enter your search term" --title "Howe-To Geek" --entry-text=""); echo $Response</code><img class="content_img" src="/image/d3/d326f89fa9e75da32c840ebf11d95956.png" /><p>将出现一个简单的对话框窗口，其中包含一个文本输入字段。</p><img class="content_img" src="/image/11/11fc4eeb3e68689ec22464b03a9ea128.png" /><p>有人可以键入和编辑文本。</p><img class="content_img" src="/image/e1/e1c1d90bc400d5e2ab15c1954a36fe96.png" /><p>当他单击“OK”时，他键入的值会分配给变量Response。我们使用echo在终端窗口中打印变量的值。</p><img class="content_img" src="/image/9e/9e2609cb3f122f6cb22bd78137bcc3a9.png" /><p>把它们放在一起</p><p>让我们将这些技术放在一起，创建一个功能脚本。该脚本将执行硬件信息扫描，并在滚动文本窗口中向用户显示结果。她可以选择长扫描或短扫描类型。</p><p>对于此脚本，我们将使用三种类型的对话框窗口，其中两种对我们来说是新的：</p><p>
+第一个是列表对话框窗口。它允许人们做出选择。
+第二个是进度对话框窗口，让用户知道正在发生什么事情，她应该等待。
+第三个是文本信息窗口，向用户显示结果。</p><p>在编辑器中输入此文本并将其保存为“Hardware-info.sh”。</p><code>#!/bin/bash
+
+# Display hardware listing for this computer
+
+TempFile=$(mktemp)
+
+ListType=`zenity --width=400 --height=275 --list --radiolist \
+     --title 'Hardware Scan' \
+     --text 'Select the scan type:' \
+     --column 'Select' \
+     --column 'Scan Type' TRUE "Short" FALSE "Long"`
+
+if [[ $? -eq 1 ]]; then
+
+  # they pressed Cancel or closed the dialog window 
+  zenity --error --title="Scan Declined" --width=200 \
+       --text="Hardware scan skipped"
+  exit 1
+ 
+elif [ $ListType == "Short" ]; then
+
+  # they selected the short radio button 
+  Flag="--short"
+ 
+else
+
+  # they selected the long radio button 
+  Flag="" 
+fi
+
+# search for hardware info with the appropriate value in $Flag
+hwinfo $Flag | tee >(zenity --width=200 --height=100 \
+     --title="Collating Information" --progress \
+     --pulsate --text="Checking hardware..." \
+     --auto-kill --auto-close) >${TempFile}
+ 
+# Display the hardware info in a scrolling window
+zenity --width=800 --height=600 \
+     --title "Hardware Details" \
+     --text-info --filename="${TempFile}"
+ 
+exit 0</code><p>使用此命令使其可执行：</p><code>chmod +x hardware-info.sh</code><img class="content_img" src="/image/52/52f72e9dada47125a568c2afdeef60d6.png" /><p>此脚本创建一个临时文件，该文件的名称保存在TempFile变量中：</p><code>TempFile=$(mktemp)</code><p>该脚本使用--list选项创建一个zenity对话窗口，称为列表对话窗口。行尾的“\”字符告诉脚本将它们视为环绕在一起的长行。以下是流程：</p><p>
+我们指定窗口的宽度和高度。
+列表对话框窗口支持列。Radiolist选项使第一列成为一列单选按钮列。
+我们为窗口设置标题和文本提示。
+我们将第一列的标题设置为“Select”。此列的内容将是单选按钮。
+我们将第二列的标题设置为“Select”，并提供第二列的内容。此列包含两个文本标签：“短”和“长”。TRUE和FALSE指示器表示当对话框窗口出现时，默认情况下选择“Short”(短)选项。
+我们将此对话框窗口的结果存储在一个名为ListType的变量中。</p><code>ListType=`zenity --width=400 --height=275 --list --radiolist \ 
+     --title 'Hardware Scan' \ 
+     --text 'Select the scan type:' \ 
+     --column 'Select' \ 
+     --column 'Scan Type' TRUE "Short" FALSE "Long"`</code><p>如果用户按下“Cancel”，我们不需要检查ListType中的值，只需退出即可。如果他按下“OK”，我们需要确定他是选择了“Short”还是“Long”单选按钮：</p><p>
+如果用户按下“OK”，则特殊参数$？1等于零。如果他按下“取消”或关闭窗口，则等于1。
+如果等于1，脚本将显示一个错误信息对话框窗口并退出。如果他按下“OK”，我们将继续测试ListType变量中的值。
+如果ListType变量包含值“Short”，则脚本将名为Flag的变量设置为等于“-Short”。
+如果ListType变量没有保存“Short”值，则它必须保存“Long”值。脚本将名为Flag的变量设置为等于“”，这是一个空字符串。
+该脚本在下一节中使用Flag变量。</p><code>if [[ $? -eq 1 ]]; then 
+
+  # they pressed Cancel or closed the dialog window 
+  zenity --error --title="Scan Declined" --width=200 \ --text="Hardware scan skipped" 
+  exit 1 
+
+elif [ $ListType == "Short" ]; then 
+
+ # they selected the short radio button 
+ Flag="--short" 
+
+else 
+
+ # they selected the long radio button 
+ Flag="" 
+fi</code><p>既然脚本知道了用户需要哪种类型的扫描，我们就可以执行硬件信息扫描了：</p><p>
+脚本调用hwinfo命令并将Flag变量中的值传递给它。
+如果Flag包含“-Short”，则hwinfo命令执行简短扫描。如果Flag的值为“”，则不会传递给hwinfo，并执行默认的长扫描。
+该脚本将hwinfo的输出通过管道传输到tee。TEE将输出发送到zenity并发送到TempFile。
+该脚本创建进度栏对话框窗口。它设置对话框窗口的宽度和高度，以及标题和提示文本。
+脚本无法预先知道hwinfo命令将生成多少信息，因此它无法将进度条设置为正确地前进到100%。PULSATE选项使进度对话框显示移动指示器。这会通知用户发生了一些事情，他应该等待。
+如果有人单击“Cancel”，--auto-kill选项将终止脚本。
+--auto-close选项使进度对话框在其监视的进程完成时自动关闭。</p><code># search for hardware info with the appropriate value in $Flag
+hwinfo $Flag | tee >(zenity --width=200 --height=100 \
+     --title="Collating Information" --progress \
+     --pulsate --text="Checking hardware..." \
+     --auto-kill --auto-close) >${TempFile}</code><p>当hwinfo扫描完成时，脚本调用zenity来创建一个带有--text-info选项的文本信息对话框窗口。文本信息对话框窗口显示TempFile文件的内容：</p><p>
+该脚本设置对话框窗口和标题文本的宽度和高度。
+flename选项用于读取保存在TempFIle变量中的文件内容。</p><code># Display the hardware info in a scrolling window 
+zenity --width=800 --height=600 \ 
+     --title "Hardware Details" \ 
+     --text-info --filename="${TempFile}"</code><p>当用户关闭文本信息对话框窗口时，脚本退出。</p><code>exit 0</code><p>让我们点燃它，看一看。</p><code>./hardware-info.sh</code><img class="content_img" src="/image/37/37a0a222511a9ea7405f97a5fc75fa63.png" /><p>此时将出现列表框。默认情况下，“Short”(短)选项处于选中状态。</p><img class="content_img" src="/image/06/06a20ac5a45a6206a7f008b2c0b3007a.png" /><p>让我们选择“Long”，然后单击“OK”。</p><img class="content_img" src="/image/bd/bd40ba210bda6e9d5c26d8ebde55cc6d.png" /><p>出现带有滑动指示器的进度窗口。它会一直显示在屏幕上，直到硬件扫描完成。</p><img class="content_img" src="/image/21/213e914166e8fe0091c2c38d696dc193.png" /><p>硬件扫描完成后，将出现文本信息对话框窗口，其中包含扫描的详细信息。</p><img class="content_img" src="/image/c0/c097970eecae3d45eeab0179fdb20a49.png" /><p>单击“确定”。</p><p>即使是一个顽固的命令行程序员也不得不承认，几个GUI对话框窗口可以给一个不起眼的Bash脚本带来专业的感觉。</p><p></p><div class="item_info"><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/选项/">选项</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14323.html">如何在Windows上将Caps Lock用作修改键</a><li><a href="/story/13415.html">如何在Linux上使用yes命令</a><li><a href="/story/13180.html">如何使用脚本编辑器为Google应用程序增压</a><li><a href="/story/13147.html">如何在进程退出时自动关闭MacOS终端</a><li><a href="/story/11555.html">如何在Windows中自动键入带双空格的句点</a><li><a href="/story/10454.html">如何在Windows 10上创建和运行Bash Shell脚本</a><li><a href="/story/7708.html">如何配置Windows以更轻松地使用PowerShell脚本</a><li><a href="/story/7704.html">如何使用批处理文件使PowerShell脚本更易于运行</a><li><a href="/story/7410.html">愚蠢的极客小把戏：如何让你的电脑与你对话</a><li><a href="/story/7370.html">在Windows上使窗口始终在最上面的3种最佳方法</a><li><a href="/story/6987.html">如何用PowerShell生成随机姓名和电话号码</a><li><a href="/story/4528.html">如何在Ubuntu上交换两个和三个手指触摸板轻击动作</a><li><a href="/story/3339.html">使用此简单脚本通过右键单击将文件上载到FTP站点</a><li><a href="/story/3166.html">Shell脚本初学者指南2：for循环</a><li><a href="/story/3146.html">Shell脚本初学者指南：基础知识</a><li><a href="/story/3024.html">如何在Ubuntu中使用热键关闭显示器</a><li><a href="/story/2913.html">使用自动热键脚本的初学者指南</a><li><a href="/story/2843.html">构建您自己的自动文件更新系统</a><li><a href="/story/2841.html">轻松保留所有网络计算机上本地文件的镜像备份</a><li><a href="/story/2839.html">使用简单的脚本诊断Linux服务器负载问题</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

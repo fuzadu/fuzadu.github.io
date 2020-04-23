@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>极客学校：学习Windows 7-远程访问</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>极客学校：学习Windows 7-远程访问</h2></div><div class="content"><img class="content_img" src="/image/a1/a17ef2899040c2a9ec7e57cda4b9a0d5.png" /><p>在本系列的最后一部分中，我们了解了如何从任何位置管理和使用Windows计算机，只要您在同一网络上。但如果你不是呢？</p><p>请务必阅读Windows7上这个极客学校系列之前的文章：</p><p>
+介绍How-to Geek学校。
+升级和迁移。
+配置设备。
+管理磁盘。
+管理应用程序。
+管理Internet Explorer。
+IP寻址基础知识。
+联网。
+无线联网。
+Windows防火墙。
+远程管理</p><p>本周我们将继续关注这一系列剩下的节目。</p><p>网络访问保护</p><p>网络访问保护是Microsoft尝试根据尝试连接到网络资源的客户端的健康状况来控制对网络资源的访问。例如，在您是笔记本电脑用户的情况下，可能有很多个月您在路上，并且没有将您的笔记本电脑连接到您的公司网络。在此期间，不能保证您的笔记本电脑不会感染病毒或恶意软件，甚至不能保证您会收到防病毒定义更新。</p><p>在这种情况下，当您回到办公室并将计算机连接到网络时，NAP将根据您在其中一台NAP服务器上设置的策略自动确定计算机的运行状况。如果连接到网络的设备未通过运行状况检查，则会自动将其移动到网络的超级受限部分(称为补救区域)。当处于修正区域时，修正服务器将自动尝试并纠正您的计算机的问题。以下可能是一些示例：</p><p>
+如果您的防火墙被禁用，而您的策略要求启用它，则修正服务器将为您启用您的防火墙。
+如果您的健康策略规定您需要安装最新的Windows更新，而您没有，那么您可以在您的修正区域中拥有一台将在您的客户端上安装最新更新的WSUS服务器。</p><p>只有当您的NAP服务器认为您的计算机处于健康状态时，才会将其移回公司网络。有四种不同的方式可以强制实施NAP，每种方式都有自己的优势：</p><p>
+VPN-在有远程上班族使用自己的计算机在家远程工作的公司中，使用VPN实施方法非常有用。您永远无法确定某人可能会在您无法控制的PC上安装什么恶意软件。使用此方法时，每次启动VPN连接时都会检查客户端的运行状况。
+DHCP-当您使用DHCP实施方法时，在您的NAP基础架构认为客户端处于健康状态之前，不会从您的DHCP服务器为客户端提供有效的网络地址。
+IPSec-IPsec是一种使用证书加密网络流量的方法。虽然不是很常见，但您也可以使用IPsec来实施NAP。
+802.1x-802.1x有时也称为基于端口的身份验证，是在交换机级别对客户端进行身份验证的一种方法。使用802.1x实施NAP策略是当今世界的标准做法。</p><p>拨号连接</p><p>由于某些原因，在今天和这个时代，微软仍然想让你知道那些原始的拨号连接。拨号连接使用模拟电话网络(也称为POTS(普通老式电话服务))将信息从一台计算机传送到另一台计算机。他们使用调制解调器来实现这一点，调制解调器是“调制”和“解调”两个词的组合。调制解调器通常使用RJ11电缆连接到您的PC，并将来自PC的数字信息流调制为可通过电话线传输的模拟信号。当信号到达目的地时，它被另一个调制解调器解调，并转换回计算机可以理解的数字信号。要创建拨号连接，请右键单击网络状态图标，然后打开网络和共享中心。</p><img class="content_img" src="/image/fd/fdc164707afcfbdb050d2ec0398be772.png" /><p>然后单击Set Up a New Connection or Network(设置新连接或网络)超链接。</p><img class="content_img" src="/image/b6/b65478ad1e1e8eef6cc3c31ec8911870.png" /><p>现在选择设置拨号连接，然后单击“下一步”。</p><img class="content_img" src="/image/93/9336338ce6b1d59394f163f27bfb4248.png" /><p>从这里您可以填写所需的所有信息。</p><img class="content_img" src="/image/33/3343a740320971f65184918de242a1e5.png" /><p>注意：如果您在考试中遇到需要设置拨号连接的问题，他们会提供相关详细信息。</p><p>虚拟专用网络</p><p>虚拟专用网络是您可以在公共网络(如Internet)上建立的专用隧道，这样您就可以安全地连接到另一个网络。</p><p>例如，您可以建立从家庭网络上的PC到公司网络的VPN连接。这样，您的家庭网络上的PC看起来就像是您公司网络的一部分。事实上，您甚至可以连接到网络共享，例如，如果您拿起PC并用以太网电缆将其物理地插入到您的工作网络中。唯一的区别当然是速度：如果你在办公室，你会受到宽带连接速度的限制，而不是获得千兆位以太网的速度。</p><p>你可能想知道这些“私人隧道”有多安全，因为它们是通过互联网“隧道”的。每个人都可以看到您的数据吗？不，它们不能，这是因为我们对通过VPN连接发送的数据进行加密，因此得名虚拟“专用”网络。用于封装和加密通过网络发送的数据的协议由您决定，Windows 7支持以下功能：</p><p>注：不幸的是，为了考试，你需要记住这些定义。</p><p>
+点对点隧道协议(PPTP)-点对点隧道协议允许将网络流量封装到IP报头中，并通过IP网络(如Internet)发送。
+
+封装：使用GRE的修改版本将PPP帧封装在IP数据报中。
+加密：PPP帧使用Microsoft点对点加密(MPPE)进行加密。在使用Microsoft质询握手身份验证协议版本2(MS-CHAP v2)或可扩展身份验证协议-传输层安全(EAP-TLS)协议的身份验证期间生成加密密钥。
+
+
+第2层隧道协议(L2TP)-L2TP是使用Internet协议传输PPP帧的安全隧道协议，它部分基于PPTP。与PPTP不同，Microsoft实施的L2TP不使用MPPE来加密PPP帧。相反，L2TP在传输模式下使用IPsec提供加密服务。L2TP和IPsec的组合称为L2TP/IPsec。
+
+封装：PPP帧首先用L2TP报头封装，然后用UDP报头封装。然后使用IPSec对结果进行封装。
+加密：使用IKE协商过程中生成的密钥，使用AES或3DES加密对L2TP消息进行加密。
+
+
+安全套接字隧道协议(SSTP)-SSTP是使用HTTPS的隧道协议。由于TCP端口443在大多数公司防火墙上都是开放的，因此对于那些不允许传统VPN连接的国家/地区来说，这是一个很好的选择。它也非常安全，因为它使用SSL证书进行加密。
+
+封装：PPP帧封装在IP数据报中。
+加密：SSTP消息使用SSL加密。
+
+
+Internet密钥交换(IKEv2)-IKEv2是在UDP端口500上使用IPsec隧道模式协议的隧道协议。
+
+封装：IKEv2使用IPSec ESP或AH报头封装数据报。
+加密：使用IKEv2协商过程中生成的密钥，使用AES或3DES加密对消息进行加密。</p><p>服务器要求</p><p>注意：显然，您可以将其他操作系统设置为VPN服务器。但是，这些是运行Windows VPN服务器的要求。</p><p>为了允许用户创建到您网络的VPN连接，您需要有一台运行Windows Server的服务器，并且安装了以下角色：</p><p>
+路由和远程访问(RRAS)。
+网络策略服务器(NPS)</p><p>您还需要设置DHCP或分配通过VPN连接的计算机可以使用的静态IP池。</p><p>创建VPN连接</p><p>要连接到VPN服务器，请右键单击网络状态图标并打开网络和共享中心。</p><img class="content_img" src="/image/ff/ff030ae4fdf04019722aa082d292fef4.png" /><p>然后单击Set Up a New Connection or Network(设置新连接或网络)超链接。</p><img class="content_img" src="/image/65/6571ffdf367f2bda8ad44e22145cceac.png" /><p>现在选择连接到工作区，然后单击“下一步”。</p><img class="content_img" src="/image/1e/1e69be0851aa3b50507886b78121b759.png" /><p>然后选择使用您现有的宽带连接。</p><img class="content_img" src="/image/03/03666e2b72fee3ecda49277a5415f567.png" /><p>现在，您需要输入要连接到的网络上VPN服务器的IP或DNS名称。然后单击下一步。</p><p>然后输入您的用户名和密码并单击连接。</p><img class="content_img" src="/image/fe/fe471cbcbe983516046bd29dbec3ef79.png" /><p>连接后，您将能够通过单击网络状态图标来查看您是否已连接到VPN。</p><img class="content_img" src="/image/13/13e08deb9df7c3d2e2e33336f304765d.png" /><p>家庭作业 / 准备工作 / 预先所做的研究 / 在家里做的工作</p><p>
+请阅读TechNet上的以下文章，该文章将指导您规划VPN的安全性。</p><p>注意：今天的家庭作业稍微超出了70-680考试的范围，但它会让您对从Windows7连接到VPN时幕后发生的事情有一个坚实的了解。</p><p>如果你有任何问题，可以发tweet给我@taabgibb，或者直接留言。</p><div class="item_info"><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/连接/">连接</a></span><span class="item_key"><a href="/tag/网络/">网络</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14584.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14577.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14572.html">如何使用Jouralctl读取Linux系统日志</a><li><a href="/story/14555.html">2020年CES最佳：我们今年看到的所有最好的东西</a><li><a href="/story/14467.html">如何在Windows 10上切换到本地用户帐户</a><li><a href="/story/14450.html">如何在Excel中将一长列变为多列</a><li><a href="/story/14438.html">如何在iPhone上创建和使用Memoji和Animoji</a><li><a href="/story/14426.html">如何使用Google Sheets中的查询功能</a><li><a href="/story/14419.html">如何在Linux中获取文件或目录的大小</a><li><a href="/story/14377.html">如何在Google Sheets中使用AND和OR函数</a><li><a href="/story/14353.html">如何使用触摸板、鼠标或键盘右键单击任何Mac</a><li><a href="/story/14296.html">如果您的Windows 10键盘或鼠标无法工作，该怎么办</a><li><a href="/story/14262.html">iPhone11上的Deep Fusion摄像头是什么？</a><li><a href="/story/14257.html">如何在Linux上编写fstab文件</a><li><a href="/story/14202.html">什么是利特语，你是如何使用它的？</a><li><a href="/story/14168.html">刚刚更新到iOS 13吗？立即更改这八个设置</a><li><a href="/story/14142.html">为什么您应该登录Google、Facebook或Apple</a><li><a href="/story/14130.html">如何在Windows 10中的每个显示器上设置不同的墙纸</a><li><a href="/story/14121.html">如何在Linux上使用chroot命令</a><li><a href="/story/14036.html">如何在Chrome中从图像中抓取文本</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

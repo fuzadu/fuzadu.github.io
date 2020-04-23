@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在不使用其他软件的情况下创建弹出提醒</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在不使用其他软件的情况下创建弹出提醒</h2></div><div class="content"><img class="content_img" src="/image/70/7089411b1fb9b66b09fcb800d1d23a9c.png" /><p>几乎每个人都需要被提醒一些事情。无论是每天的任务、经常性的承诺，还是一次性的事件--在你的电脑上有一个弹出式提醒都会派上用场。虽然有无数的工具可用于处理此任务，但我们概述了一种无需额外软件即可完成此任务的简单方法。</p><p>我们的“诀窍”与任务调度器</p><p>虽然我们在前面已经讨论了如何使用Task Scheduler本机创建弹出提醒，但是我们打算用这种替代方法来解决一些行为怪癖/限制。</p><p>
+大多数情况下，任务计划程序生成的弹出对话框显示在任何打开的窗口下(任务栏中有一个条目)。虽然你的工作不会有丝毫的中断，但如果你依赖通知来吸引你的注意力，这就会产生问题。
+我们的替代方法会在您当前窗口的顶部打开一个窗口，但不会偷走焦点。因此，例如，如果您在计划显示弹出窗口时键入一封电子邮件，则该框将显示在您的电子邮件的顶部，并且按键仍会发送给您的编辑。
+任务计划程序生成的弹出对话框需要交互才能取消。基本上，它将一直保持到您按下OK按钮。
+我们的替代方法除了允许计时器在预定义的时间量之后清除盒子之外，还支持这一点。</p><p>设置它</p><p>虽然此技巧是另一种方法，但我们仍使用Windows任务计划程序。</p><img class="content_img" src="/image/8b/8bfc0978788aec833d4c8380b6a4e8d5.png" /><p>应在取消选中“隐藏”选项的情况下将任务设置为“仅当用户登录时运行”。</p><img class="content_img" src="/image/29/29ec2045e2e81cdc4b7f1f20fb13c1b8.png" /><p>根据需要设置要运行的计划。</p><img class="content_img" src="/image/2f/2ff148ee967c18636ac6c242aba3f1f7.png" /><p>要运行的程序是cmd.exe，它是Windows命令行控制台shell，第一个参数是‘/C’，它将运行shell中的后续文本，然后终止控制台窗口。</p><img class="content_img" src="/image/61/615dbdb398e0f2bcd333f14b57fb68a4.png" /><p>这里的神奇之处在于参数框(在前面提到的‘/C’开关之后)，它显示为(注意-虽然这显示在下面的几行中，但所有文本都是参数框中的单个连续行)：</p><code>TITLE Read How-To Geek Reminder&ECHO.&ECHO.&ECHO It is currently %TIME%
+&ECHO.&ECHO.&ECHO Time to go read How-To Geek.
+&ECHO https://www.howtogeek.com&ECHO.&ECHO.&TIMEOUT 120</code><p>“与”(&)字符允许您在单行上将命令链接在一起，这使得上面的内容等同于以下序列：</p><code>TITLE Read How-To Geek Reminder
+ECHO.
+ECHO.
+ECHO It is currently %TIME%
+ECHO.
+ECHO.
+ECHO Time to go read How-To Geek.
+ECHO https://www.howtogeek.com
+ECHO.
+ECHO.
+TIMEOUT 120</code><p>可以将上述命令放入批处理脚本中，然后将计划任务设置为运行相应的程序/脚本，以获得完全相同的结果(尽管在批处理脚本中，您可能希望插入@echo off作为第一个命令)。</p><p>消息可以根据需要进行自定义，要准确了解消息是如何生成的，请考虑以下关键字：</p><p>
+标题将控制台窗口名称更改为后续文本。
+Echo将后续文本打印到控制台窗口。当一个圆点紧跟在ECHO命令之后时，将打印一个空行。
+%time%是一个环境变量，它将替换为当前系统时间(24小时格式)。
+TIMEOUT&lt;N&gt;告诉控制台等待N个数字或秒以继续，或者直到按键(以先到者为准)。如果要强制窗口等到按键(即没有倒计时)，则输入-1作为N的值。</p><p>当然，您并不局限于上面的命令-您可以使用整个命令行库中的关键字，例如，可以让您的提醒打开程序和/或启动网站作为该过程的一部分。</p><div class="item_info"><span class="item_key"><a href="/tag/控制台/">控制台</a></span><span class="item_key"><a href="/tag/程序/">程序</a></span><span class="item_key"><a href="/tag/任务/">任务</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14175.html">如何在Chrome(或任何浏览器)中编辑任何网页</a><li><a href="/story/126.html">在Ubuntu服务器上打开第二个控制台会话</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

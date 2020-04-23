@@ -1,0 +1,87 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何检查Linux上安装了哪个GPU</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何检查Linux上安装了哪个GPU</h2></div><div class="content"><p>需要识别Linux计算机中的图形处理器(GPU)吗？下面介绍如何从命令行和GNOME中识别图形卡。</p><p>第一步</p><p>你可能去过那里。你被征召为不懂技术的亲戚或同事提供支持，有些东西告诉你，这不会是没有痛苦的。尽管如此，你还是加入进来吧！您很快就会确定问题很可能是显示器驱动程序问题。嘿，这可能还不算太糟！但是，当你问“你有什么类型的显卡？”时，你短暂的希望之光就会熄灭。</p><p>你得到的回应是前灯里的鹿的表情很有说服力。要支持某事，你需要知道它是什么。那么，如何识别Linux计算机中的显卡呢？</p><p>让我们假设最坏的情况，假设显卡的驱动程序从未安装过，因此您甚至无法查看这些驱动程序来获得线索。无所谓!。您可以通过命令行或图形用户界面(GUI)来解决此难题。</p><p>LSPCI和PCI ID数据库</p><p>外围组件互连(PCI)标准是可用于与内部外围设备(如图形卡)通信的通用协议。PCI ID存储库维护PCI设备的所有已知ID的数据库。这意味着如果你知道一些关于该设备的信息，你就可以查到它。</p><p>您可以使用lspci命令列出Linux计算机上安装的PCI设备以及有关它们的一些信息。</p><p>如果我们可以将cpci数据库和lspci命令捆绑在一起，那不是很好吗？实际上，这正是您运行lspci命令时发生的情况。它检查PCI数据库的本地副本以识别它检测到的PCI设备。在我们开始之前，明智的做法是更新PCI数据库的本地副本。</p><p>键入update-pciids命令即可执行此操作：</p><p>sudo update-pciid</p><img class="content_img" src="/image/fc/fcd0a629f1a4730bd7a4c16d2331dd10.png" /><p>我们检索到了最新的数据库版本，现在可以使用lspci命令了。产量会很大，所以我们会用更少的管子。v(详细)选项告诉lscpi为我们提供尽可能多的信息。我们将使用Sudo工具来确保信息尽可能详细。</p><p>我们按如下方式键入命令：</p><p>sudo lspci-v|LESS</p><img class="content_img" src="/image/f7/f7852f4688c33dbc7f1a3859e4031fbb.png" /><p>结果以较少的形式显示。如果按正斜杠(/)，则会激活无符号搜索功能。</p><p>在所有大写字母中键入“VGA”，然后按Enter键。</p><img class="content_img" src="/image/cf/cf458d53c66f611b68027b9155ced183.png" /><p>减少对字符串“vga”的搜索，它会显示找到的第一个匹配项。从这一点开始，您可以向前滚动或翻页，查看lspci找到了多少图形卡。</p><img class="content_img" src="/image/58/58a83d247312d55669d5fc1be3319743.png" /><p>对于本文，我们对在VirtualBox虚拟机上运行的各种Linux发行版进行了研究。当然，虚拟机有虚拟显卡。</p><p>因此，您可以看到实际结果的示例，以下是主机(物理)计算机的输出：</p><p>26：00.0 VGA兼容控制器：NVIDIA Corporation GP108[GeForce GT 1030](A1版)(PROG-IF 00[VGA控制器])。
+子系统：技嘉科技有限公司GP108[GeForce GT 1030]。
+标志：总线主控器、快速设备、延迟0、IRQ 97。
+内存为f6000000(32位，不可预取)[大小=16M]。
+e0000000内存(64位，可预取)[大小=256M]。
+内存为f0000000(64位，可预取)[大小=32M]。
+e000的I/O端口[大小=128]。
+000c0000的扩展ROM[禁用][大小=128K]。
+功能：[60]电源管理版本3。
+功能：[68]MSI：启用+计数=1/1可屏蔽-64位+。
+功能：[78]Express传统端点、MSI 00。
+功能：[100]虚拟通道。
+功能：[250]延迟容差报告。
+功能：[128]电源预算&lt;？&gt;。
+功能：[420]高级错误报告。
+功能：[600]供应商特定信息：ID=0001版本=1 LEN=024&lt;？&gt;。
+功能：[900]辅助PCI Express&lt;？&gt;。
+正在使用的内核驱动程序：nouveau。
+内核模块：nouveau</p><p>它立刻给了我们很多好的信息！</p><p>该卡是NVIDIA Corporation GP108[GeForce GT 1030]，使用搜索引擎几秒钟后，我们在该设备的NVIDIA技术页面上找到了该卡。第一行末尾的“[VGA CONTROLLER]”文本表示这是“运行”的图形卡。当一台计算机上安装了多张卡时，这是非常有用的信息。</p><p>lshw命令</p><p>您还可以使用lshw命令列出Linux计算机上安装的硬件。它还报告了各种类型-不仅仅是PCI硬件。</p><p>要告诉它报告它找到的图形卡，我们将使用-C(Class)选项并传递“display”修饰符。-numeric选项强制lshw提供设备的数字ID及其名称。</p><p>键入以下内容：</p><p>SUDO LSHW-数字-C显示</p><img class="content_img" src="/image/7e/7ee6d77b4698db9779cf9ab4128d7768.png" /><p>以下是该命令在物理计算机上找到内容：</p><p>*-显示。
+说明：VGA兼容控制器。
+产品：GP108[GeForce GT 1030][10DE：1D01]。
+供应商：NVIDIA Corporation[10DE]。
+物理ID：0。
+总线信息：pci@0000：26：00.0。
+版本：A1。
+宽度：64位。
+时钟：33 MHz。
+功能：pm msi pciexpress vga控制器bus_master cap_list rom。
+配置：驱动程序=新延迟=0。
+资源：irq：97内存：f6000000-f6ffffff内存：e0000000-efffffff内存：f0000000-f1ffffff ioport：e000(size=128)内存：c0000-dffff</p><p>令人振奋的是，两人都找到了同样的卡片！</p><p>[10DE：1D01]标识符表示制造商(10DE)和型号(1D01)。要立即找到制造商和型号，您可以在搜索引擎中键入“显卡10de：1d01”。</p><p>glxinfo命令</p><p>glxinfo命令是您可以使用的另一种方法。它为您提供来自X Windows系统的OpenGL扩展的信息。然后，您可以搜索其中的一些信息，以找出计算机上安装了哪种类型的图形卡。</p><p>在Manjaro和Fedora上已经有glxinfo命令，但是您必须在Ubuntu上安装它。要执行此操作，请键入以下命令：</p><p>sudo apt-get install mesa-utils</p><img class="content_img" src="/image/21/213e1f51ae9525c50bfb2cee978b9677.png" /><p>要通过管道将glxinfo的输出传递给LESS，并使用-B选项(打印ID)，请键入以下内容：</p><p>glxinfo-B|更少</p><img class="content_img" src="/image/bb/bb73e17d8fb18648ea2e8881c667ad1f.png" /><p>图形卡在“设备”行中描述。</p><img class="content_img" src="/image/c5/c517843c04888c2d09518b7558a8c483.png" /><p>这是物理计算机的输出：</p><p>显示名称：：1。
+显示：：1屏幕：0。
+直接渲染：是。
+扩展渲染器信息(GLX_MESA_QUERY_RENDER)：
+供应商：Nouveau(0x10de)。
+设备：NV138(0x1d01)。
+版本：19.3.2。
+加速：是。
+显存：1987MB。
+统一内存：否。
+首选配置文件：核心(0x1)。
+最大核心配置文件版本：4.3。
+最高Compat配置文件版本：4.3。
+最高GLES1配置文件版本：1.1。
+最大GLES[23]配置文件版本：3.2。
+OpenGL供应商字符串：nouveau。
+OpenGL渲染器字符串：NV138。
+OpenGL核心配置文件版本字符串：4.3(核心配置文件)MESA 19.3.2。
+OpenGL核心轮廓着色语言版本字符串：4.30。
+OpenGL核心配置文件上下文标志：(无)。
+OpenGL核心配置文件配置文件蒙版：核心配置文件。
+
+OpenGL版本字符串：4.3(兼容性配置文件)MESA 19.3.2。
+OpenGL着色语言版本字符串：4.30。
+OpenGL上下文标志：(无)。
+OpenGL配置文件蒙版：兼容性配置文件。
+
+OpenGL ES Profile版本字符串：OpenGL ES 3.2 Mesa 19.3.2。
+OpenGL ES剖面着色语言版本字符串：OpenGL ES GLSL ES 3.20</p><p>当您在搜索引擎中键入“NV138”时，系统会立即识别NVIDIA显卡。</p><p>使用GUI识别图形卡</p><p>如果计算机是仅使用CLI的服务器，则必须使用上面介绍的技术之一。如果它有一个(工作的)GUI，那么很可能有一种图形化的方式可以识别图形卡。事实上，该选项可能在您的Linux桌面设置工具中的某个位置。</p><p>在GNOME桌面上，打开“设置”对话框，然后单击侧边栏中的“详细信息”。在“关于”面板中，查找“图形”条目。这将告诉您计算机中的图形卡类型，或者更具体地说，是当前正在使用的图形卡。您的计算机可能有多个GPU。</p><img class="content_img" src="/image/27/270ea902c1f9ae21b5eb87a23e4a2db2.png" /><p>在来自物理主机的GNOME Settings“About”选项卡中，我们获得了前面看到的相同的“NV138”卡ID。同样，我们可以将这些信息输入搜索引擎以查找卡类型。</p><img class="content_img" src="/image/29/29160548613330f20ea5a7804978fe96.png" /><p>笔记本电脑上的显卡</p><p>许多笔记本电脑都有两块显卡：一块来自中央处理器(CPU)制造商，另一块来自主流GPU提供商。</p><p>让我们键入与前面相同的lspci命令，但这一次，我们将在笔记本电脑上运行它：</p><p>sudo lspci-v|LESS</p><p>不出所料，我们将获得机器中图形卡的描述：</p><p>00：02.0 VGA兼容控制器：英特尔公司第三代酷睿处理器图形控制器(09版)(PROG-IF 00[VGA控制器])。
+子系统：华硕电脑公司。第三代酷睿处理器图形控制器。
+标志：总线主控器、快速设备、延迟0、IRQ 33。
+内存为f7400000(64位，不可预取)[大小=4M]。
+内存为d0000000(64位，可预取)[大小=256M]。
+f000的I/O端口[大小=64]。
+000c0000的[虚拟]扩展ROM[禁用][大小=128K]。
+功能：[90]MSI：启用+计数=1/1可屏蔽-64位-。
+功能：[D0]电源管理版本2。
+功能：[A4]PCI高级功能。
+正在使用的内核驱动程序：i915。
+内核模块：i915。
+
+01：00.0 VGA兼容控制器：NVIDIA Corporation GF119M[GeForce 610M](A1版)(PROG-IF 00[VGA控制器])。
+子系统：华硕电脑公司。GF119M[GeForce 610M]。
+标志：总线主控器、快速设备、延迟0、IRQ 34。
+内存为f6000000(32位，不可预取)[大小=16M]。
+e0000000内存(64位，可预取)[大小=128M]。
+e8000000内存(64位，可预取)[大小=32M]。
+e000的I/O端口[大小=128]。
+f7000000的扩展ROM[禁用][大小=512K]。
+功能：[60]电源管理版本3。
+功能：[68]MSI：启用+计数=1/1可屏蔽-64位+。
+功能：[78]Express端点、MSI 00。
+功能：[b4]供应商特定信息：LEN=14&lt;？&gt;。
+功能：[100]虚拟通道。
+功能：[128]电源预算&lt;？&gt;。
+功能：[600]供应商特定信息：ID=0001版本=1 LEN=024&lt;？&gt;。
+正在使用的内核驱动程序：nouveau。
+内核模块：nouveau</p><p>这款笔记本电脑同时配备了英特尔酷睿GPU和NVIDIA GeForce 610M。但是，这两个卡都有“[VGA CONTROLLER]”字符串，该字符串通常表示正在使用哪个GPU。</p><p>它们不可能都在使用，所以试着先从主流GPU提供商那里弄到卡。笔记本电脑制造商认为这是默认的，并将其包括在机器的硬件规格中。</p><p>我们在这里介绍的其中一种技术肯定对您有效！了解计算机或笔记本电脑的图形卡类型后，可以选择适当的图形驱动程序。</p><div class="item_info"><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/pci/">pci</a></span><span class="item_key"><a href="/tag/内存/">内存</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14584.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14572.html">如何使用Jouralctl读取Linux系统日志</a><li><a href="/story/14555.html">2020年CES最佳：我们今年看到的所有最好的东西</a><li><a href="/story/14467.html">如何在Windows 10上切换到本地用户帐户</a><li><a href="/story/14450.html">如何在Excel中将一长列变为多列</a><li><a href="/story/14438.html">如何在iPhone上创建和使用Memoji和Animoji</a><li><a href="/story/14426.html">如何使用Google Sheets中的查询功能</a><li><a href="/story/14419.html">如何在Linux中获取文件或目录的大小</a><li><a href="/story/14377.html">如何在Google Sheets中使用AND和OR函数</a><li><a href="/story/14353.html">如何使用触摸板、鼠标或键盘右键单击任何Mac</a><li><a href="/story/14296.html">如果您的Windows 10键盘或鼠标无法工作，该怎么办</a><li><a href="/story/14262.html">iPhone11上的Deep Fusion摄像头是什么？</a><li><a href="/story/14257.html">如何在Linux上编写fstab文件</a><li><a href="/story/14202.html">什么是利特语，你是如何使用它的？</a><li><a href="/story/14168.html">刚刚更新到iOS 13吗？立即更改这八个设置</a><li><a href="/story/14142.html">为什么您应该登录Google、Facebook或Apple</a><li><a href="/story/14130.html">如何在Windows 10中的每个显示器上设置不同的墙纸</a><li><a href="/story/14121.html">如何在Linux上使用chroot命令</a><li><a href="/story/14036.html">如何在Chrome中从图像中抓取文本</a><li><a href="/story/14026.html">如何在Linux上使用chgrp命令</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

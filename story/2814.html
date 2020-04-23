@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>将批处理(BAT)脚本转换为可执行(EXE)文件</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>将批处理(BAT)脚本转换为可执行(EXE)文件</h2></div><div class="content"><p>当您深入了解它时，批处理文件和可执行文件的工作方式基本相同。两者都只是一组用于Windows执行的指令和逻辑。那么，如果批处理文件和可执行文件在本质上是相同的，那么为什么要将它们转换为可执行文件呢？以下是几个原因：</p><p>
+可移植性-您可以在EXE文件中包含批处理文件所依赖的其他工具。
+保护-EXE为您的源脚本提供保护，以确保其不会被意外修改。
+便捷性-可以将可执行文件固定到Windows开始菜单和/或Windows 7任务栏。</p><p>使用下面的脚本，您可以轻松地从批处理文件构建您自己的可执行文件，包括所需的嵌入式工具。</p><p>配置 / 构造 / 布局 / 外形</p><p>此脚本利用7-Zip高级SFX(自解压程序)将批处理文件与任何附带的工具捆绑在一起并执行。因此，您需要下载这些文件(末尾提供的链接)并将其解压缩到单个目录。</p><p>下载完所有文件后，将脚本中的‘PathTo7Zip’变量设置为下载这些文件的位置。</p><p>剧本</p><code>@ECHO OFF
+ECHO Make EXE From BAT
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+REM Usage:
+REM MakeExeFromBat BatFileToConvert [IncludeFile1] [IncludeFile2] [...]
+REM
+REM Required Parameters:
+REM  BatFileToConvert
+REM      Source batch file to use to produce the output Exe file.
+REM
+REM Optional Parameters:
+REM  IncludeFile
+REM      Additional files to include in the Exe file.
+REM      You can include external tools used by the batch file so they are available on the executing machine.
+
+SETLOCAL
+
+REM Configuration (no quotes needed):
+SET PathTo7Zip=
+
+
+REM ---- Do not modify anything below this line ----
+
+SET OutputFile="%~n1.exe"
+SET SourceFiles="%TEMP%MakeEXE_files.txt"
+SET Config="%TEMP%MakeEXE_config.txt"
+SET Source7ZFile="%Temp%MakeEXE.7z"
+
+REM Remove existing files
+IF EXIST %OutputFile% DEL %OutputFile%
+
+REM Build source archive
+ECHO "%~dpnx1" > %SourceFiles%
+:AddInclude
+IF {%2}=={} GOTO EndInclude
+ECHO "%~dpnx2" >> %SourceFiles%
+SHIFT /2
+GOTO AddInclude
+:EndInclude
+"%PathTo7Zip%7za.exe" a %Source7ZFile% @%SourceFiles%
+
+REM Build config file
+ECHO ;!@Install@!UTF-8! > %Config%
+ECHO RunProgram="%~nx1" >> %Config%
+ECHO ;!@InstallEnd@! >> %Config%
+
+REM Build EXE
+COPY /B "%PathTo7Zip%7zsd.sfx" + %Config% + %Source7ZFile% %OutputFile%
+
+REM Clean up
+IF EXIST %SourceFiles% DEL %SourceFiles%
+IF EXIST %Config% DEL %Config%
+IF EXIST %Source7ZFile% DEL %Source7ZFile%
+
+ENDLOCAL</code><p>结束 / 结尾 / 结论 / 推论</p><p>重要的是要注意，虽然结果文件与源BAT文件运行完全相同，但这并不是真正的批处理到可执行文件的转换。生成的文件是一个EXE，但是它旨在用于自解压安装程序。当您执行生成的EXE文件时，该过程如下所示：</p><p>
+EXE文件的内容将解压缩到TEMP目录。
+读取脚本生成的配置文件。
+EXE文件中包含的批处理文件在新的命令窗口中执行。
+完成后，将删除临时文件。</p><p>在Windows Vista和新操作系统上，脚本运行后您可能会看到以下消息框。选择“此程序已正确安装”后，以后将不会显示此文件的消息框。</p><img class="content_img" src="/image/42/4260fafebbcb204e8680e826700c4a7a.png" /><p>由于EXE文件在新窗口中启动，记录输出的典型方式(使用‘&gt;’字符)将不会按预期工作。为了记录输出，您需要在源脚本中进行本机处理。</p><p>尽管有这些小小的不便，但是能够将批处理文件转换为可执行文件确实可以派上用场。</p><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从sysadmin Geek的BAT脚本下载make EXE</p><p>下载7-Zip命令行工具</p><p>下载7-Zip Advanced 7zSD SFX</p><div class="item_info"><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/可执行文件/">可执行文件</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14797.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14796.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14627.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14624.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14550.html">如何在Linux上使用Tail命令</a><li><a href="/story/14514.html">您想知道的关于Linux上的inode的所有信息</a><li><a href="/story/14471.html">如何在Google Drive中更改文件所有者</a><li><a href="/story/14454.html">如何在Linux上使用stat命令</a><li><a href="/story/14347.html">如何使用cURL从Linux命令行下载文件</a><li><a href="/story/14306.html">如何创建USB驱动器的映像</a><li><a href="/story/14240.html">如何在Linux上使用LESS命令</a><li><a href="/story/14188.html">如何最终确定和撤销对共享Google文件的访问</a><li><a href="/story/14167.html">如何共享指向您的Google文件的“复制”链接</a><li><a href="/story/14164.html">如何将Google文档、工作表或幻灯片文件共享为网页</a><li><a href="/story/14127.html">如何在iPhone和iPad上将文件复制和备份到外部存储</a><li><a href="/story/14024.html">如何快速搜索Google Drive</a><li><a href="/story/13983.html">如何在Linux上使用chown命令</a><li><a href="/story/13968.html">如何将音乐复制到Android手机</a><li><a href="/story/13912.html">你能在Windows PC或Android手机上使用AirDrop吗？</a><li><a href="/story/13883.html">如何在PowerPoint演示文稿中使用iTunes音乐</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

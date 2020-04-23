@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上运行和控制后台进程</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上运行和控制后台进程</h2></div><div class="content"><p>使用Linux中的Bash shell管理前台和后台进程。您可以使用Bash的作业控制函数和信号来更灵活地运行命令。我们教你怎么做。</p><p>所有关于进程的信息</p><p>每当在Linux或类Unix操作系统中执行程序时，都会启动一个进程。“进程”是计算机内存中执行程序的内部表示名称。每个活动程序都有一个进程。事实上，您的计算机上运行的几乎所有东西都有一个进程。这包括图形桌面环境(GDE)的组件，如GNOME或KDE，以及在启动时启动的系统守护进程。</p><p>为什么几乎所有正在运行的东西都在运行？嗯，诸如CD、PWD和别名之类的Bash内置在运行时不需要启动(或“衍生”)进程。Bash在终端窗口中运行的Bash shell实例中执行这些命令。这些命令之所以快速，正是因为它们不需要启动进程即可执行。(您可以在终端窗口中键入help以查看Bash内置的列表。)</p><p>进程可以在前台运行，在这种情况下，它们会接管您的终端，直到它们完成，或者它们可以在后台运行。后台运行的进程不会主宰终端窗口，您可以继续在其中工作。或者至少，如果它们不生成屏幕输出，它们就不会主宰终端窗口。</p><p>一个乱七八糟的例子</p><p>我们将开始一个简单的跟踪运行。我们要ping How-to Geek域。这将作为前台进程执行。</p><code>ping www.howtogeek.com</code><img class="content_img" src="/image/e4/e47ce05878803b865c2913e5cc847b14.png" /><p>向下滚动终端窗口，我们会得到预期的结果。当ping正在运行时，我们不能在终端窗口中执行任何其他操作。要终止该命令，请按Ctrl+C。</p><code>Ctrl+C</code><img class="content_img" src="/image/ba/baf98f7554edabc04b05a4a31db9ec7a.png" /><p>屏幕截图中突出显示了Ctrl+C的可见效果。Ping给出一个简短的总结，然后停止。</p><p>让我们重复一遍。但这一次我们将按Ctrl+Z+，而不是Ctrl+C。任务不会终止。这将成为一项后台任务。我们把终端窗口的控制权还给了我们。</p><code>ping www.howtogeek.com</code><code>Ctrl+Z</code><img class="content_img" src="/image/fe/fef616758a0f60cef3fd6c11e4beadd5.png" /><p>点击Ctrl+Z的可见效果在屏幕截图中突出显示。</p><p>这一次，我们被告知进程已停止。停止并不意味着终止。就像一辆车在停车标志前。我们还没有把它扔掉扔掉。它还在路上，静止不动，等着开走。该过程现在是后台作业。</p><p>job命令将列出在当前终端会话中已启动的作业。由于作业(不可避免地)是进程，我们还可以使用ps命令查看它们。让我们使用这两个命令并比较它们的输出。我们将使用T选项(终端)选项仅列出在此终端窗口中运行的进程。请注意，不需要将连字符-与T选项一起使用。</p><code>jobs</code><code>ps T</code><img class="content_img" src="/image/33/331f335a461606287cf72238a14002d2.png" /><p>作业命令告诉我们：</p><p>
+[1]：方括号中的数字是工单编号。当我们需要使用作业控制命令控制作业时，我们可以使用它来引用作业。
++：加号+表示如果我们使用没有特定作业编号的作业控制命令，将对此作业执行操作。它被称为默认作业。默认作业始终是最近添加到作业列表中的作业。
+已停止：进程未运行。
+ping www.howtogek.com：启动该进程的命令行。</p><p>ps命令告诉我们：</p><p>
+PID：进程的进程ID。每个进程都有一个唯一的ID。
+TTY：从中执行进程的伪电传类型(终端窗口)。
+STAT：进程的状态。
+时间：进程占用的CPU时间。
+命令：启动进程的命令。</p><p>以下是STAT列的通用值：</p><p>
+D：不间断的睡眠。进程处于等待状态，通常等待输入或输出，不能中断。
+I：闲置。
+R：在跑。
+S：可中断睡眠。
+T：被作业控制信号停止。
+Z：僵尸进程。进程已终止，但尚未被其父进程“清除”。</p><p>STAT列中的值后面可以跟随以下一个额外指示符：</p><p>
+&lt;：高优先级任务(对其他进程不友好)。
+N：低优先级(适用于其他进程)。
+L：进程将页面锁定到内存中(通常由实时进程使用)。
+史：一位会议领导。会话领导者是启动了进程组的进程。shell是会话领导者。
+L：多线程进程。
++：前台进程。</p><p>我们可以看到Bash的状态是SS。大写的“S”告诉我们Bash shell正在休眠，并且它是可中断的。只要我们需要它，它就会响应。小写的“s”告诉我们，shell是会话领导者。</p><p>ping命令的状态为T，这告诉我们ping已被作业控制信号停止。在本例中，这是我们用来将其放到背景中的Ctrl+Z。</p><p>ps T命令的状态为R，表示正在运行。+号表示此进程是前台组的成员。因此，ps t命令在前台运行。</p><p>BG命令</p><p>bg命令用于恢复后台进程。它可以与工单编号一起使用，也可以不与工单编号一起使用。如果您使用它时没有工单编号，则默认工单被带到前台。该进程仍在后台运行。您不能向其发送任何输入。</p><p>如果我们发出bg命令，我们将恢复ping命令：</p><code>bg</code><img class="content_img" src="/image/6a/6a92b814707dabc1b594f763c602f88f.png" /><p>ping命令继续执行，我们再次在终端窗口中看到滚动输出。将为您显示已重新启动的命令的名称。这在屏幕截图中突出显示。</p><img class="content_img" src="/image/d0/d04d21a5aa7f2949f1b6aa2aba7b6e64.png" /><p>但我们有个问题。任务在后台运行，不接受输入。那我们怎么阻止它呢？Ctrl+C不执行任何操作。当我们键入它时，我们可以看到它，但是后台任务没有接收到那些击键，所以它一直在愉快地ping。</p><img class="content_img" src="/image/c7/c7943ed1361c9ac9282c546fbd6e1a9c.png" /><p>事实上，我们现在处于一种奇怪的混合模式。我们可以在终端窗口中键入，但是我们键入的内容很快就会被ping命令的滚动输出清除。我们键入的任何内容都会在前景中生效。</p><p>要停止我们的后台任务，我们需要将其带到前台，然后停止它。</p><p>FG命令</p><p>fg命令将把后台任务带到前台。就像bg命令一样，它可以与作业号一起使用，也可以不与作业号一起使用。将其与工单编号一起使用意味着它将在特定的工单上操作。如果在没有作业号的情况下使用它，则使用发送到后台的最后一个命令。</p><p>如果我们键入fg，我们的ping命令将被带到前台。我们键入的字符与ping命令的输出混为一谈，但是shell会像往常一样在命令行中输入它们一样对它们进行操作。事实上，从Bash shell的角度来看，这正是已经发生的事情。</p><code>fg</code><img class="content_img" src="/image/33/3314c56cb23ce2fe37130b5726809864.png" /><p>现在我们让ping命令再次在前台运行，我们可以使用Ctrl+C来终止它。</p><code>Ctrl+C</code><img class="content_img" src="/image/be/bed1a744a5c43b0adfd5c445c91b3d43.png" /><p>我们需要发出正确的信号</p><p>那不是很漂亮。显然，当进程不产生输出且不需要输入时，在后台运行进程效果最好。</p><p>但是，不管是否混乱，我们的示例确实实现了：</p><p>
+将进程放到后台。
+在后台将进程恢复到运行状态。
+将进程返回到前台。
+正在终止进程。</p><p>当您使用Ctrl+C和Ctrl+Z时，您是在向进程发送信号。这些是使用kill命令的快捷方式。KILL可以发送64种不同的信号。在命令行中使用kill-l列出它们。杀戮并不是这些信号的唯一来源。其中一些是由系统中的其他进程自动引发的</p><p>以下是一些常用的方法。</p><p>
+SIGHUP：信号1，当进程运行的终端关闭时，自动发送给进程。
+SIGINT：信号2。发送到您按Ctrl+C组合键的进程。该进程被中断并被告知终止。
+SIGQUIT：信号3。如果用户发送退出信号Ctrl+D，则发送给进程。
+SIGKILL：信号9。进程立即终止，不会尝试干净地关闭。这一过程不会优雅地进行下去。
+SIGTERM：信号15，这是KILL发送的默认信号。它是标准节目终止信号。
+SIGTSTP：信号20。当您使用Ctrl+Z时发送给进程。它停止进程并将其放在后台。</p><p>我们必须使用kill命令来发出没有指定组合键的信号。</p><p>进一步的作业控制</p><p>使用Ctrl+Z移动到后台的进程将处于停止状态。我们必须使用bg命令才能重新启动它运行。要启动一个程序作为运行的后台进程是很简单的。在命令行的末尾追加一个“与”号(&S)。</p><p>虽然后台进程最好不要写入终端窗口，但我们将使用这样做的示例。我们需要在屏幕截图中有一些我们可以参考的东西。此命令将启动作为后台进程的无限循环：</p><p>True；Do Echo“How-to Geek Loop Process”；休眠3；完成&</p><img class="content_img" src="/image/98/9860c7faee594400a1fc7e2f90624d35.png" /><p>我们被告知进程的作业号和进程ID ID。我们的作业号是1，进程id是1979。“我们可以使用这些标识符来控制进程。</p><p>无限循环的输出开始出现在终端窗口中。和以前一样，我们可以使用命令行，但是我们发出的任何命令都散布在循环过程的输出中。</p><p>莱索托 / 同 Lesotho</p><img class="content_img" src="/image/7e/7e35cb6a14c0e39679463df38b8d73a9.png" /><p>要停止我们的进程，我们可以使用JOBS来提醒自己作业号是多少，然后使用KILL。</p><p>JOBS报告我们的进程是作业号1。要将该数字与KILL一起使用，我们必须在它前面加上百分号%。</p><code>jobs</code><code>kill %1</code><img class="content_img" src="/image/8f/8f376472a60ba23d128f01481d5f435f.png" /><p>KILL向进程发送信号编号15的SIGTERM信号，然后进程终止。下一次按Enter键时，将显示作业的状态。它将该进程列为“已终止”。如果该进程没有响应KILL命令，您可以将其升级。将KILL与SIGKILL一起使用，信号编号为9。只需将数字9放在KILL命令和作业号之间即可。</p><code>kill 9 %1</code><p>我们已经谈过的事情</p><p>
+Ctrl+C：发送信号2 SIGINT到进程(如果它正在接受输入)，并告诉它终止。
+Ctrl+D：如果进程接受输入，则向进程发送SISQUIT信号3，并告诉它退出。
+Ctrl+Z：向进程发送SIGSTP信号20，并告诉它停止(挂起)并成为后台进程。
+作业：列出后台作业并显示其作业编号。
+BG JOB_NUMBER：重新启动后台进程。如果不提供作业号，则使用上一个转变为后台任务的进程。
+fg job_number：将后台进程带到前台并重新启动。*如果不提供作业号，则使用上一个转换为后台任务的进程。
+命令行&：在命令行的末尾添加一个“与”号&会将该命令作为正在运行的后台任务执行。
+KILL%JOB_NUMBER：将信号SIGTERM(信号15)发送到进程以终止它。
+KILL 9%JOB_NUMBER：向进程发送SIGKILL信号9，并突然终止它。</p><p>相关：如何从Linux终端终止进程</p><div class="item_info"><span class="item_key"><a href="/tag/进程/">进程</a></span><span class="item_key"><a href="/tag/命令/">命令</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/13312.html">如何从Linux终端杀死进程</a><li><a href="/story/13255.html">如何在Linux上使用NICE和RENICE设置进程优先级</a><li><a href="/story/13233.html">什么是“系统空闲进程”，为什么它使用这么多CPU？</a><li><a href="/story/12976.html">您可以在Mac上的Activity Monitor中安全退出哪些进程？</a><li><a href="/story/12936.html">Windows任务管理器：完整指南</a><li><a href="/story/11538.html">如何辨别哪个应用程序正在使用Mac的网络摄像头</a><li><a href="/story/7572.html">如何使用Process Explorer暂停或恢复Windows应用程序</a><li><a href="/story/7512.html">如何使用Process Explorer暂停或恢复Windows应用程序</a><li><a href="/story/6785.html">将工具打包并一起使用</a><li><a href="/story/6758.html">了解进程监视器</a><li><a href="/story/6756.html">了解Process Explorer</a><li><a href="/story/6476.html">如何结束进程并确定其优先级，以使您的Windows PC运行更顺畅</a><li><a href="/story/6156.html">如何在任务管理器失败时终止“无响应”程序</a><li><a href="/story/5980.html">初学者极客：关于使用Windows任务管理器，每个Windows用户都需要知道什么</a><li><a href="/story/5482.html">如何在Windows中从CLI终止进程</a><li><a href="/story/4882.html">Windows任务管理器的最佳免费替代方案</a><li><a href="/story/4567.html">Linux上的“僵尸进程”是什么？</a><li><a href="/story/3423.html">在Windows 8中重新启动Windows资源管理器进程</a><li><a href="/story/1278.html">什么是conhost.exe？它为什么要运行？</a><li><a href="/story/808.html">在Windows 7或Vista中创建打开任务管理器的“所有用户”视图的快捷键或热键</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

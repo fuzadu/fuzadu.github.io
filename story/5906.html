@@ -1,0 +1,82 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>调整专用虚拟Web服务器</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>调整专用虚拟Web服务器</h2></div><div class="content"><p>当你有一个专用的虚拟服务器来运行你的网站时，很可能它是为每个人配置的，而不是为了最大限度地提高网站的运行性能而定制的。</p><p>概述 / 综述</p><p>我们希望最大限度地提高性能的问题领域有很多：</p><p>
+Linux配置。
+通常有一些不需要运行的服务正在运行，这浪费了本可以用于更多连接的内存。
+MySQL配置。
+默认设置通常基于小型服务器，我们可以添加一些关键更改来极大地提高性能。
+Apache配置。
+默认情况下，大多数主机提供商安装Apache时几乎安装了每个模块。如果您永远不打算使用模块，那么就没有理由加载模块。
+PHP配置。
+默认的PHP配置同样臃肿，通常会安装大量不必要的额外模块。
+PHP操作码缓存。
+操作码缓存不再允许PHP每次重新编译脚本，而是将编译后的脚本缓存在内存中，以实现巨大的性能提升。
+备份。
+也许应该设置一些自动备份，因为您的主机提供商不会为您这样做。
+安防。
+当然，Linux在默认情况下是足够安全的，但是通常有一些明显的安全问题，您可以通过几个快速设置来修复它们。</p><p>Linux配置</p><p>您可以进行相当多的调整，这些调整会根据您使用的服务器而略有不同。这些调整适用于运行CentOS的服务器，但它们应该适用于大多数DV服务器。</p><p>禁用DNS</p><p>如果您的主机提供商为您的域处理DNS(可能)，那么您可以禁止DNS服务运行。</p><code>disable dns
+/etc/init.d/named stop
+chmod 644 /etc/init.d/named</code><p>chmod命令从脚本中删除EXECUTE权限，使其在启动时停止运行。</p><p>禁用垃圾邮件评估</p><p>如果您没有在服务器上使用电子邮件帐户，则不应费心运行反垃圾邮件工具。(你还应该看看谷歌应用程序(Google Apps)，这是一个更好的电子邮件解决方案)</p><code>/etc/init.d/psa-spamassassin stop
+chmod 644 /etc/init.d/psa-spamassassin</code><p>禁用xinetd</p><p>xinetd进程包含许多其他进程，这些进程都不适用于典型的Web服务器。</p><code>/etc/init.d/xinetd stop
+chmod 644 /etc/init.d/xinetd</code><p>限制Plesk内存使用</p><p>如果您使用Plesk面板，您可以通过添加选项文件强制它使用更少的内存。</p><code>vi /usr/local/psa/admin/conf/httpsd.custom.include</code><p>将以下行添加到文件中：</p><code>MinSpareServers 1 
+MaxSpareServers 1 
+StartServers 1 
+MaxClients 5</code><p>请注意，已知此选项在MediaTemple DV服务器上有效，但尚未在任何其他服务器上选中。(请参阅参考资料)</p><p>禁用或关闭Plesk(可选)</p><p>如果你一年只使用一次Plesk，那就没有什么理由让它继续运行了。请注意，此步骤完全是可选的，并且稍微高级一些。</p><p>运行以下命令以关闭Plesk：</p><code>/etc/init.d/psa stop</code><p>您可以通过运行以下命令来禁止其在启动时运行：</p><code>chmod 644 /etc/init.d/psa</code><p>请注意，如果禁用它，则在不改回文件权限(chmod u+x)的情况下无法手动启动它。</p><p>MySQL配置</p><p>启用查询缓存</p><p>打开/etc/my.cnf文件，并在[mysqld]节中添加以下行，如下所示：</p><code>[mysqld]
+query-cache-type = 1
+query-cache-size = 8M</code><p>如果愿意，您可以向查询缓存添加更多内存，但不要使用太多内存。</p><p>禁用TCP/IP</p><p>默认情况下，数量惊人的主机允许通过TCP/IP访问MySQL，这对网站来说毫无意义。您可以通过运行以下命令来确定MySQL是否在监听TCP/IP：</p><code>netstat -an | grep 3306</code><p>要禁用，请将以下行添加到/etc/my.cnf文件：</p><code>skip-networking</code><p>Apache配置</p><p>打开httpd.conf文件，该文件通常位于/etc/httpd/conf/httpd.conf中</p><p>找到如下所示的行：</p><code>Timeout 120</code><p>并将其更改为以下内容：</p><code>Timeout 20</code><p>现在查找包含这些行的部分，并调整为类似的内容：</p><code>StartServers       2
+MinSpareServers    2
+MaxSpareServers    5
+ServerLimit        100
+MaxClients         100
+MaxRequestsPerChild  4000</code><p>PHP配置</p><p>在PHP平台上调整服务器时需要记住的一件事是，每个Apache线程都将在内存中的单独位置加载PHP。这意味着如果一个未使用的模块为PHP增加了256k的内存，那么在40个Apache线程中，您就浪费了10MB的内存。</p><p>删除不需要的PHP模块</p><p>您需要找到php.ini文件，该文件通常位于/etc/php.ini(请注意，在某些发行版上，/etc/php.d/目录包含许多.ini文件，每个模块一个。</p><p>注释掉包含以下模块的所有装入模块行：</p><p>
+ODBC。
+SNMP。
+PDO。
+ODBC PDO。
+梅斯。
+离子立方体装载机。
+杰森。
+IMAP。
+LDAP。
+诅咒</p><p></p><p>TODO：在此处添加更多信息。</p><p>PHP操作码缓存</p><p>您可以使用许多操作码缓存，包括APC、eAccelerator和Xcache，由于稳定性原因，最后一种是我个人喜欢的。</p><p>下载xcache并解压缩到一个目录中，然后从xcache源目录运行以下命令：</p><code>phpize 
+./configure --enable-xcache 
+make 
+make install</code><p>打开php.ini文件并为xcache添加一个新部分。如果您的php模块是从其他地方加载的，则需要调整路径。</p><code>vi /etc/php.ini</code><p>将以下部分添加到文件中：</p><code>[xcache-common]
+zend_extension  = /usr/lib/php/modules/xcache.so
+[xcache.admin]
+xcache.admin.user       = "myusername"
+xcache.admin.pass       = "putanmd5hashhere"
+[xcache]
+; Change xcache.size to tune the size of the opcode cache
+xcache.size         = 16M
+xcache.shm_scheme   = "mmap"
+xcache.count        = 1
+xcache.slots        = 8K
+xcache.ttl          = 0
+xcache.gc_interval  = 0
+; Change xcache.var_size to adjust the size of variable cache
+xcache.var_size     = 1M
+xcache.var_count    = 1
+xcache.var_slots    = 8K
+xcache.var_ttl      = 0
+xcache.var_maxttl   = 0
+xcache.var_gc_interval =     300
+xcache.test         = Off
+xcache.readonly_protection = On
+xcache.mmap_path    = "/tmp/xcache"
+xcache.coredump_directory =   ""
+xcache.cacher       = On
+xcache.stat         = On
+xcache.optimizer    = Off</code><p>TODO：需要稍微扩展一下，并在引用中链接到xcache。</p><p>备份</p><p>没有什么比自动备份您的网站更重要的了。你也许可以从你的主机提供商那里获得快照备份，这也非常有用，但我更喜欢自动备份。</p><p>创建自动备份脚本</p><p>我通常从创建一个/backups目录开始，在它下面有一个/backups/files目录。如果需要，您可以调整这些路径。</p><code>mkdir -p /backups/files</code><p>现在，在backups目录内创建一个backup.sh脚本：</p><code>vi /backups/backup.sh</code><p>将以下内容添加到文件中，并根据需要调整路径和mysqldump密码：</p><code>#!/bin/sh
+
+THEDATE=`date +%d%m%y%H%M`
+
+mysqldump -uadmin -pPASSWORD DATABASENAME > /backups/files/dbbackup$THEDATE.bak
+
+tar -cf /backups/files/sitebackup$THEDATE.tar /var/www/vhosts/my-website-path/httpdocs
+gzip /backups/files/sitebackup$THEDATE.tar
+
+find /backups/files/site* -mtime +5 -exec rm {} \;
+find /backups/files/db* -mtime +5 -exec rm {} \;</code><p>该脚本将首先创建一个日期变量，以便为单个备份将所有文件命名为相同的名称，然后转储数据库，将Web文件压缩并压缩它们。Find命令用于删除任何超过5天的文件，因为您不希望驱动器空间不足。</p><p>通过运行以下命令使脚本可执行：</p><code>chmod u+x /backups/backup.sh</code><p>接下来，您需要将其指定为由cron自动运行。请确保您使用的帐户可以访问备份目录。</p><code>crontab -e</code><p>将以下行添加到crontab：</p><code>1       1       *       *       *       /backups/backup.sh</code><p>您可以通过在登录到用户帐户时运行脚本来提前测试脚本。(我通常以root身份运行备份)</p><p>使用rsync异地同步备份</p><p>现在您已经运行了服务器的自动备份，您可以使用rsync实用程序在其他地方同步它们。您将希望阅读这篇关于如何设置ssh密钥以实现自动登录的文章：在单个命令中将公共SSH密钥添加到远程服务器</p><p>您可以通过在另一个位置的Linux或Mac机器上运行此命令来测试这一点(我家里有一台Linux服务器，我就是在那里运行这个命令的)</p><code>rsync -a user@website.com:/backups/files/* /offsitebackups/</code><p>这将需要相当长的时间才能第一次运行，但最后您的本地计算机应该在/offsitebackups/目录中有一个文件目录的副本。(确保在运行脚本之前创建该目录)</p><p>您可以通过将其添加到crontab行来对其进行调度：</p><code>crontab -e</code><p>添加以下行，它将每小时在45分钟标记处运行rsync。您会注意到，我们在这里使用完整路径进行rsync。</p><code>45 * * * * /usr/bin/rsync -a user@website.com:/backups/files/* /offsitebackups/</code><p>您可以安排它在不同的时间运行，也可以每天只运行一次。这真的要看你的了。</p><p>请注意，有很多实用程序允许您通过ssh或ftp进行同步。您不必使用rsync。</p><p>安全 / 抵押品 / 保证 / 证券</p><p>您要做的第一件事是确保您有通过ssh使用的常规用户帐户，并确保您可以使用su切换到root用户。允许root通过ssh直接登录是一个非常糟糕的主意。</p><p>禁用通过SSH的超级用户登录</p><p>编辑/etc/ssh/sshd_config文件，并查找以下行：</p><code>#PermitRootLogin yes</code><p>将该行更改为如下所示：</p><code>PermitRootLogin no</code><p>在进行此更改之前，请确保您拥有常规用户帐户，并且可以通过su切换为root用户，否则您可能会将自己锁在门外。</p><p>禁用SSH版本1</p><p>除了SSH版本2之外，确实没有理由使用任何其他版本，因为它比以前的版本更安全。编辑/etc/ssh/sshd_config文件，并查找以下部分：</p><code>#Protocol 2,1
+Protocol 2</code><p>确保您只使用如图所示的协议2。</p><p>重新启动SSH服务器</p><p>现在您需要重新启动SSH服务器才能使其生效。</p><code>/etc/init.d/sshd restart</code><p>检查打开的端口</p><p>您可以使用以下命令查看服务器正在侦听哪些端口：</p><code>netstat -an | grep LISTEN</code><p>对于Plesk，除了端口22、80，可能还有8443之外，您真的不应该有任何其他监听。</p><p>设置防火墙</p><p>正文：在linux‎上使用iptables</p><p>您可以选择设置iptables防火墙以阻止更多连接。例如，我通常会阻止从我的工作网络以外的任何其他端口进行访问。如果您有一个动态IP地址，您将希望避免使用该选项。</p><p>如果到目前为止您已经遵循了本指南中的所有步骤，那么可能没有必要再添加防火墙，但是了解您的选择是很好的。</p><p></p><p></p><p>亦见</p><p>
+在linux‎上使用iptables</p><p>参考文献</p><p>
+优化您的DV服务器(mediateple.net)。
+XCache</p><div class="item_info"><span class="item_key"><a href="/tag/运行/">运行</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/服务器/">服务器</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/13067.html">您的功能键在Google Chrome中的作用</a><li><a href="/story/10749.html">如何在Windows 8和10上隐藏音量弹出窗口显示</a><li><a href="/story/10077.html">如何确定您的设备运行的是32位还是64位Android</a><li><a href="/story/9038.html">如何绕过“此应用程序已被阻止以保护您”在Windows 10中安装应用程序</a><li><a href="/story/7460.html">如何检查您的Linux系统是32位还是64位</a><li><a href="/story/4353.html">如何以不同于开始屏幕的用户身份运行Windows 8应用</a><li><a href="/story/4013.html">如何允许在Windows 7上执行PowerShell脚本</a><li><a href="/story/3659.html">谷歌天空地图让你的Android手机变成数字望远镜</a><li><a href="/story/2417.html">在Windows XP中创建您自己的Windows 7样式自动碎片整理</a><li><a href="/story/1948.html">通过对虚拟磁盘进行碎片整理提高VMware虚拟机性能</a><li><a href="/story/1085.html">确保您的计算机可以使用升级顾问运行Windows 7</a><li><a href="/story/899.html">在Vista中关闭令人讨厌的HP驱动程序UAC弹出更新检查</a><li><a href="/story/621.html">使资源管理器在Windows Vista中显示窗口标题</a><li><a href="/story/504.html">阻止X.Org在Ubuntu中启动</a><li><a href="/story/295.html">如何在XP上运行DirectX诊断程序</a><li><a href="/story/163.html">在Windows 7、8或10中，以管理员身份从运行框运行命令</a><li><a href="/story/95.html">获取Solaris上的系统正常运行时间信息</a><li><a href="/story/85.html">如何修复双击始终在Windows资源管理器中打开搜索</a><li><a href="/story/83.html">以root用户身份启动Ubuntu Gnome应用程序</a><li><a href="/story/51.html">如何辨别您正在运行的Ubuntu版本</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

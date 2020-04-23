@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>极客周：在VirtualBox XP访客版中修复缓慢的互联网</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>极客周：在VirtualBox XP访客版中修复缓慢的互联网</h2></div><div class="content"><p>您是否曾在VirtualBox来宾操作系统中遇到过网络性能慢得离谱的情况？这个问题通常是通过一个极其简单的小把戏来解决的。</p><p>您通常需要做的就是进入设置(确保虚拟机已关闭)，然后将网络适配器更改为不同的适配器类型。对于我们正在使用的XP测试虚拟机，切换到PCnet-PCI II适配器解决了这个问题。</p><img class="content_img" src="/image/b8/b860049b6a83aa4d767eeee7f0630231.png" /><p>换出适配器并打开虚拟机后，互联网性能几乎再次瞬间恢复。在另一个例子中，我们有一个Windows7虚拟机在运行，用英特尔的适配器交换适配器会让一切都快很多。至少值得一看。</p><p>从未使用过VirtualBox？我们有一些指南可以帮助您入门：</p><p>
+使用VirtualBox轻松试用新操作系统。
+使用VirtualBox在您的Windows PC上测试Linux。
+从Ubuntu Guest挂载共享VirtualBox文件夹。
+在VirtualBox中安装Windows和Linux虚拟机的来宾添加</p><p>如果你想知道我们是如何一直测试这么多软件的--这是因为我们使用VirtualBox来安全地测试东西，而不会有损坏我们的主PC的风险。它是免费的，非常值得一看。</p><p>奖金小贴士！通过主机访问访客+使用VBox NAT访问互联网</p><p>这实际上不会提高性能，但如果您想要从主机PC直接访问来宾虚拟机，并通过NAT(网络地址转换)为来宾虚拟机提供互联网访问，则必须使用多个适配器来完成此任务。原因如下：</p><p>
+VirtualBox NAT适配器非常棒，特别是对于笔记本电脑用户-无论您的笔记本电脑连接到哪里，来宾虚拟机始终可以访问互联网。问题是NAT用户无法从主机访问来宾，这在您测试网络软件时相当烦人。
+VirtualBox仅主机适配器允许您轻松地从主机访问来宾(反之亦然)，但不允许来宾访问互联网。
+VirtualBox Bridge适配器工作得非常好，将您的虚拟机直接连接到网络，但不适用于笔记本电脑用户，因为每个网络都有不同的设置。</p><p>答案是什么？使用两个适配器-一个NAT适配器和一个仅主机适配器。这样，您可以使用仅限主机的适配器连接到来宾VM，并且来宾将可以通过NAT适配器访问互联网。</p><img class="content_img" src="/image/99/99c626ccd07fd29d5c5680e4f33245a7.png" /><p>这里的诀窍是将适配器1用作NAT，将适配器3用作仅主机。绝对要确保对每种类型使用不同的适配器类型，否则它不会工作得很好。</p><p>询问超级用户</p><p>在我们最喜欢的问答网站上，本周最热门的帖子包括一些很棒的问题，以及来自网站上所有超级用户的大量答案。</p><p>
+适用于Mac OS X的终端提示和技巧。
+我的手指在使用电脑时冰冷-解决方案？
+你最喜欢的火狐快捷键是什么？
+我应该将交换文件保存在SSD驱动器上吗？
+您如何向非超级用户解释更高级的计算概念？
+如何在谷歌上搜索问号？
+为什么与Linux相比，Windows占用更多的磁盘空间？
+在Mac上解压.rar文件的好方法是什么？
+Boot Camp、Parallels、VirtualBox或Fusion？
+如何将Ubuntu 9.10从9.4升级</p><p>最新软件评审</p><p>你可能已经注意到，我们现在把这些评论摘录在主要的RSS源/电子邮件时事通讯中，这意味着没有任何好的理由把它们包括在每周一次的综述中。</p><p>去年在“极客”</p><p>大约52周前，我们报道了很多新订户可能遗漏的好东西。以下是我们当时所写内容的简要回顾：</p><p>
+极客评论：使用PC向导监控您的PC并对其进行基准测试。
+在Vista中关闭令人讨厌的HP驱动程序UAC弹出更新检查。
+使用SSL加密保护您的Gmail帐户，而不会破坏Gmail通告程序。
+快速提示：在Outlook 2007中轻松切换签名。
+使用双驱动程序轻松备份和还原硬件驱动程序。
+从Windows Vista的登录屏幕中删除用户帐户。
+如何在Windows Vista中创建和使用密码重置盘</p><p>“极客笔记”</p><p>我工作的一位客户今天(第四次)提交了一份错误报告，要求我们：“请确保您的网站不会在我点击红色X时关闭。”</p><p>嗯。我是认真的。</p><p>似乎他们应该把“极客”作为学校的必修课，嗯？</p><div class="item_info"><span class="item_key"><a href="/tag/适配器/">适配器</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/virtualbox/">virtualbox</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/9672.html">如何在Windows 10笔记本电脑上安装外部Wi-Fi适配器</a><li><a href="/story/9030.html">HTG回顾D-Link DWA-192：令您垂涎的快速死星形状Wi-Fi适配器</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

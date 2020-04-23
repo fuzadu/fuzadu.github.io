@@ -1,0 +1,12 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>修复Vista中的COM代理已停止工作错误</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>修复Vista中的COM代理已停止工作错误</h2></div><div class="content"><p>如果您每次浏览包含视频或媒体文件的文件夹时都收到COM代理已停止工作的错误，那么您已经找到了一些可能的解决方案。这个问题是由各种软件安装的编解码器和其他COM组件造成的，这些软件与Vista不完全兼容，比如某些版本的DivX或Nero。</p><p>以下是错误消息：</p><img class="content_img" src="/image/c9/c90c2fe72abf015c4bcfbbeb71f8f3d2.png" /><p></p><p>这个问题有许多可能的解决方案，正确的解决方案在很大程度上取决于实际导致问题的是什么软件。一些最著名的导致问题的软件是DivX和Nero，但也有其他软件导致了问题。</p><p>可能的解决方案</p><p>
+如果您使用的是DivX，则应升级到最新版本(6.5+)。
+如果您使用的是Nero，可以尝试升级到最新版本(7.7.5.1+)。
+如果您已升级Nero和DivX但仍有问题，可以尝试将文件C：\Program Files\Common Files\Ahead\DSFilter\NeVideo.ax重命名为NeVideo.ax.bak。但是，您可能还需要将NeVideoHD.ax重命名为NeVideoHD.bak这将中断Nero Showtime。(感谢这一条评论中的Dugi)。
+您可以禁用缩略图预览，这应该会使问题消失，但不是最佳解决方案。
+已知较旧的ffdshow编解码器包会导致一些问题。ffdshow试用版的编解码器包似乎工作得更好。可能要尝试使用这个：http://ffdshow-tryout.sourceforge.net/。
+
+如果您想要完全卸载Nero，他们提供了一个实用程序来帮助您完全卸载，在旧版本安装不好的情况下会有很大帮助。http://www.nero.com/nero7/eng/FAQs_Nero7_NeroVision.html。
+
+一些用户建议安装Vista编解码器软件包，以便将所有编解码器更新到正确的版本。我不能确认这是否有效，因为我自己还没有试过。与往常一样，在安装未知组件并创建还原点时要小心。
+您可以使用NirSoft提供的非常有用的MMCompView免费实用程序来禁用系统上的任何编解码器。这对于帮助准确诊断导致问题的组件非常有用。
+下面还有另一种可能的解决方案，即关闭dllhost的DEP，这可能不适用于所有人。您可能需要将DivX+NERO可执行文件添加到DEP忽略列表。</p><p></p><p>Alan MCC写道，这个修复可能会以一种更容易的方式解决问题。基本上，关闭dllhost(COM代理)上的数据执行保护可以解决某些人的这个问题。下面将详细介绍此解决方案。</p><p>右键单击计算机，然后选择属性</p><img class="content_img" src="/image/d7/d767d5684b78f3be00d47b894980ddbb.jpg" /><p>单击高级系统设置，然后在高级下单击设置</p><img class="content_img" src="/image/15/15faef47fb64be821ed557076ede805c.jpg" /><p>选择“Data Execution Protection”(数据执行保护)选项卡，然后单击“为除我选择的程序和服务之外的所有程序和服务打开DEP</p><div class="item_info"><span class="item_key"><a href="/tag/nero/">nero</a></span><span class="item_key"><a href="/tag/编解码器/">编解码器</a></span><span class="item_key"><a href="/tag/问题/">问题</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

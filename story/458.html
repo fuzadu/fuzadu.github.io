@@ -1,0 +1,14 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何绕过Windows的“缩量”不足问题</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何绕过Windows的“缩量”不足问题</h2></div><div class="content"><p>Windows Vista及更高版本中的收缩卷功能有一些严重的限制，我们将尝试解释这些限制，然后建议一些可能对您有所帮助的解决方法。执行这些步骤时要小心，因为它们可能会使您的系统无法引导…。需要高级极客级别。</p><p>我还建议，如果您正在尝试配置双引导系统，最好的办法是备份所有数据，并设置一个全新的双引导系统，记住先安装最旧的操作系统。(XP在Vista之前，Linux在最后)</p><p>问题说明</p><p>我们在使用收缩卷功能时遇到的主要问题是，即使有明显的空闲空间，也无法收缩卷。</p><img class="content_img" src="/image/23/231b3c134d0c06f5dfbe84df731ccb5d.png" /><p>您根本无法收缩卷，因为根据Windows，您没有可用空间来收缩：</p><img class="content_img" src="/image/6c/6cecc5a4485e0f8a8651da500c2e1b42.png" /><p>Windows不允许您缩小卷的原因是因为卷的最末端有不可移动的系统文件，正如Auslogics碎片整理实用程序的屏幕截图所显示的那样。在这种情况下，不可移动文件实际上是卷的MFT或主文件表。</p><img class="content_img" src="/image/a9/a9f09180cb7dc7af546ed49c8eacb863.png" /><p>使收缩体积工作</p><p>要绝对确保可以收缩卷，您应该禁用尽可能多的系统文件，至少暂时禁用。以下是步骤列表：</p><p>
+运行磁盘清理向导，确保删除休眠文件和所有还原点。
+禁用系统还原。
+禁用页面文件(在控制面板中打开系统，然后选择高级系统设置：\Advanced\Performance\Advanced\Change\No Paging File。
+在相同的高级设置中，转到启动和恢复\设置，然后将写入调试信息下拉列表更改为“无”以禁用内核内存转储。
+在电源选项\高级电源选项屏幕中禁用休眠模式。
+重新启动计算机，然后删除c：\pagefile.sys文件，如果有问题，请按照以下说明操作。</p><p>现在我们已经删除了几乎所有可以删除的系统文件，您应该至少运行这些免费碎片整理实用程序中的一个，但最好是所有这些实用程序，以便将所有文件移动到卷的开头，这样我们就可以强制使用收缩卷功能。</p><p>
+电源碎片整理程序(Sysinterals contig的GUI界面)。
+Auslogics磁盘碎片整理</p><p>如果您遇到了MFT问题，那么即使在运行了这些实用程序之后，您也不会有太多的运气。您需要做的是使用能够移动MFT文件的非免费碎片整理实用程序之一。如果有人可以建议一个免费的方式来移动MFT，请在评论中留言。</p><p>
+你可以下载30天免费试用的Perfect Disk软件，完成后再卸载。或者不去。</p><p>在这一点上，您应该能够收缩分区，至少是相当大的数量。一旦缩小了分区，就应该重新启用这些重要文件：</p><p>
+重新启用页面文件(上面的反向说明)。
+如果您在重新启用Hibernate时遇到问题，请按照以下步骤操作。
+启用系统还原或内核调试信息完全由您决定。
+重新启动。</p><p>同样，您使用双引导程序的最佳选择是备份、擦除和重新加载，但是这些步骤在测试期间确实适用于我。</p><p>使用Linux调整大小</p><p>您还可以使用gparted live CD来调整分区大小。这样做的问题是，除非您遵循一些非常具体的步骤，否则它肯定会导致您的系统不再引导，因为Vista无法处理它。</p><p>使用商业公用事业</p><p>有许多商业软件实用程序可以为您处理这类事情，比如Partition Magic。只要有可能，我们更喜欢这里的自由软件。</p><p>总而言之，如果您足够幸运地让“收缩音量”为您工作，那就太好了。如果没有，我建议备份、擦除和安装新的。</p><div class="item_info"><span class="item_key"><a href="/tag/收缩/">收缩</a></span><span class="item_key"><a href="/tag/步骤/">步骤</a></span><span class="item_key"><a href="/tag/系统/">系统</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

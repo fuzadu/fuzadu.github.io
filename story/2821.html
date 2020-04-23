@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>自动执行删除旧日志文件的过程</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>自动执行删除旧日志文件的过程</h2></div><div class="content"><p>许多服务和程序都会生成日志文件，作为它们正在做的每件事的审计跟踪，但是很少有服务和程序具有删除这些文件的功能，因为它们的使用期限已过。因此，这些日志文件位于您的系统上，会占用空间(有时比您知道的更多)，并且在您需要访问它们的时候会使目录变得杂乱无章。</p><p>所以如果你不需要这些文件，为什么要保留它们呢？我们将向您展示如何轻松删除这些旧的日志文件，使您的系统保持整洁。</p><p>当然，虽然我们下面介绍的内容对于管理日志文件非常有用，但是您也可以将相同的技术应用于任何其他类型的“过期”文件(如备份)。</p><p>根据上次修改日期删除文件</p><p>如果您只想根据文件的上次修改日期清除现有日志文件，则只需使用FORFILES命令即可。例如：</p><p>上述命令将删除“C：LogFiles”文件夹中的所有文件，以及上周未修改的所有子文件夹。</p><p>FORFILES命令在搜索模式和日期函数方面相当灵活。例如，您可以输入日期(如‘-1/13/2010’)代替数字，以删除在指定日期之前最后一次修改的文件。</p><p>要获取有关FORFILES可以执行哪些操作的所有详细信息，请在命令提示符下使用以下命令查看联机帮助：</p><p>根据文件名中的日期模式删除文件</p><p>许多应用程序和服务基于日期模式生成日志文件，即每天有一个日志文件(即Log100113.txt、Backup-2010-01-13.zip等)。对于这些类型的文件，最好根据合并到文件名中的文件的日期而不是最后修改日期来删除。这对于保留过去3个月的所有日志文件等场景非常有用。不幸的是，Windows没有带有这种类型逻辑的本机命令，但是使用批处理脚本，我们可以轻松地处理此任务。</p><p>脚本的用法注释中包含了一些示例，因此应该很容易弄清楚。</p><p>剧本</p><code>@ECHO OFF
+ECHO Delete By Date Pattern
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+REM Delete/Select files based on a date which utilizes MM and/or DD for file naming patterns.
+REM
+REM Usage:
+REM DeleteByDatePattern {/M | /D} NumberToKeep Path PatternPrefix PatternPostfix [/L | /DEL]
+REM    /M     Specifies the pattern being used is based on months.
+REM    /D     Specifies the pattern being used is based on days.
+REM    NumberToKeep
+REM           The number of months (/M) or days (/D) to keep, including the current.
+REM           For example, entering 1 keeps only the current month/day and 6 would keep the current minus 5.
+REM    Path   The root location to search. Subdirectories will be searched.
+REM    PatternPrefix
+REM           The file search pattern placed before of the month/day when building the search string.
+REM    PatternPostfix
+REM           The file search pattern placed after of the month/day when building the search string.
+REM    /L     (optional) Lists all files matching the pattern, but does not delete them.
+REM    /DEL   (optional) Deletes all files matching the pattern.
+REM
+REM Examples:
+REM    DeleteByDatePattern /M 3 "%WinDir%system32LogFiles" ex?? ??.log /DEL
+REM       Deletes all IIS log files (Windows Server 2003) except for the current and previous two months.
+REM    DeleteByDatePattern /D 7 "D:Backup" *-????-??- .zip /DEL
+REM       Deletes all zip files from the D:Backup folder except for the current week.
+REM       The file name pattern assumed above is "*-YYYY-MM-DD.zip"
+REM    DeleteByDatePattern /M 0 "C:" *( )* /L
+REM       Prints a list of all files on the C drive matching the pattern: "*-MM-*" (where MM is replaced with 01-12)
+REM    DeleteByDatePattern /D 14 "C:Logs" Log-???? .txt
+REM       Prints a list of all patterns which would be processed by the script.
+
+SETLOCAL EnableExtensions EnableDelayedExpansion
+
+REM Assumes your Windows Date/Time settings are set to 'DayOfWeek M/D/YYYY' format.
+REM If your format is different, you will need to alter the variables below so they align.
+FOR /F "tokens=1,2,3,4 delims=/ " %%A IN ('DATE /T') DO (
+   SET Month=%%B
+   SET Day=%%C
+   SET Year=%%D
+)
+
+IF /I {%1}=={/M} (
+   SET Keep=%Month%
+   SET Max=12
+)
+IF /I {%1}=={/D} (
+   SET Keep=%Day%
+   SET Max=31
+   REM Working off of the previous month's max days.
+   SET /A PrevMonth=%Month%-1
+   IF !PrevMonth! EQU 2 (
+      SET Max=28
+      REM Leap years... add more as needed.
+      IF /I %Year% EQU 2012 SET Max=29
+      IF /I %Year% EQU 2016 SET Max=29
+   )
+   IF /I !PrevMonth! EQU 4 SET Max=30
+   IF /I !PrevMonth! EQU 6 SET Max=30
+   IF /I !PrevMonth! EQU 9 SET Max=30
+   IF /I !PrevMonth! EQU 11 SET Max=30
+)
+SET Current=%Keep%
+SET /A Keep=%Keep%-%2+1
+
+REM Determine the range to be removed.
+SET /A RemoveHighStart=%Current%+1
+IF /I %Keep% LSS 1 (
+   SET RemoveLow=0
+   SET /A RemoveHighEnd=%Keep%+%Max%-1
+) ELSE (
+   SET /A RemoveLow=%Keep%-1
+   SET RemoveHighEnd=%Max%
+)
+
+REM Process all less than the low range.
+FOR /L %%Z IN (1,1,%RemoveLow%) DO CALL :Process %%Z %3 %4 %5 %6
+REM Process all greater than the high range.
+FOR /L %%Z IN (%RemoveHighStart%,1,%RemoveHighEnd%) DO CALL :Process %%Z %3 %4 %5 %6
+
+ENDLOCAL
+GOTO End
+
+:Process
+SET Key=0%1
+SET Key=%Key:~-2%
+SET Target="%~2%~3%Key%%~4"
+ECHO Target Pattern: %Target%
+
+IF /I {%5}=={/L} DIR %Target% /B /S
+IF /I {%5}=={/DEL} DEL /F /S /Q %Target%
+GOTO End
+
+:End</code><p>使流程自动化</p><p>FORFILES命令是Windows本机命令，但是DeleteByDatePattern脚本应该放在PATH变量中定义的文件夹(如Windows文件夹)中，以便可以像调用本机命令一样调用它。完成此操作后，您可以创建一个计划任务，该任务可以是单个命令(如果只需要从单个位置删除)或批处理文件(如果需要从多个位置删除)，它每天、每周、每月或任何时候都会运行。</p><p>还有一件事你可以设定好就忘了。</p><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从sysadmin Geek下载按日期删除模式脚本</p><div class="item_info"><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/删除/">删除</a></span><span class="item_key"><a href="/tag/命令/">命令</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14797.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14796.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14627.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14624.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14550.html">如何在Linux上使用Tail命令</a><li><a href="/story/14514.html">您想知道的关于Linux上的inode的所有信息</a><li><a href="/story/14471.html">如何在Google Drive中更改文件所有者</a><li><a href="/story/14454.html">如何在Linux上使用stat命令</a><li><a href="/story/14347.html">如何使用cURL从Linux命令行下载文件</a><li><a href="/story/14306.html">如何创建USB驱动器的映像</a><li><a href="/story/14240.html">如何在Linux上使用LESS命令</a><li><a href="/story/14188.html">如何最终确定和撤销对共享Google文件的访问</a><li><a href="/story/14167.html">如何共享指向您的Google文件的“复制”链接</a><li><a href="/story/14164.html">如何将Google文档、工作表或幻灯片文件共享为网页</a><li><a href="/story/14127.html">如何在iPhone和iPad上将文件复制和备份到外部存储</a><li><a href="/story/14024.html">如何快速搜索Google Drive</a><li><a href="/story/13983.html">如何在Linux上使用chown命令</a><li><a href="/story/13968.html">如何将音乐复制到Android手机</a><li><a href="/story/13912.html">你能在Windows PC或Android手机上使用AirDrop吗？</a><li><a href="/story/13883.html">如何在PowerPoint演示文稿中使用iTunes音乐</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

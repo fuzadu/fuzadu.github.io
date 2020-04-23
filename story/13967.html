@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上使用chmod命令</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上使用chmod命令</h2></div><div class="content"><p>控制谁可以使用Linux的chmod命令访问文件、搜索目录和运行脚本。该命令修改Linux文件权限，乍一看看起来很复杂，但一旦了解了它们的工作原理，实际上就相当简单了。</p><p>chmod修改文件权限</p><p>在Linux中，谁可以对文件或目录做什么是通过权限集来控制的。一组用于文件所有者，另一组用于文件组的成员，最后一组用于其他所有人。</p><p>权限控制可以对文件或目录执行的操作。它们允许或阻止读取、修改或执行文件(如果是脚本或程序)。对于目录，权限控制谁可以CD进入目录以及谁可以在目录中创建或修改文件。</p><p>您可以使用dchmod命令来设置这些权限。要查看在文件或目录上设置了哪些权限，我们可以使用ls。</p><p>查看和了解文件权限</p><p>我们可以使用-l(长格式)选项让ls列出文件和目录的文件权限。</p><code>ls -l</code><img class="content_img" src="/image/18/18b5fb3be2b53f06547280ca9c027a69.png" /><p>每行的第一个字符标识列出的条目类型。如果是破折号(-)，则为文件。如果是字母d，那就是目录。</p><p>接下来的九个字符表示三组权限的设置。</p><p>
+前三个字符显示拥有文件的用户的权限(用户权限)。
+中间三个字符显示文件组成员的权限(组权限)。
+最后三个字符显示不在前两个类别中的任何人的权限(其他权限)。</p><p>每组权限中有三个字符。字符是其中一个权限存在或不存在的指示符。它们可以是破折号(-)，也可以是字母。如果字符是破折号，则表示未授予权限。如果字符是r、w或x，则已授予该权限。</p><p>这些字母代表：</p><p>
+R：读取权限。可以打开文件并查看其内容。
+W：写权限。可以编辑、修改和删除该文件。
+X：执行权限。如果文件是脚本或程序，则可以运行(执行)。</p><p>例如：</p><p>
+*-表示根本没有授予任何权限。
+nrwx表示已授予完全权限。读取、写入和执行指示器都存在。</p><p>在我们的截图中，第一行以d开头，该行指的是一个名为“archive”的目录，该目录的所有者是“Dave”，该目录所属的组名也叫“Dave”。</p><p>接下来的三个字符是此目录的用户权限。这些显示所有者拥有完全权限。r、w和x字符都存在。这意味着用户Dave对该目录具有读、写和执行权限。</p><p>第二组三个字符是组权限，它们是r-x。这表明Dave组的成员对此目录具有读取和执行权限。这意味着他们可以列出目录中的文件及其内容，并且可以CD(执行)到该目录中。他们没有写入权限，因此无法创建、编辑或删除文件。</p><p>最后一组三个字符也是r-x。这些权限适用于不受前两组权限管辖的人员。这些人(称为“其他人”)对此目录具有读取和执行权限。</p><p>因此，总而言之，组成员和其他人具有读取和执行权限。所有者是名为Dave的用户，也具有写入权限。</p><p>对于所有其他文件(除了mh.sh脚本文件)，Dave和Dave组的成员对这些文件具有读写属性，而其他人只有读权限。</p><p>对于mh.sh脚本文件的特殊情况，所有者Dave和组成员拥有读取、写入和执行权限，其他人只有读取和执行权限。</p><p>了解权限语法</p><p>要使用chmod命令设置权限，我们需要告诉它：</p><p>
+用户：包括我们为其设置权限的用户。
+事件：我们要做什么改变？我们是添加还是删除权限？
+哪一个：我们设置的是哪种权限？</p><p>我们使用指示符来表示这些值，并形成简短的“权限语句”，如u+x，其中“u”表示“user”(谁)，“+”表示add(什么)，“x”表示Execute权限(哪个)。</p><p>我们可以使用的“Who”值是：</p><p>
+u：用户，表示文件的所有者。
+G：组，表示文件所属的组的成员。
+o：其他，指的是不受u和g权限管辖的人。
+答：全部，意思是以上全部。</p><p>如果没有使用这些参数，则chmod的行为就像使用了“a”一样。</p><p>我们可以使用的“什么”值是：</p><p>
+-：减号。删除权限。
++：加号。授予权限。该权限将添加到现有权限中。如果要设置此权限且仅设置此权限，请使用=选项，如下所述。
+=：等号。设置权限并删除其他权限。</p><p>我们可以使用的“哪些”值包括：</p><p>
+R：取消读取权限。
+W：写权限。
+x：执行权限。</p><p>设置和修改权限</p><p>假设我们有一个文件，其中每个人都具有完全权限。</p><code>ls -l new_ file.txt</code><img class="content_img" src="/image/f0/f0350b6d5b0a8da68190b8546a7c45f8.png" /><p>我们希望用户Dave有读写权限，而组和其他用户只有读权限。我们可以使用以下命令来执行此操作：</p><code>chmod u=rw,og=r new_file.txt</code><img class="content_img" src="/image/4c/4c5c4fc7b8684b7431eff925c44eb5ed.png" /><p>使用“=”运算符意味着我们清除所有现有权限，然后设置指定的权限。</p><p>让我们检查一下该文件的新权限：</p><code>ls -l new_file.txt</code><img class="content_img" src="/image/68/687532401e6bf903ab33d69e5143cf53.png" /><p>如我们所料，现有权限已被删除，新权限已设置。</p><p>在不删除现有权限设置的情况下添加权限如何？我们也可以很容易地做到这一点。</p><p>假设我们有一个已完成编辑的脚本文件。我们需要使它对所有用户都可执行。其当前权限如下所示：</p><code>ls -l new_script.sh</code><img class="content_img" src="/image/1d/1d6339b15783e163b92245db018cb13e.png" /><p>我们可以使用以下命令为每个人添加执行权限：</p><code>chmod a+x new_script.sh</code><img class="content_img" src="/image/45/45b6c05a85345607d9648825f34dd90d.png" /><p>如果我们查看权限，我们将看到Execute权限现在授予了每个人，并且现有权限仍然存在。</p><code>ls -l new_script.sh</code><img class="content_img" src="/image/09/099fc87632eb7722338617355c47e261.png" /><p>如果没有“a+x”语句中的“a”，我们也可以达到同样的效果。下面的命令也可以很好地工作。</p><code>chmod +x new_script.sh</code><p>设置多个文件的权限</p><p>我们可以一次将权限应用于多个文件。</p><p>以下是当前目录中的文件：</p><code>ls -l</code><img class="content_img" src="/image/b6/b67bd0ef003ac201aa9cfa60ff001287.png" /><p>假设我们想要从扩展名为“.page”的文件中删除“其他”用户的写权限。我们可以使用以下命令完成此操作：</p><code>chmod o-r *.page</code><img class="content_img" src="/image/9d/9dc70b297809bfd8bb54968a1d81bc3b.png" /><p>让我们来看看这产生了什么效果：</p><code>ls -l</code><img class="content_img" src="/image/4f/4fbbaf7dffa166346033045ddf5e3a60.png" /><p>正如我们所看到的，“Other”类别的用户的“.page”文件中的读取权限已被删除。没有其他文件受到影响。</p><p>如果我们想包含子目录中的文件，我们可以使用-R(递归)选项。</p><code>chmod -R o-r *.page</code><p>数字速记</p><p>使用chmod的另一种方式是以三位数的数字形式提供您希望授予所有者、组和其他人的权限。最左边的数字表示所有者的权限。中间数字表示组成员的权限。最右边的数字表示其他用户的权限。</p><p>下面列出了您可以使用的数字及其表示的含义：</p><p>
+0：(000)没有权限。
+1：(001)执行权限。
+2：(010)写权限。
+3：(011)写入和执行权限。
+4：(100)读权限。
+5：(101)读取和执行权限。
+6：(110)读写权限。
+7：(111)读、写和执行权限。</p><p>三种权限中的每一种都由十进制数的二进制等价物中的一位来表示，因此5在二进制中是101，表示读取和执行。2(以二进制表示为010)表示写入权限。</p><p>使用此方法，您可以设置您希望拥有的权限，而不是将这些权限添加到现有权限中。因此，如果读写权限已经到位，则必须使用7(111)来添加执行权限。使用1(001)将删除读取和写入权限，并添加执行权限。</p><p>让我们为Other类别的用户重新添加对“.page”文件的读取权限。我们还必须设置用户和组权限，因此需要将它们设置为已有的权限。这些用户已经拥有读写权限，即6(110)。我们希望“其他”具有读取和权限，因此需要将它们设置为4(100)。</p><p>以下命令将完成此操作：</p><code>chmod 664 *.page</code><img class="content_img" src="/image/88/8841ae24eed53dd2e54ff628febc9473.png" /><p>这会将我们需要的用户、组成员和其他人的权限设置为我们需要的权限。用户和组成员的权限将重置为原来的权限，其他用户和组成员的权限将恢复为读取权限。</p><code>ls -l</code><img class="content_img" src="/image/cb/cb3140a84bc42122e24e925f933ce3d9.png" /><p>高级选项</p><p>如果您阅读chmod的手册页，您会看到有一些高级选项与SETUID和SETGID位以及受限删除或“粘滞”位相关。</p><p>对于99%需要chmod的情况，这里描述的选项将为您提供服务。</p><div class="item_info"><span class="item_key"><a href="/tag/权限/">权限</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/10486.html">精灵宝可梦Go拥有对您的Google帐户的完全访问权限。以下是如何修复它[更新]</a><li><a href="/story/9057.html">如何在Mac上禁用系统完整性保护(以及为什么不应该禁用)</a><li><a href="/story/7296.html">修复Mac上的磁盘权限的方式、时间和原因</a><li><a href="/story/7032.html">Android的应用程序权限刚刚被简化-现在它们的安全性要低得多</a><li><a href="/story/6374.html">iOS也有App权限：可以说它们比Android的更好</a><li><a href="/story/5890.html">修正“警告：私钥文件不受保护！”在Linux上</a><li><a href="/story/5174.html">极客学校：学习Windows7-资源访问</a><li><a href="/story/4402.html">如何限制Android App权限</a><li><a href="/story/4008.html">使用aSpotCat控制您的Android应用程序权限</a><li><a href="/story/3270.html">如何理解那些令人困惑的Windows 7文件/共享权限</a><li><a href="/story/2800.html">使用控制委派向导在Server 2008中分配权限</a><li><a href="/story/275.html">在Outlook 2003/Exchange环境中共享日历</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

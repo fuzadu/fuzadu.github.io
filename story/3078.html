@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何网络引导BitDefender救援CD(PXE)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何网络引导BitDefender救援CD(PXE)</h2></div><div class="content"><img class="content_img" src="/image/48/48c78b5d06b67c16ab52c706dbf6a74e.jpg" /><p>我们已经向您展示了如何使用BitDefender Rescue CD来清理受感染的PC，但是如果您只想通过网络在没有CD的情况下实现相同的功能，该怎么办？在本指南中，我们将向您演示如何操作。</p><p>男爵松鼠提供的图像</p><p>先决条件</p><p>
+假设您已经按照我们的“什么是网络引导(PXE)以及如何使用它？”中的说明设置了FOG服务器。向导。
+您将看到“vim”程序用作编辑器，这主要是因为它在Linux平台上广泛可用。您可以使用您喜欢的任何其他编辑器。</p><p>概述 / 综述</p><p>在使用Linux修复Windows PC的10种最聪明的方法中，我们展示的其中一件事是，安装杀毒软件并从Ubuntu LiveCD扫描您的计算机是可能的。也就是说，如果您想要绝对确保您的计算机不会通过使用另一种杀毒软件进行扫描而受到感染，该怎么办呢？</p><p>为此，你可以使用另一张防病毒救援CD，有一些我们过去已经审查过了，比如卡巴斯基和阿维拉。聪明的是，如果您想要将这个额外的工具添加到您的PXE服务器上，这样您就再也不必寻找实用程序的CD了，那该怎么办呢？</p><p>我们已经做了跑腿工作，并发现，即使它需要一些TLA开机后，BitDefender救援CD到目前为止是最容易从上面的选项中获得PXEable的。</p><p>在“如何使用PXE设置网络可引导实用程序光盘”指南中，我们承诺将提供另一个“内核+Initrd+NFS方法”的示例，我们将交付。这里的原理与如何网络引导(PXE)Ubuntu LiveCD是一样的。</p><p>我们将从CD上取出文件，使它们通过NFS共享可用，并将PXE客户机指向此NFS共享作为其“根文件系统”。</p><p>服务器端设置</p><p>您要做的是重复Ubuntu LiveCD指南的How to Network Boot(PXE)中的步骤，即：</p><p>
+从Bitdefender的网站下载最新的ISO，并将其放入“/tftpboot/howtogeek/utils/”。
+创建装载点：
+sudo mkdir-p/tftpboot/howtogeek/utils/Bitdefender。
+
+编辑“fstab”文件，使ISO在引导时自动挂载：
+sudo vim/etc/fstab。
+
+将ISO装载条目附加到“fstab”：
+/tftpboot/howtogeek/utils/bitdefender-rescue-cd.iso/tftpboot/howtogeek/utils/Bitdefender Udf，iso9660用户，循环0 0。
+注：尽管有表示法，但这是一条不间断的线。
+通过执行以下命令测试装载点是否工作正常：
+SUDO MOUNT-A。
+
+如果一切正常，您应该能够通过发出以下命令列出ISO的内容：
+ls-lash/tftpboot/howtoek/utils/Bitdefender/。
+
+通过编辑“exports”文件创建NFS共享：
+SUDO VIM/ETC/EXPORTS。
+
+将指向我们的ISO挂载点的指针追加到它后面：
+/tftpboot/Howtogeek/utils/Bitdefender*(ro，sync，no_wDelay，INSECURE_LOCKS，NO_ROOT_Squash，INSECURE)。
+
+重新启动NFS服务以使设置生效：
+sudo/etc/init.d/nfs-kernel-server重启。
+
+通过编辑“Utils”菜单创建PXE菜单项：
+sudo vim/tftpboot/howgeek/menus/utils.cfg。
+
+在其后面附加以下内容：
+将BitDefender Rescue Live标记为。
+kernel howtogeek/utils/Bitdefender/casper/vmlinuz。
+附加文件=/cdrom/presed/ubuntu.Seed Boot=Casper initrd=howtogeek/utils/bitdefender/casper/initrd.gz Splash vga=791lang=us root=/dev/nfs netboot=nfs nfsroot=&lt;YOUR-SERVER-IP&gt;：/tftpboot/howtogeek/utils/bitdefender</p><p>也就是说，在服务器端，您的客户机应该已经准备好通过PXE引导到救援CD。</p><p>客户端使用情况</p><p>正如我们在概述中所说的，当您实际使用PXE引导与从CD模式引导的客户端进行引导时，此防病毒程序需要一些干预。</p><p>问题出在启动Linux的救援CD时设置/检测网络的方式，但修复方法相当简单。</p><img class="content_img" src="/image/16/16fcb7bc095cb5a87774523bc1bfdc50.png" /><p>单击确定并关闭此消息。</p><img class="content_img" src="/image/47/47a6c599e7f5a4ed73116be39353d7f2.png" /><img class="content_img" src="/image/06/0638b97a1db5b7c85590b33b04fb3572.png" /><p>进入午夜命令器后，进入“/etc/network”并编辑(使用F4)“interface”文件。</p><p>找到行“iface eth0inet Manual”，并将Manual替换为“dhcp”。</p><img class="content_img" src="/image/4d/4d75418317c13d14e6216e28cb8e5af8.png" /><p>通过按“F10”并在出现提示时选择“是”，在保存更改时退出“编辑模式”。</p><p>通过执行以下命令重新启动客户端网络：</p><p>如果一切顺利，您应该会看到您获得了一个IP地址，现在您可以使用BitDefender应用程序的更新功能了。</p><img class="content_img" src="/image/ae/ae4a6049fd7512eb6cbef3d2c0e75145.png" /><img class="content_img" src="/image/bf/bf76cbd858cc0f756c9ced048e5814e3.png" /><p>主要的图像是男爵松鼠拍摄的，其余的是由阿维亚德·拉维夫拍摄的。</p><p>别害怕，极客就在这里。</p><div class="item_info"><span class="item_key"><a href="/tag/nfs/">nfs</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/pxe/">pxe</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何使用脚本编辑器为Google应用程序增压</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何使用脚本编辑器为Google应用程序增压</h2></div><div class="content"><img class="content_img" src="/image/d4/d4ac77fc367224a126450f287ce67842.png" /><p>如果您使用Google Apps，那么您很可能没有充分使用它们。使用Google Apps Script，您可以添加自定义菜单和对话框，可以编写自定义函数和宏，还可以构建附加组件来扩展Google文档、工作表和幻灯片。</p><p>什么是Google Apps脚本？</p><p>Google Apps Script是一个基于云的开发平台，用于创建定制的轻量级Web应用程序。您可以直接在浏览器中构建可伸缩的应用程序，轻松地与Google产品集成。</p><p>应用程序脚本使用JavaScript语言，将Web开发和Google产品的熟悉度集中在一个地方，使其成为为您的企业、组织定制应用程序的完美工具，或者仅仅是自动化平凡的任务。</p><p>您可以使用Google Apps脚本制作两种类型的脚本：</p><p>
+独立：这些脚本没有绑定到任何服务-比如Google Docs、Sheet或幻灯片。它们可以执行系统范围的功能，有点像宏。它们不适合与更广泛的受众共享，因为您需要复制和粘贴代码才能使用它们。例如，在驱动器中搜索具有特定名称的文件，或查看谁有权访问驱动器中的共享文件和文件夹。
+绑定：所有这些都链接到Google Docs、Sheet、Forms或幻灯片文件。绑定脚本扩展了文件的功能，并且仅在该特定文件中执行操作。例如，向服务或脚本添加自定义菜单、对话框和侧栏，每当工作表中的特定单元格发生更改时，这些服务或脚本都会通过电子邮件向您发送通知。</p><p>如果您不太了解JavaScript，或者您以前可能从未听说过它，请不要因为此而害怕开发您自己的脚本。使用Apps script入门非常容易，因为它提供了丰富的文档和示例供您自己测试。下面是几个简单的示例，帮助您了解它们是如何工作的。</p><p>如何创建独立脚本</p><p>现在您知道了它们是什么，让我们继续创建您的第一个独立脚本。我们将使用来自Google的代码示例来帮助我们开始工作，如果您不熟悉GoogleScript或JavaScript，我们将提供代码行的解释。</p><p>前往Google Apps脚本。在左上角，点击汉堡图标，然后点击“新建脚本”。</p><img class="content_img" src="/image/52/52bb5f4ab5c2e29b42e9ca2f9e14b301.png" /><p>将打开一个新的无标题项目，其中包含一个空函数，但是因为我们使用的是Google的示例代码，所以您可以继续删除文件中的所有文本。</p><img class="content_img" src="/image/12/1228c2487aa990612cc3f6f3ad96451b.png" /><p>注意：您需要登录到您的Google帐户才能使用此脚本。</p><p>删除文件中预加载的代码后，粘贴以下代码：</p><code>//Initialize your function
+ function createADocument() {
+ 
+// Create a new Google Doc named 'Hello, world!'
+ var doc = DocumentApp.create('Hello, world!');
+ 
+// Access the body of the document, then add a paragraph.
+ doc.getBody().appendParagraph('This document was created by Google Apps Script.');
+ }</code><p>在运行代码之前，您必须保存脚本。单击“文件”，然后单击“保存”。</p><img class="content_img" src="/image/05/0544ee952a3051dd6aeafa124ea58762.png" /><p>将项目重命名为有助于您记住脚本功能的名称，然后单击“OK”。</p><img class="content_img" src="/image/51/51af180597c49a3d74340ada4fc9e753.png" /><p>若要运行代码，请单击工具栏中的“播放”图标。</p><img class="content_img" src="/image/92/92a9d0b83b49f32ec4cae9ab10974f80.png" /><p>您必须授予脚本一些权限，以便在您第一次单击“运行”后通过弹出窗口访问您的Google帐户。单击“查看权限”查看需要访问的内容。</p><img class="content_img" src="/image/c2/c253a020ee549be1a30681701767e49d.png" /><p>因为这不是谷歌认证的应用程序，你会收到另一条警告。它基本上是这样说的，除非你知道开发商(我们)只有在你信任他们的情况下才会继续。单击“高级”，然后单击“转到CreateNewDoc”(或您给此脚本命名的任何名称)。</p><img class="content_img" src="/image/2a/2a5b650d6e91f96293b6fb90ac37542b.png" /><p>查看脚本所需的权限，然后单击“允许”。</p><img class="content_img" src="/image/76/761f58c5d46c80cae8ed9abf62f8039f.png" /><p>太棒了！现在，去你的车道，如果一切正常，“你好，世界！”文件应该在那里。双击它以将其打开。</p><img class="content_img" src="/image/8d/8d54d0e0cb47d7fcfdb5c71180fa5b23.png" /><p>打开文件时，您将看到代码中的文本行添加到文档中。</p><img class="content_img" src="/image/2f/2f4d149eb4ce97c725af276bcab8beae.png" /><p>现在，如果您想在文档创建时收到电子邮件通知，您可以再添加几行代码，自动将通知发送到您的Google帐户。在.doc.getBody().appendParagraph(‘this document is create by Google Apps script.’)之后；但在最后一个大括号}之前添加以下代码行：</p><code>// Get the URL of the document.
+var url = doc.getUrl();
+// Get the email address of the active user - that's you.
+var email = Session.getActiveUser().getEmail();
+
+// Get the name of the document to use as an email subject line.
+var subject = doc.getName();
+
+// Append a new string to the "url" variable to use as an email body.
+var body = 'Link to your doc: ' + url;
+
+// Send yourself an email with a link to the document.
+GmailApp.sendEmail(email, subject, body);</code><p>单击“运行”图标。</p><img class="content_img" src="/image/92/92a9d0b83b49f32ec4cae9ab10974f80.png" /><p>因为您添加了几行额外的需要额外权限的行，所以您必须执行与以前相同的过程。“单击”查看权限“。”</p><img class="content_img" src="/image/c2/c253a020ee549be1a30681701767e49d.png" /><p>单击“高级”，然后单击“转到CreateNewDoc”。</p><img class="content_img" src="/image/2a/2a5b650d6e91f96293b6fb90ac37542b.png" /><p>注意：由于谷歌警告您不要启动未经验证的应用程序，您也会收到一封安全警报电子邮件，通知您。谷歌这样做是为了以防你不是那个授权访问未经验证的应用程序的人。</p><p>查看脚本所需的新权限集，然后单击“允许”。</p><img class="content_img" src="/image/d4/d482b55eaae735a11dd3fcd764766bf7.png" /><p>文档创建后，您会收到一封电子邮件，其中包含指向Google Drive中文件的链接。</p><img class="content_img" src="/image/2d/2d239f1c861fac0d14b4915920154bef.png" /><p>单击该链接可直接转到Google Drive中的文件。</p><img class="content_img" src="/image/2f/2f4d149eb4ce97c725af276bcab8beae.png" /><p>如何创建绑定脚本</p><p>对于下一个示例，让我们为Google Sheets创建一个绑定脚本，该脚本解析现有的工作表以查找行中的重复条目，然后删除它们。</p><p>如果您还记得前面的内容，绑定脚本的工作方式就像是特定文件的附加组件，所以要创建一个绑定脚本，让我们打开一个现有的Google Sheet电子表格，它至少包含一个重复的数据点。</p><img class="content_img" src="/image/2c/2c8f61d793a7c289463f18ddce730a48.png" /><p>单击“工具”，然后单击“脚本编辑器”。</p><img class="content_img" src="/image/9d/9d29f77828b75fb086b91eae6a0e3846.png" /><p>Google Apps脚本将在一个新选项卡中打开，其中包含一个空脚本。但是，这一次，脚本被绑定到从中打开它的工作表。</p><img class="content_img" src="/image/12/1228c2487aa990612cc3f6f3ad96451b.png" /><p>与前面一样，删除Empty函数并粘贴以下代码：</p><code>//Removes duplicate rows from the current sheet.
+
+ function removeDuplicates() {
+//Get current active Spreadsheet
+ var sheet = SpreadsheetApp.getActiveSheet();
+//Get all values from the spreadsheet's rows
+ var data = sheet.getDataRange().getValues();
+//Create an array for non-duplicates
+ var newData = [];
+//Iterate through a row's cells
+ for (var i in data) {
+   var row = data[i];
+   var duplicate = false;
+   for (var j in newData) {
+    if (row.join() == newData[j].join()) {
+     duplicate = true;
+    }
+  }
+//If not a duplicate, put in newData array
+ if (!duplicate) {
+  newData.push(row);
+ }
+}
+//Delete the old Sheet and insert the newData array
+ sheet.clearContents();
+ sheet.getRange(1, 1, newData.length, newData[0].length).setValues(newData);
+}</code><p>注意：要使脚本删除重复项，行中的所有单元格都必须匹配。</p><p>保存并重命名脚本，然后单击“运行”图标。</p><img class="content_img" src="/image/92/92a9d0b83b49f32ec4cae9ab10974f80.png" /><p>同样，正如您在上一个创建的脚本中遇到的那样，您必须检查您的脚本所需的权限，并授予它访问您的电子表格的权限。单击“查看权限”以查看此脚本需要哪些访问权限。</p><img class="content_img" src="/image/cd/cd8187ec34e07513d0c8c336314f7e5e.png" /><p>接受提示并单击“允许”以授权脚本。</p><img class="content_img" src="/image/2f/2ffcb575d857edf6756217f8672f7ccd.png" /><p>运行结束后，返回到您的工作表，就像变魔术一样，所有重复的条目都会从您的文件中消失！</p><img class="content_img" src="/image/bb/bb805df1e5c712bd45e2428719cde989.png" /><p>不幸的是，如果您的数据位于表中(如上面的示例)，则此脚本不会调整表的大小以适应其中的条目数量。</p><p>虽然这是如何使用Apps script的两个非常简单的示例，但选择几乎是无限的，这完全取决于您能从这些资源中想出什么。但是，在此期间，请前往GSuite Devs Github页面或Digital Inspiration，查看您可以在自己的服务中部署的示例脚本堆栈，以更好地了解Apps脚本真正能够做什么。</p><div class="item_info"><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/google/">google</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14323.html">如何在Windows上将Caps Lock用作修改键</a><li><a href="/story/13819.html">如何将GUI添加到Linux Shell脚本</a><li><a href="/story/13415.html">如何在Linux上使用yes命令</a><li><a href="/story/13147.html">如何在进程退出时自动关闭MacOS终端</a><li><a href="/story/11555.html">如何在Windows中自动键入带双空格的句点</a><li><a href="/story/10454.html">如何在Windows 10上创建和运行Bash Shell脚本</a><li><a href="/story/7708.html">如何配置Windows以更轻松地使用PowerShell脚本</a><li><a href="/story/7704.html">如何使用批处理文件使PowerShell脚本更易于运行</a><li><a href="/story/7410.html">愚蠢的极客小把戏：如何让你的电脑与你对话</a><li><a href="/story/7370.html">在Windows上使窗口始终在最上面的3种最佳方法</a><li><a href="/story/6987.html">如何用PowerShell生成随机姓名和电话号码</a><li><a href="/story/4528.html">如何在Ubuntu上交换两个和三个手指触摸板轻击动作</a><li><a href="/story/3339.html">使用此简单脚本通过右键单击将文件上载到FTP站点</a><li><a href="/story/3166.html">Shell脚本初学者指南2：for循环</a><li><a href="/story/3146.html">Shell脚本初学者指南：基础知识</a><li><a href="/story/3024.html">如何在Ubuntu中使用热键关闭显示器</a><li><a href="/story/2913.html">使用自动热键脚本的初学者指南</a><li><a href="/story/2843.html">构建您自己的自动文件更新系统</a><li><a href="/story/2841.html">轻松保留所有网络计算机上本地文件的镜像备份</a><li><a href="/story/2839.html">使用简单的脚本诊断Linux服务器负载问题</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

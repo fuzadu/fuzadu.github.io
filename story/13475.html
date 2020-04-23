@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何将Alexa添加到您的Smart Mirror</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何将Alexa添加到您的Smart Mirror</h2></div><div class="content"><p>如果你造了一面智能镜子，你就已经可以方便地访问日历、天气和新闻了。但你可以做的不止这些！Magic Mirror软件允许您添加额外功能的模块，如用于语音控制的Alexa。</p><p>其他开发人员创建这些模块。选项从有用的，如Alexa或存在检测(通过相机或被动红外传感器)到娱乐性的，如雪花和Spotify播放信息，不一而足。</p><p>我们推荐使用MMM-AWOWE-Alexa，因为它似乎由活跃的开发人员维护得很好，尽管还有其他适用于Magic Mirror软件的Alexa模块。</p><p>如果您更喜欢安装Google Assistant，Google提供了在Raspberry PI上安装Assistant的完整教程，包括步骤、图片和下载链接。虽然存在一些Google助手的Magic Mirror模块，但我们的调查显示这些模块存在问题，经常会崩溃或覆盖镜像信息。如果您想要最简单的设置，我们建议您添加Google AIY工具包并使用其特定的教程。</p><p>要安装大多数模块，您需要完成一些基本步骤：</p><p>
+从GitHub下载模块代码。
+配置特定于模块的选项。
+将模块添加到镜像配置</p><p>根据模块的不同，可能会或多或少涉及到步骤2和3。例如，设置Alexa需要比添加雪花更多的配置。此外，在下载模块之前，这个特定的Alexa模块需要安装一些额外的软件(依赖项)。</p><p>相关：如何打造自己的未来主义智能镜</p><p>您需要的材料</p><p>本指南假定您已经创建了智能镜像。如果你还没有开始，那就开始吧，但是要记住在你的成本和空间考虑中列出的额外材料。</p><p>
+已完成的智能镜。
+话筒。
+扬声器</p><p>对于麦克风和音箱，我们推荐原创的Google AIY语音套件。16美元，你很难找到更便宜的麦克风和扬声器组合。您不一定需要使用随附的纸板箱；将组件去掉，在镜子外面打开麦克风和扬声器可能会更有效。</p><p>谷歌AIY语音工具包还有第二个版本，但价格更高，而且还包括一个Raspberry Pi Zero，它的功能不足以运行唤醒单词或魔镜软件，所以你应该跳过它。</p><p>连接扬声器和麦克风，即可安装Alexa模块。如果您使用的是Google AIY套件，只需按照它的组装指南连接麦克风和扬声器组件即可。</p><p>安装模块依赖项</p><p>在下载和配置mmm-awong-Alexa之前，您需要安装模块依赖的几个依赖项。在尝试安装任何其他东西之前更新一下你的树莓PI总是一个好主意。在Raspberry PI上，首先运行以下命令：</p><code>sudo apt update && sudo apt upgrade</code><p>一旦您的Raspberry PI是最新的，请逐个运行以下命令：</p><code>sudo apt-get install sox libsox-fmt-all
+sudo apt-get install swig3.0 python-pyaudio python3-pyaudio sox
+pip install pyaudio
+sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg libav-tools
+sudo apt-get install libatlas-base-dev</code><p>每个命令都安装一个依赖项，它们都是运行所必需的。只需运行一个命令，等待下载和安装完成，然后运行下一个命令。</p><p>正在下载模块代码</p><p>为Magic Mirror添加任何模块的第一步是下载模块的代码Github。为此，您需要登录到Raspberry PI，打开终端，并将目录更改为存储模块的位置。然后，您将使用下载命令从Github拉取代码。如果您有shell访问权限，则可以远程完成所有这些操作。</p><p>打开终端后，键入以下内容：</p><code>cd ~/MagicMirror/modules
+</code><p>此命令将您移至Magic Mirror软件的模块文件夹的工作目录。每当您下载新模块时，您都会希望在这里保持一切井然有序。下一步是使用以下命令从Github下载软件：</p><code>git clone https://github.com/dolanmiu/MMM-awesome-alexa.git</code><p>完成后，使用以下命令将目录切换到模块：</p><code>cd MMM-awesome-alexa</code><p>Alexa模块需要一些额外的依赖项才能正常工作。运行以下命令以安装它们：</p><code>npm install --only=prod</code><p>现在，将目录切换到新创建的node_module文件夹：</p><code>cd node_modules</code><p>删除之前添加的命令的SnowBoy文件夹。我们需要一个更新版本的“雪童”：</p><code>rm -rf snowboy</code><p>接下来，我们将使用以下命令下载最新版本的SnowBoy：</p><code>git clone https://github.com/Kitt-AI/snowboy.git</code><p>在我们继续之前，请将目录切换到新的SnowBoy文件夹。</p><code>cd snowboy</code><p>现在，我们需要删除NODE_MODULES文件夹并安装一些额外的依赖项。在执行这些步骤时，请务必留在SnowBoy文件夹内；不要更改目录。逐个运行以下命令：</p><code>rm -rf node_modules
+npm install nan --save 
+npm install node-pre-gyp@0.12.0 --save 
+npm install 
+npm run prepublish 
+npm install --save-dev electron-rebuild 
+npm install nan 
+./node_modules/.bin/electron-rebuild</code><p>现在，该模块已完全下载并安装。</p><p>配置Alexa模块</p><img class="content_img" src="/image/4e/4e1f437e64f4a10a7807b651f3fcbd38.jpg" /><p>现在已经安装了mmm-awong-Alexa模块，我们需要对其进行配置。第一步是将目录更改为模块的根目录。在终端中键入以下命令，然后按Enter键：</p><code>cd ~/MagicMirror/modules/MMM-awesome-alexa</code><p>这个Alexa模块有一个配置帮助器；我们想要运行它。在端子类型中：</p><code>npm run config-helper</code><p>您将看到一个要求输入客户端ID的提示，因为您实际上是在设置一个定制的Echo，因此您需要打开浏览器并转到Alexa开发人员站点。然后使用您的亚马逊帐户登录。</p><p>登录后，单击“开始”按钮。您正在创建设备，因此单击“产品”，然后单击“创建产品”。</p><img class="content_img" src="/image/b7/b7b021f7fdf8a0c3b3a33d5b206dd718.jpg" /><p>在下一个屏幕上，为您的产品指定名称和产品ID-我们建议使用“Magic_Mirror_Alexa”作为名称，使用“YourFirstName_MM_Alexa”作为产品ID。为类别选择智能家居，并启用免提和远场选项。您将看到一系列是或否的问题，为所有问题选择“否”，然后单击“下一步”。</p><p>在安全配置文件屏幕上，单击“创建新配置文件”。对您的安全配置文件使用与产品ID相同的名称。然后键入您想要的任何描述，然后单击“下一步”。</p><p>检查协议并单击Finish。</p><p>单击新创建的产品，然后单击安全配置文件，您应该会看到客户端ID和客户端密码。</p><img class="content_img" src="/image/6b/6b8baf0b63bbbc74f561321802cecf29.jpg" /><p>在允许的返回URL条目中键入：
+https://magic-mirror-avs.github.io/Alexa-Web-Helper/authresponse</p><p>然后单击添加按钮。向下滚动并单击更新框以完成添加URL。</p><p>在终端中，您将看到输入客户端ID的提示。从浏览器复制客户端ID，将其粘贴到终端，然后按Enter键。现在终端将提示输入客户端密码。切换回浏览器，复制客户端密码，然后将其粘贴到终端并按Enter键。</p><p>提示输入设备ID时，输入上面创建的名称作为产品ID(在我们的示例中为Magic_Mirror_Alexa)。</p><p>当系统要求您提供返回URL时，请键入以下命令并按Enter键：</p><code>https://magic-mirror-avs.github.io/Alexa-Web-Helper/authresponse</code><p>终端将显示定制链接。将其复制并粘贴到您的浏览器中。如果出现提示，请使用您的亚马逊帐户登录。在下一个屏幕上单击Allow(允许)。</p><img class="content_img" src="/image/1f/1fd363fb1c8eedbc4b98367bcdc4e1ba.jpg" /><p>您将在浏览器上看到一个错误，但不要担心！这是意料之中的。滚动浏览错误页面的URL，找到“Code=xxxxxx”部分。</p><img class="content_img" src="/image/75/75cb3323b5fd4431d520e51629a143fe.png" /><p>复制出现在“code=”和“&scope”之间的字母和数字，并将它们粘贴到终端中。完成后按Enter键。</p><p>当系统询问您是否要生成MagicMirror配置时，键入Y，然后按Enter键。</p><p>系统将询问您使用哪个唤醒词。Alexa是默认选择，因此按Enter键。</p><p>对于使用精简模式和可视化，回答“不”。</p><p>配置帮助器将生成您的模块信息。它将如下所示：</p><code>{
+ module: "MMM-awesome-alexa",
+ position: "bottom_bar",
+ config: {
+ wakeWord: "Alexa",
+ clientId: "YOUR_CLIENT_ID",
+ clientSecret: "YOUR_CLIENT_SECRET",
+ deviceId: "YOUR_DEVICE_ID",
+ refreshToken: "YOUR_REFRESH_TOKEN",
+ lite: false,
+ isSpeechVisualizationEnabled: false
+ }
+ }
+</code><img class="content_img" src="/image/4f/4f1d68dbd1227670d1a76f08cbb1c6bf.png" /><p>复制这些行。我们需要将它们添加到魔镜配置中。</p><p>将Alexa模块添加到Magic Mirror配置</p><p>然后使用以下命令将目录切换到Magic Mirror配置文件夹：</p><p>CD~/MagicMirror/config</p><p>并使用Nano命令打开config.js：</p><p>Nano config.js</p><p>紧跟在}的第一个实例(模块的末尾)之后，按Enter在下一个{条目(新模块的开始)之前创建一个空行。</p><img class="content_img" src="/image/f5/f5dd8a8bfcac4da687b762c0f236e1de.png" /><p>在您创建的新空白行上，粘贴配置助手步骤中的模块代码。自动生成的代码确实有错误；您还需要在最后一个括号后键入逗号，以便您的模块以“}”结束。</p><img class="content_img" src="/image/2c/2cae3032a7c1e081135be2e1b05c1c40.png" /><p>使用Ctrl+x关闭该文件。出现提示时，键入“y”确认保存，然后按Enter键保持文件名不变。</p><p>模块完成。要在安装好模块的情况下重新启动Magic Mirror软件，请键入PM2Restart mm，Magic Mirror软件将重新启动。亚历克莎现在应该在你的魔镜上工作了。</p><p>这是您可以为魔镜设置的更复杂的模块之一。但对于其他模块，基本步骤是相同的，下载代码、配置特定于模块的选项、将模块添加到配置。你可以在镜子上添加雪花，或者进行运动检测，甚至可以显示你的谷歌照片。</p><div class="item_info"><span class="item_key"><a href="/tag/模块/">模块</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/alexa/">alexa</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/11204.html">如何在Excel中按字母顺序对工作表选项卡进行排序</a><li><a href="/story/5292.html">极客学校：了解如何扩展PowerShell</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

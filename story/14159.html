@@ -1,0 +1,79 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Bash中使用变量</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Bash中使用变量</h2></div><div class="content"><p>如果您想要编写脚本并了解您将要从Web上剪切和粘贴的代码将对您的Linux计算机造成什么影响，变量是至关重要的。我们会帮你开始的！</p><p>变量101</p><p>变量是命名符号，表示字符串或数字值。当您在命令和表达式中使用它们时，它们会被视为您键入的是它们持有的值，而不是变量的名称。</p><p>要创建变量，只需为其提供名称和值。您的变量名称应该是描述性的，并提醒您它们所包含的值。变量名不能以数字开头，也不能包含空格。但是，它可以以下划线开头。除此之外，您还可以使用任意组合的大小写字母数字字符。</p><p>实例</p><p>在这里，我们将创建五个变量。格式是键入名称、等号=和值。注意等号前后没有空格。为变量赋值通常被称为为变量赋值。</p><p>我们将在this_Year中创建四个字符串变量和一个数值变量：</p><code>me=Dave</code><code>my_boost=Linux</code><code>him=Popeye</code><code>his_boost=Spinach</code><code>this_year=2019</code><img class="content_img" src="/image/80/807efbe093311cfceec310017d6d554c.png" /><p>要查看变量中保存的值，请使用ECHO命令。无论何时引用变量名包含的值，都必须在变量名前面加上美元符号$，如下所示：</p><code>echo $my_name</code><code>echo $my_boost</code><code>echo $this_year</code><img class="content_img" src="/image/8a/8afb63b334ade283eb4faead1c6dc12e.png" /><p>让我们一次使用所有变量：</p><code>echo "$my_boost is to $me as $his_boost is to $him (c) $this_year"</code><img class="content_img" src="/image/19/198dd194385e4a746fb4a75d91659ca9.png" /><p>变量的值替换它们的名称。您还可以更改变量的值。要为变量赋一个新值，只需重复赋值第一个值时所做的操作，如下所示：</p><code>my_boost=Tequila</code><img class="content_img" src="/image/b4/b4f6e9b320e85e39410dfc94281f665b.png" /><p>如果重新运行前面的命令，现在会得到不同的结果：</p><code>echo "$my_boost is to $me as $his_boost is to $him (c) $this_year"</code><img class="content_img" src="/image/19/196bf3119371aa296513cafbe66a1e90.png" /><p>因此，如果更改变量中保存的值，则可以使用引用相同变量的相同命令并获得不同的结果。</p><p>我们稍后会讨论引用变量的问题。目前，以下是一些需要记住的事情：</p><p>
+单引号中的变量被视为文字字符串，而不是变量。
+引号“中的变量被视为变量。
+要获得保存在变量中的值，您必须提供美元符号$。
+不带美元符号$的变量仅提供变量名称。</p><img class="content_img" src="/image/03/0344bfd51deed8e6fdb4834ea75f9618.png" /><p>您还可以创建一个从现有变量或多个变量中获取其值的变量。以下命令定义一个名为Drink_of_the_Year的新变量，并为其分配My_Boost和This_Year变量的组合值：</p><code>drink_of-the_Year="$my_boost $this_year"</code><code>echo drink_of_the-Year</code><img class="content_img" src="/image/a2/a290478b3719eeff5692dca902d62143.png" /><p>如何在脚本中使用变量</p><p>没有变量，脚本将完全瘫痪。变量提供了灵活性，使脚本成为一般的解决方案，而不是特定的解决方案。为了说明不同之处，下面是一个对/dev目录中的文件进行计数的脚本。</p><p>在文本文件中键入以下内容，然后将其另存为fcnt.sh(表示“文件计数”)：</p><code>#!/bin/bash
+
+folder_to_count=/dev
+
+file_count=$(ls $folder_to_count | wc -l)
+
+echo $file_count files in $folder_to_count</code><p>在运行脚本之前，您必须使其可执行，如下所示：</p><code>chmod +x fcnt.sh</code><img class="content_img" src="/image/18/18f0cb2cfd319f9779bf00310a9e63d7.png" /><p>键入以下命令以运行该脚本：</p><code>./fcnt.sh</code><img class="content_img" src="/image/19/19c3d45c725a5178eb66131a12a526fb.png" /><p>这将打印/dev目录中的文件数。它是这样运作的：</p><p>
+定义了一个名为Folder_to_count的变量，并将其设置为保存字符串“/dev”。
+定义了另一个变量，名为“file_count”。此变量从命令替换中获取其值。这是圆括号$()之间的命令短语。注意在第一个括号前有一个美元符号$。此构造$()计算括号内的命令，然后返回它们的最终值。在本例中，该值被赋给FILE_COUNT变量。就FILE_COUNT变量而言，它传递了一个值来保存；它不关心该值是如何获得的。
+命令替换中计算的命令在Folder_to_count变量中的目录上执行ls文件列表，该变量已设置为“/dev”。因此，该脚本执行命令“ls/dev”。
+此命令的输出通过管道传递到wc命令。-l(行数)选项会使wc命令计算来自ls命令的输出中的行数。因为每个文件都列在单独的行上，所以这是“/dev”目录中的文件和子目录的计数。该值被赋给FILE_COUNT变量。
+最后一行使用ECHO输出结果。</p><p>但这只适用于“/dev”目录。我们如何才能使脚本与任何目录一起工作？只需做一个小小的更改即可。</p><p>如何在脚本中使用命令行参数</p><p>许多命令(如ls和wc)都接受命令行参数。它们为命令提供信息，因此它知道您想要它做什么。如果希望命令ls在您的主目录上工作并显示隐藏文件，可以使用以下命令，其中代字号~和-a(All)选项是命令行参数：</p><code>ls ~ -a</code><p>我们的脚本可以接受命令行参数。对于第一个参数，它们被引用为$1，对于第二个参数，它们被引用为$2，依此类推，对于第九个参数，它们最多被引用为$9。(实际上，也有0美元，但这是为始终保留脚本而保留的。)</p><p>您可以像引用常规变量一样在脚本中引用命令行参数。让我们修改我们的脚本，如下所示，并将其保存为新名称：fcnt2.sh：</p><code>#!/bin/bash
+
+folder_to_count=$1
+
+file_count=$(ls $folder_to_count | wc -l)
+
+echo $file_count files in $folder_to_count</code><p>这一次，为Folder_to_Count变量分配了第一个命令行参数$1的值。</p><p>脚本的其余部分完全像以前一样工作。现在，您的脚本不是特定的解决方案，而是一个通用的解决方案。您可以在任何目录上使用它，因为它没有硬编码为只与“/dev”一起使用。</p><p>下面是如何使脚本成为可执行的：</p><code>chmod +x fcnt2.sh</code><img class="content_img" src="/image/c2/c27f9aaddcc404eb72594a133b819228.png" /><p>现在，尝试使用几个目录。您可以先做“/dev”，以确保得到与之前相同的结果。键入以下内容：</p><code>./fnct2.sh /dev</code><code>./fnct2.sh /etc</code><code>./fnct2.sh /bin</code><img class="content_img" src="/image/27/27e23b4523914d912b1ac84e74751ffb.png" /><p>您将获得与之前“/dev”目录相同的结果(207个文件)。这是令人鼓舞的，您可以获得其他每个命令行参数特定于目录的结果。</p><p>要缩短脚本，您可以完全省略变量Folder_to_Count，只在整个脚本中引用$1，如下所示：</p><code>#!/bin/bash 
+
+file_count=$(ls $1  wc -l) 
+
+echo $file_count files in $1</code><p>使用特殊变量</p><p>我们提到了$0，它总是设置为脚本的文件名。这允许您使用该脚本执行诸如正确打印其名称之类的操作，即使它已重命名。这在日志记录情况下非常有用，在这种情况下，您希望知道添加条目的进程的名称。</p><p>以下是其他特殊预设变量：</p><p>
+$#：向脚本传递了多少个命令行参数。
+$@：传递给脚本的所有命令行参数。
+$？：要运行的最后一个进程的退出状态。
+$$：当前脚本的进程ID(PID)。
+$user：执行脚本的用户的用户名。
+$HOSTNAME：运行脚本的计算机的主机名。
+$Second：脚本已运行的秒数。
+$Random：返回随机数。
+$LINENO：返回脚本的当前行号。</p><p>你想把它们都放在一个剧本里，不是吗？你可以的!。将以下内容另存为文本文件，名为.Special.sh：</p><code>#!/bin/bash
+
+echo "There were $# command line parameters"
+echo "They are: $@"
+echo "Parameter 1 is: $1"
+echo "The script is called: $0"
+# any old process so that we can report on the exit status
+pwd
+echo "pwd returned $?"
+echo "This script has Process ID $$"
+echo "The script was started by $USER"
+echo "It is running on $HOSTNAME"
+sleep 3
+echo "It has been running for $SECONDS seconds"
+echo "Random number: $RANDOM"
+echo "This is line number $LINENO of the script"</code><p>键入以下内容以使其可执行：</p><code>chmod +x special.sh</code><img class="content_img" src="/image/7c/7cc59f8775f3fc07369ae2d9eb646d37.png" /><p>现在，您可以使用一组不同的命令行参数运行它，如下所示。</p><img class="content_img" src="/image/a5/a54a239c496cc3dfbd6e5655fd997b83.png" /><p>环境变量</p><p>Bash使用环境变量来定义和记录它在启动时创建的环境的属性。这些保存信息Bash可以很容易地访问，比如您的用户名、区域设置、您的历史文件可以保存的命令数、您的默认编辑器等等。</p><p>要查看Bash会话中的活动环境变量，请使用以下命令：</p><code>env | less</code><img class="content_img" src="/image/31/314818e565c8728cf25ba3e3f8c7a523.png" /><p>如果您浏览该列表，您可能会发现一些对在脚本中引用很有用的内容。</p><img class="content_img" src="/image/46/466e668ffb0f9ca405e345e675b41a25.png" /><p>如何导出变量</p><p>当脚本运行时，它在自己的进程中，它使用的变量在该进程之外不可见。如果要与脚本启动的另一个脚本共享变量，则必须导出该变量。我们将通过两个脚本向您展示如何做到这一点。</p><p>首先，使用文件名：脚本_one.sh保存以下内容：</p><code>#!/bin/bash
+
+first_var=alpha
+second_var=bravo
+
+# check their values
+echo "$0: first_var=$first_var, second_var=$second_var"
+
+export first_var
+export second_var
+
+./script_two.sh
+
+# check their values again
+echo "$0: first_var=$first_var, second_var=$second_var"</code><p>这将创建两个变量，first_var和Second_var，并为其赋值。它将这些输出到终端窗口，导出变量，然后调用scripttwo.sh。当script_two.sh终止时，流程返回到此脚本，它会再次将变量打印到终端窗口。然后，您可以查看它们是否发生了变化。</p><p>我们将使用的第二个脚本是script_two.sh。这是脚本脚本_one.sh调用的脚本。键入以下内容：</p><code>#!/bin/bash
+
+# check their values
+echo "$0: first_var=$first_var, second_var=$second_var"
+
+# set new values
+first_var=charlie
+second_var=delta
+
+# check their values again
+echo "$0: first_var=$first_var, second_var=$second_var"</code><p>第二个脚本打印两个变量的值，为它们分配新值，然后再次打印它们。</p><p>要运行这些脚本，您必须键入以下内容以使其可执行：</p><code>chmod +x script_one.sh
+chmod +x script_two.sh</code><img class="content_img" src="/image/f9/f983f65298bb436b01b62bd99b17386a.png" /><p>现在，键入以下命令以启动script_one.sh：</p><code>./script_one.sh</code><img class="content_img" src="/image/95/95d0cb5998345b6d3d940da2464e4c47.png" /><p>以下是输出告诉我们的信息：</p><p>
+script_one.sh打印变量的值，即alpha和bravo。
+script_two.sh在收到变量(alpha和bravo)时打印它们的值。
+script_two.sh将它们更改为Charlie和Delta。
+script_one.sh打印变量的值，它们仍然是alpha和bravo。</p><p>在第二个脚本中发生了什么，停留在第二个脚本中，就像变量的副本被发送到第二个脚本，但当该脚本退出时，它们会被丢弃。第一个脚本中的原始变量不会因第二个脚本中它们的副本发生任何变化而改变。</p><p>如何引用变量</p><p>您可能已经注意到，当脚本引用变量时，它们都在引号中“。这使得变量可以被正确引用，因此在脚本中执行该行时会使用它们的值。</p><p>如果分配给变量的值包括空格，则当您将空格分配给变量时，空格必须放在引号中。这是因为在默认情况下，Bash使用空格作为分隔符。</p><p>这里有一个例子：</p><code>site_name=How-To Geek</code><img class="content_img" src="/image/3a/3a3d6c4d135f90bf8c97d0a76f46dd1c.png" /><p>Bash将“Geek”前面的空格视为新命令正在启动的指示。它报告没有这样的命令，并放弃该线路。ECHO告诉我们，SITE_NAME变量没有保存任何内容-甚至连“How-to”文本都没有。</p><p>用引号将值引起来，再试一次，如下所示：</p><code>site_name="How-To Geek"</code><img class="content_img" src="/image/0d/0df11120c57abf6ce5e6aaf0e10a66ab.png" /><p>这一次，它被识别为单个值，并正确分配给SITE_NAME变量。</p><p>艾可是你的朋友</p><p>习惯命令替换、引用变量以及记住何时包含美元符号可能需要一些时间。</p><p>在按Enter键并执行一行Bash命令之前，请尝试一下，并在其前面加上ECHO。这样，你就可以确保将要发生的事情是你想要的。您还可以捕获语法中可能出现的任何错误。</p><div class="item_info"><span class="item_key"><a href="/tag/变量/">变量</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/命令/">命令</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/5395.html">极客学派：学习PowerShell变量、输入和输出</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

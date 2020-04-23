@@ -1,0 +1,76 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何使用Linux的ar命令创建静态库</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何使用Linux的ar命令创建静态库</h2></div><div class="content"><p>在开发软件时，使用Linux的jar命令创建函数库。本教程将通过示例代码向您展示如何创建、修改和在程序中使用静态库。</p><p>AR司令部是一个真正的老兵，它从1971年就开始存在了。名称ar引用了该工具最初的预期用途，即创建归档文件。存档文件是单个文件，用作其他文件的容器。有时用于许多其他文件。可以向存档添加文件、从存档中删除文件或从存档中提取文件。寻找这类功能的人们不再求助于ar。这一角色已经被其他公用事业公司取代，如tar。</p><p>不过，ar命令仍用于少数专业用途。AR用于创建静态库。这些在软件开发中使用。ar还用于创建包文件，如Debian Linux发行版中使用的“.deb”文件及其衍生产品(如Ubuntu)。</p><p>我们将演练创建和修改静态库所需的步骤，并演示如何在程序中使用库。要做到这一点，我们需要满足静态库的要求。此库的目的是对文本字符串进行编码，并对编码的文本进行解码。</p><p>请注意，出于演示目的，这是一次快速而肮脏的黑客攻击。不要对任何有价值的东西使用这种加密。这是世界上最简单的替代密码，A变成B，B变成C，以此类推。</p><p>相关：如何在Linux上使用tar命令压缩和解压缩文件</p><p>cipher_encode()和cipher_decode()函数</p><p>我们将在一个名为“library”的目录中工作，稍后我们将创建一个名为“test”的子目录。</p><p>我们在此目录中有两个文件。在名为cipher_encode.c的文本文件中，我们有cipher_encode()函数：</p><code>void cipher_encode(char *text)
+{
+ for (int i=0; text[i] != 0x0; i++) {
+   text[i]++;
+ }
+
+} // end of cipher_encode</code><p>相应的cipher_decode()函数位于名为cipher_decde.c的文本文件中：</p><code>void cipher_decode(char *text)
+{
+ for (int i=0; text[i] != 0x0; i++) {
+   text[i]--;
+ }
+
+} // end of cipher_decode</code><p>包含编程指令的文件称为源代码文件。我们将创建一个名为libcipher.a的库文件。它将包含这两个源代码文件的编译版本。我们还将创建一个名为libcipher.h的短文本文件。这是一个头文件，其中包含新库中两个函数的定义。</p><p>拥有该库和头文件的任何人都可以在自己的程序中使用这两个函数。他们不需要重新发明轮子和重写函数；他们只需利用我们库中的副本。</p><p>编译cipher_encode.c和cipher_decde.c文件</p><p>为了编译源代码文件，我们将使用标准GNU编译器GCC。c(编译，无链接)选项告诉GCC编译文件，然后停止。它从每个源代码文件生成一个中间文件，称为对象文件。GCC链接器通常获取所有目标文件，并将它们链接在一起以生成可执行程序。我们使用-c选项跳过了这一步。我们只需要目标文件。</p><p>让我们检查一下我们有没有我们认为有的文件。</p><code>ls -l</code><img class="content_img" src="/image/38/38bb2adb93cb3d6ba84a94f37aa1f31d.png" /><p>这两个源代码文件位于此目录中。我们用GCC把它们编译成目标文件。</p><code>gcc -c cipher_encode.c</code><code>gcc -c cipher_decode.c</code><p>如果一切顺利，应该不会有GCC的输出。</p><img class="content_img" src="/image/4d/4df422d1b9e5c00a1969723eccc2659c.png" /><p>这将生成两个与源代码文件同名但扩展名为“.o”的目标文件。这些是我们需要添加到库文件中的文件。</p><code>ls -l</code><img class="content_img" src="/image/7d/7d312fbb667aeaafdf095b01e86ef274.png" /><p>创建libcipher.a库</p><p>要创建库文件(实际上是存档文件)，我们将使用ar。</p><p>我们使用-c(CREATE)选项创建库文件，使用-r(ADD WITH REPLACE)选项将文件添加到库文件，使用-s(INDEX)选项创建库文件内文件的索引。</p><p>我们将把库文件命名为libcipher.a。我们在命令行上提供该名称，以及要添加到库中的目标文件的名称。</p><code>ar -crs libcipher.a cipher_encode.o cipher_decode.o</code><img class="content_img" src="/image/a0/a0e75beb111a909a89c4fcf0f3a2b7fe.png" /><p>如果我们列出目录中的文件，我们将看到现在有了一个libcipher.a文件。</p><p>LS-l</p><img class="content_img" src="/image/53/53b83fa08826b21d6e1713118adb0041.png" /><p>如果我们将-t(表)选项与ar一起使用，我们可以看到库文件中的模块。</p><code>ar -t libcipher.a</code><img class="content_img" src="/image/2d/2d88c4b405e778ef92bcc09589b5ae09.png" /><p>创建libcipher.h头文件</p><p>libcipher.h文件将包含在使用libcipher.a库的任何程序中。但libcipher.h文件必须包含库中函数的定义。</p><p>要创建头文件，我们必须在文本编辑器(如Gedit)中键入函数定义。将文件命名为“libcipher.h”，并将其保存在与libcipher.a文件相同的目录中。</p><code>void cipher_encode(char *text);
+void cipher_decode(char *text);</code><p>使用libcipher库</p><p>测试我们的新库的唯一可靠方法是编写一个小程序来使用它。首先，我们将创建一个名为test的目录。</p><code>mkdir test</code><p>我们将把库文件和头文件复制到新目录中。</p><code>cp libcipher.* ./test</code><p>我们将切换到新目录。</p><code>cd test</code><p>让我们检查一下我们的两个文件是否在这里。</p><code>ls -l</code><img class="content_img" src="/image/4f/4f8978fc62e9df8e880e44a4c3410968.png" /><p>我们需要创建一个可以使用库的小程序，并证明它按预期运行。在编辑器中键入以下文本行。将编辑器的内容保存到test目录中名为“test.c”的文件中。</p><code>#include <stdio.h>
+#include <stdlib.h>
+
+#include "libcipher.h"
+
+int main(int argc, char *argv[])
+{
+ char text[]="How-To Geek loves Linux";
+
+ puts(text);
+
+ cipher_encode(text);
+ puts(text);
+
+ cipher_decode(text);
+ puts(text);
+
+ exit (0);
+
+} // end of main</code><p>程序流程非常简单：</p><p>
+它包括libcipher.h文件，以便它可以看到库函数定义。
+它创建一个名为“text”的字符串，并在其中存储“How-to Geek Love Linux”字样。
+它会将该字符串打印到屏幕上。
+它调用cipher_encode()函数对字符串进行编码，并将编码后的字符串打印到屏幕上。
+它调用cipher_decode()对字符串进行解码，并将解码后的字符串打印到屏幕上。</p><p>要生成测试程序，我们需要编译test.c程序并链接到库中。o(输出)选项告诉GCC它生成的可执行程序的名称。</p><code>gcc test.c libcipher.a -o test</code><img class="content_img" src="/image/95/95d6dc716c7bdff9241304f248fac958.png" /><p>如果GCC默默地让你回到命令提示符，那就万事大吉了。现在让我们测试一下我们的程序。关键时刻：</p><code>./test</code><img class="content_img" src="/image/88/8827d4cef14b662d00467c0fa70fb07e.png" /><p>我们看到了预期的产量。测试程序打印纯文本，打印加密文本，然后打印解密文本。它正在使用我们新库中的函数。我们的图书馆正在运转。</p><img class="content_img" src="/image/9d/9d74b67bbf8789c57230efb2480b3164.png" /><p>成功。但为什么要止步于此呢？</p><p>将另一个模块添加到库中</p><p>让我们向库中添加另一个函数。我们将添加一个函数，程序员可以使用该函数来显示他们正在使用的库的版本。我们需要创建新函数、编译它，并将新的目标文件添加到现有的库文件中。</p><p>在编辑器中键入以下行。1将编辑器的内容保存到库目录中名为cipher_version.c的文件中。</p><code>#include <stdio.h>
+
+void cipher_version(void)
+{
+ puts("How-To Geek :: VERY INSECURE Cipher Library");
+ puts("Version 0.0.1 Alpha\n");
+
+} // end of cipher_version</code><p>我们需要将新函数的定义添加到libcipher.h头文件中。在该文件的底部添加新行，使其如下所示：</p><code>void cipher_encode(char *text);
+void cipher_decode(char *text);
+void cipher_version(void);</code><p>保存修改后的libcipher.h文件。</p><p>我们需要编译cipher_version.c文件，以便拥有cipher_version.o目标文件。</p><code>gcc -c cipher_version.c</code><img class="content_img" src="/image/59/59c57011b80d3909cb30509fb7215253.png" /><p>这将创建一个cipher_version.o文件。我们可以使用以下命令将新对象文件添加到libcipher.a库中。v(详细)选项让通常不说话的ar告诉我们它做了什么。</p><code>ar -rsv libcipher.a cipher_version.o</code><img class="content_img" src="/image/38/38283aef81814b2219e18438eef55681.png" /><p>新对象文件将添加到库文件中。AR打印确认。“a”表示“添加”。</p><img class="content_img" src="/image/a4/a4b89614e7d4d599bf222a5f47b5870b.png" /><p>我们可以使用-t(表)选项来查看库文件中有哪些模块。</p><code>ar -t libcipher.a</code><img class="content_img" src="/image/b9/b9e01f8d090f52dfbf0bd3189959d630.png" /><p>现在，我们的库文件中有三个模块。让我们利用一下新功能吧。</p><p>使用cipher_version()函数。</p><p>让我们从test目录中删除旧库和头文件，复制新文件，然后切换回test目录。</p><p>我们将删除旧版本的文件。</p><code>rm ./test/libcipher.*</code><p>我们将把新版本复制到测试目录中。</p><code>cp libcipher.* ./test</code><p>我们将切换到测试目录。</p><code>cd test</code><img class="content_img" src="/image/f6/f694aad5da7e4e473c1bb368c9d407f7.png" /><p>现在我们可以修改test.c程序，使其使用新的库函数。</p><p>我们需要向test.c程序添加调用cipher_version()函数的新行。我们将把它放在第一个put(Text)；行之前。</p><code>#include <stdio.h>
+#include <stdlib.h> 
+
+#include "libcipher.h" 
+
+int main(int argc, char *argv[]) 
+{
+ char text[]="How-To Geek loves Linux"; 
+
+ // new line added here
+ cipher_version(); 
+
+ puts(text); 
+ 
+ cipher_encode(text); 
+ puts(text); 
+ 
+ cipher_decode(text); 
+ puts(text); 
+
+ exit (0); 
+
+} // end of main</code><p>将其另存为test.c。我们现在可以编译它并测试新函数是否可操作。</p><code>gcc test.c libcipher.a -o test</code><img class="content_img" src="/image/28/288ce237d7fe92eb3c485227f3af2f8b.png" /><p>让我们运行新版本的test：</p><img class="content_img" src="/image/f2/f26cd12028b1a6621d6dc4d62f5b3263.png" /><p>这项新功能正在发挥作用。我们可以在test的输出开始处看到库的版本。</p><p>但可能存在一个问题。</p><p>更换库中的模块</p><p>这不是该库的第一个版本，而是第二个版本。我们的版本号不正确。第一个版本中没有cipher_version()函数。这个可以。所以这应该是版本“0.0.2”。我们需要用更正后的函数替换库中的cipher_version()函数。</p><p>谢天谢地，AR让这件事变得非常容易。</p><p>首先，让我们编辑库目录中的cipher_version.c文件。将“Version 0.0.1 Alpha”文本更改为“Version 0.0.2 Alpha”。应该如下所示：</p><code>#include <stdio.h>
+
+void cipher_version(void)
+{
+ puts("How-To Geek :: VERY INSECURE Cipher Library");  
+ puts("Version 0.0.2 Alpha\n"); 
+
+} // end of cipher_version</code><p>保存此文件。我们需要重新编译它以创建一个新的cipher_version.o目标文件。</p><code>gcc -c cipher_version.c</code><img class="content_img" src="/image/59/59c57011b80d3909cb30509fb7215253.png" /><p>现在，我们将用新编译的版本替换库中现有的cipher_version.o对象。</p><p>我们以前使用过-r(Add With Place)选项，将新模块添加到库中。当我们将其与库中已有的模块一起使用时，ar将用新版本替换旧版本。-s(Index)选项将更新库索引，-v_s(详细)选项将使Jar告诉我们它做了什么。</p><code>ar -rsv libcipher.a cipher_version.o</code><img class="content_img" src="/image/57/57f357a0382ee4725dcdea1fb5bdcd22.png" /><p>这一次，ar报告它已经替换了cipher_version.o模块。“r”表示已替换。</p><img class="content_img" src="/image/f9/f9f6eb0a7e81beaf1584767009214a82.png" /><p>使用更新的cipher_version()函数</p><p>我们应该使用修改后的库，并检查它是否正常工作。</p><p>我们将把库文件复制到test目录。</p><code>cp libcipher.* ./test</code><p>我们将切换到测试目录。</p><code>cd ./test</code><p>我们需要用新的库重新编译我们的测试程序。</p><code>gcc test.c libcipher.a -o test</code><p>现在我们可以测试我们的程序了。</p><code>./test</code><img class="content_img" src="/image/84/84d6a7b1c0a175b5f85555b93df3739b.png" /><p>测试程序的输出符合我们的预期。版本字符串中显示了正确的版本号，并且加密和解密例程正在工作。</p><p>从库中删除模块</p><p>经过这一切似乎很遗憾，但是让我们从库文件中删除cipher_version.o文件。</p><p>为此，我们将使用-d(删除)选项。我们还将使用-v(详细)选项，这样ar就会告诉我们它做了什么。我们还将包括-s(索引)选项来更新库文件中的索引。</p><code>ar -dsv libcipher.a cipher_version.o</code><img class="content_img" src="/image/4f/4f15cfd61c98cd296ad859829cd2f809.png" /><p>AR报告它已卸下该模块。“d”表示“已删除”。</p><p>如果我们要求ar列出库文件中的模块，我们将看到我们返回到两个模块。</p><code>ar -t libcipher.a</code><img class="content_img" src="/image/a9/a9fec97cb3829b1f551b2cc2b252df88.png" /><p>如果要从库中删除模块，请记住从库头文件中删除它们的定义。</p><p>共享您的代码</p><p>库以一种实用但私有的方式使代码可共享。您向其提供库文件和头文件的任何人都可以使用您的库，但您的实际源代码仍然是私有的。</p><div class="item_info"><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/ar/">ar</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14797.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14796.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14627.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14624.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14550.html">如何在Linux上使用Tail命令</a><li><a href="/story/14514.html">您想知道的关于Linux上的inode的所有信息</a><li><a href="/story/14471.html">如何在Google Drive中更改文件所有者</a><li><a href="/story/14454.html">如何在Linux上使用stat命令</a><li><a href="/story/14347.html">如何使用cURL从Linux命令行下载文件</a><li><a href="/story/14306.html">如何创建USB驱动器的映像</a><li><a href="/story/14240.html">如何在Linux上使用LESS命令</a><li><a href="/story/14188.html">如何最终确定和撤销对共享Google文件的访问</a><li><a href="/story/14167.html">如何共享指向您的Google文件的“复制”链接</a><li><a href="/story/14164.html">如何将Google文档、工作表或幻灯片文件共享为网页</a><li><a href="/story/14127.html">如何在iPhone和iPad上将文件复制和备份到外部存储</a><li><a href="/story/14024.html">如何快速搜索Google Drive</a><li><a href="/story/13983.html">如何在Linux上使用chown命令</a><li><a href="/story/13968.html">如何将音乐复制到Android手机</a><li><a href="/story/13912.html">你能在Windows PC或Android手机上使用AirDrop吗？</a><li><a href="/story/13883.html">如何在PowerPoint演示文稿中使用iTunes音乐</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

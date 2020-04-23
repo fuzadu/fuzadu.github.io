@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何摆脱wmpscfgs.exe病毒，读者投稿指南</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何摆脱wmpscfgs.exe病毒，读者投稿指南</h2></div><div class="content"><p>How-to Geek读者Kan写了一份完整的指南，告诉我们如何摆脱令人讨厌的wmpscfgs.exe病毒，我们认为我们应该把它分享给每个人，以防其他人在未来遇到同样的问题。</p><p>请注意，这是一个特定的清除特定病毒的指南，并由特定的读者进行了测试。我们没有亲自测试这些步骤。</p><p>wmpscfgs.exe病毒的症状</p><p>
+如果您有Malwarebytes或SuperAntiSpyware软件，这些人会在每次扫描时检测到它，并会尝试删除此病毒。但病毒在重启后就会卷土重来。即使是安全模式引导(带或不带网络)也不起作用。
+一条关于IE不是您的默认浏览器的警告将始终弹出，甚至不需要单击或打开IE。我不建议单击是或否。只需将窗口移动到显示器的某个角落，即可查看下面的解决方案。
+Windows UAC将行为不正常，并将继续提示您是否要执行以前执行的启动程序。这为我泄露了病毒，因此我开始扫描和调查。如果您尝试允许一个，UAC将被禁用。奇怪的是，如果你启用了它，windows不会提示你重新启动，这也说明有问题！因为更改UAC设置肯定会要求重新启动。
+Microsoft Security Essentials将检测到您的启动程序(病毒软件、反间谍软件/恶意软件等)是否为病毒，并将其标记为病毒。又一次泄露了事情大错特错的事实！</p><p>如果你有上述症状，你很可能感染了我昨天感染的病毒。以下是你可以做的摆脱它的方法。不要担心扫描，因为扫描仪不能完全修复您的问题，最终会损坏您的应用程序。</p><p>
+在安全模式下引导。这是因为在安全模式下没有多少进程在运行。您需要在下面的步骤9中进行此设置，因为此病毒是一种令人讨厌的病毒。
+打开windows资源管理器，然后转到“工具”-&gt;“文件夹选项”。单击a.确保勾选了以下选项-&gt;显示隐藏的文件和文件夹。b.确保以下选项未勾选-&gt;隐藏已知文件类型的扩展名。
+转到以下目录(这是Vista Home Premium的目录)：*C：\Program Files\Internet Explorer**C：\Users\User\AppData\Local\Temp*C：\Users\User\AppData\Local\Temp**，您会在那里看到一个名为wmpscfgs.exe的文件。删除它们。
+打开您的任务管理器，确保勾选了“显示所有进程”，并查找相同的进程。如果它正在运行。杀了它。</p><p>从这一部分开始，STEP需要更多的技术经验。如果您在执行以下步骤时感到不舒服，请寻找可以帮助您的人。</p><p>
+打开Regedit并转到：*HKLM-&gt;软件-&gt;Microsoft-&gt;Windows-&gt;CurrentVersion-&gt;Run。
+查找包含数据“%ProgramFiles%\Internet Explorer\wmpscfgs.exe”的Adobe_Reader条目。删掉它。对我来说，从现在开始，几乎所有写在网上的东西都没有下面的步骤。这就是这种病毒不断卷土重来的原因。
+希望您在“HKLM-&gt;软件-&gt;Microsoft-&gt;Windows-&gt;CurrentVersion-&gt;Run”下没有太多的应用程序。因为你必须逐个访问它们，因为这个病毒几乎劫持了上面运行列表中的所有应用程序。
+基本上，它将旧的exe文件从比如“mcagent.exe”重命名为“mcagent.exe”。在文件名和“.exe”或扩展名之间使用空格。然后，它将使用与您的可执行文件相同的文件名创建自身的副本，以便当有人执行您的文件时，病毒将首先执行，然后再执行您的文件。它将对您运行列表中的所有应用程序执行此操作。
+因此，如果您转到McAfee mcagent.exe应用程序的位置，您将看到两到三个文件具有几乎相同的文件名：
+
+mcagent.exe安装了一个39 KB的文件wmpscfgs.exe，它是最近创建的，它是不断添加回wmpscfgs.exe文件的病毒。
+mcagent.exe将原来的mcagent文件重命名为mcagent文件。
+mcagent.exe.delme&lt;某个随机数&gt;也删除这个。我不是每次都看到这种情况，但我看到过一些应用程序，其中包含这个文件，而且是最近创建的。
+
+如果受感染的文件在任务管理器中运行，您首先需要杀死相应的进程，手动删除仅约39KB的现有.exe文件，并将旧的可执行文件重命名回其以前的文件名。对上面运行列表中的每个应用程序重复此操作。我看到这个病毒唯一没有感染的是windows defender应用程序。我跑步清单上的其他人都搞砸了。卸载并重新安装它们无济于事，以前的特洛伊木马exe文件将保留在应用程序目录中。
+这就是为什么Microsoft Security Essentials抱怨您的启动可执行文件是病毒的原因。
+验证运行列表中的每个应用程序都已恢复后。要完全确定您的系统中没有任何此类文件，请对最近创建的、大小为39KB的任何文件进行驱动器搜索，并仔细检查每个文件是否只是原始可执行文件的副本。对于每次出现的情况，请执行步骤7。到目前为止，我只看到这个病毒附着到可执行文件中。
+如果你想百分之百确定，接下来你需要做的就是仔细检查任务管理器中运行的每个进程是否合法。一些进程，特别是那些由系统启动的进程将不能带你到它的进程文件，这是可以的，但大多数进程如果你右击它们，你应该会看到一个名为“打开文件位置”的选项。然后按照上面的步骤7操作。
+重新启动，就是这样！</p><p>感谢读者菅直人写下了这本指南，希望它能对其他人有所帮助！</p><div class="item_info"><span class="item_key"><a href="/tag/病毒/">病毒</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/进程/">进程</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/6249.html">并非所有的“病毒”都是病毒：解释10个恶意软件术语</a><li><a href="/story/4784.html">防病毒软件的工作原理</a><li><a href="/story/2542.html">愚蠢的极客花招：用记事本制作你自己的假病毒</a><li><a href="/story/1805.html">从Ubuntu Live CD扫描Windows PC中的病毒</a><li><a href="/story/1535.html">修复伪造的UPS跟踪号病毒重启您的机器</a><li><a href="/story/1002.html">重要提示：如何扫描和删除恶意病毒</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

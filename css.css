@@ -1,0 +1,100 @@
+
+#header {
+    margin-bottom: 20px;
+}
+
+#header a {
+    text-decoration: none;
+    color:black;
+    font-size: 36px;
+}
+
+a {
+    color: #0000ff;
+    text-decoration: underline;
+}
+a:hover {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+a:active {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #0000ff;
+    text-decoration: underline;
+}
+
+#header a:link 
+
+.site_title {
+    font-size: 42px;
+}
+
+#list {
+    margin-top: 20px;
+}
+
+#footer {
+    margin-top: 20px;
+}
+
+#pager {
+    margin-top: 20px;
+}
+
+#pager .pager_node {
+    margin-right: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: burlywood;
+}
+
+#pager .pager_active {
+    background-color: coral;
+}
+
+.pager_active a {
+    text-decoration: none;
+}
+
+.pager_node a {
+    font-size: 12px;
+}
+
+/* ITEM */
+.item {
+    margin-top: 5px;
+    border-bottom: #0000ff;
+    margin-bottom: 5px;
+}
+.item_title {
+    margin-top: 3px;
+}
+.item_title a {
+    font-size: 14px;
+}
+
+.item_info {
+    margin-top: 3px;
+}
+.item_key {
+    padding:0px;
+    padding-left: 3px;
+    padding-right: 3px;
+    margin-right: 3px;
+    background-color: burlywood;
+}
+.item_key a {
+    font-size: 11px;
+}
+
+/* content */
+.content {
+    margin-top: 20px;
+}

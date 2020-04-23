@@ -1,0 +1,111 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上使用netstat</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上使用netstat</h2></div><div class="content"><p>Linux netstat命令为您提供了有关网络连接、正在使用的端口以及使用它们的进程的信息宝库。学习如何使用它。</p><p>端口、进程和协议</p><p>网络套接字可以连接，也可以等待连接。连接使用网络协议，如传输控制协议(TCP)或用户数据报协议UDP。它们使用Internet协议地址和网络端口来建立连接。</p><p>单词Sockets可能会让人联想到导线或电缆的物理连接点的图像，但在此上下文中，Socket是用于处理网络数据连接的一端的软件构造。</p><p>套接字有两种主要状态：它们要么已连接并促进正在进行的网络通信，要么正在等待传入的连接与其连接。如果还有其他状态，例如套接字在远程设备上建立连接中途的状态，但撇开瞬态不谈，您可以将套接字视为正在连接或正在等待(通常称为侦听)。</p><p>侦听套接字称为服务器，请求与侦听套接字连接的套接字称为客户端。这些名称与硬件或计算机角色无关。它们只是定义连接两端的每个套接字的角色。</p><p>netstat命令允许您发现哪些套接字已连接，哪些套接字正在侦听。也就是说，它会告诉您哪些端口正在使用以及哪些进程正在使用它们。它可以向您显示有关网络接口和多播连接的路由表和统计信息。</p><p>随着时间的推移，netstat的功能已经在不同的Linux实用程序(如ip和ss)中复制。了解这个所有网络分析命令的鼻祖仍然是值得的，因为它可以在所有Linux和Unix类操作系统上使用，甚至在Windows和Mac上也可以使用。</p><p>下面是如何使用它，并附有示例命令。</p><p>列出所有套接字</p><p>a(All)选项使netstat显示所有已连接和正在等待的套接字。此命令可能会生成较长的列表，因此我们将其转换为较少的列表。</p><p>netstat-a|更少</p><img class="content_img" src="/image/bd/bd64a1786d829f3c1df0e1a32c547c9c.png" /><p>该列表包括TCP(IP)、TCP6(IPv6)和UDP套接字。</p><img class="content_img" src="/image/39/392e2d59b6dae1c41788ba92235f4cee.png" /><p>终端窗口中的环绕使得查看正在发生的事情变得有点困难。下面是该清单中的几个部分：</p><p>活动的Internet连接(服务器和已建立的)。
+协议接收-Q发送-Q本地地址外部地址状态。
+TCP 0 0本地主机：域0.0.0.0：*侦听。
+TCP 0 0 0.0.0.0：SSH 0.0.0.0：*监听。
+tcp 0 0 localhost：ipp 0.0.0.0：*侦听。
+TCP 0 0本地主机：SMTP 0.0.0.0：*侦听。
+tcp6 0 0[：：]：ssh[：：]：*监听。
+tcp6 0 0 ip6-localhost：ipp[：：]：*监听。
+。
+。
+。
+活动的UNIX域套接字(服务器和已建立的)。
+Proto RefCnt标志类型状态I节点路径。
+UNIX 24[]DGRAM 12831/运行/系统d/日志/开发日志。
+UNIX 2[acc]流侦听24747@/tmp/dbus-zH6clYmvw8。
+UNIX 2[]DGRAM 26372/运行/用户/1000/SYSTEM/NOTIFY。
+UNIX 2[]DGRAM 23382/RUN/USER/121/SYSTEM D/NOTIFY。
+UNIX 2[ACC]SEQPACKET侦听12839/RUN/udev/CONTROL</p><p>“Active Internet”部分列出了已连接的外部连接和侦听远程连接请求的本地套接字。也就是说，它列出了与外部设备建立(或将要建立)的网络连接。</p><p>“UNIX域”部分列出了已连接和正在侦听的内部连接。换句话说，它列出了您的计算机中在不同的应用程序、进程和操作系统元素之间建立的连接。</p><p>“Active Internet”列包括：</p><p>
+PROTO：此套接字使用的协议(例如，TCP或UDP)。
+Recv-q：接收队列。这些是已接收并缓冲的传入字节，等待使用此连接的本地进程读取和使用它们。
+Send-Q：删除发送队列。这将显示准备从发送队列发送的字节数。
+本地地址：连接的本地端的地址详细信息。默认情况下，netstat将显示地址的本地主机名和端口的服务名称。
+外来地址：输入连接远端的地址和端口号。
+状态：本地套接字的状态。对于UDP套接字，此字段通常为空。请参见下面的状态表。</p><p>对于TCP连接，状态值可以是以下值之一：</p><p>
+听着：仅限服务器端。套接字正在等待连接请求。
+SYN-SEND：仅限客户端。此套接字已发出连接请求，正在等待是否会被接受。
+SYN-RECEIVED：仅服务器端。此套接字在接受连接请求后正在等待连接确认。
+已建立：服务器和客户端。服务器和客户端之间已经建立了工作连接，允许在两者之间传输数据。
+FIN-WAIT-1：服务器和客户端。此套接字正在等待来自远程套接字的连接终止请求，或等待对先前从此套接字发送的连接终止请求的确认。
+FIN-WAIT-2：服务器和客户端。此套接字正在等待来自远程套接字的连接终止请求。
+关闭-等待：服务器和客户端。此套接字正在等待来自本地用户的连接终止请求。
+结束：服务器和客户端。此套接字正在等待来自远程套接字的连接终止请求确认。
+Last-ACK：服务器和客户端。此套接字正在等待对其发送到远程套接字的连接终止请求的确认。
+等待时间：服务器和客户端。此套接字向远程套接字发送确认，让它知道已收到远程套接字的终止请求。它现在正在等待，以确保收到确认。
+已关闭：没有连接，因此套接字已终止。</p><p>“Unix domain”列为：</p><p>
+PROTO：此套接字使用的协议。它将是“Unix”。
+RefCnt：引用计数。连接到此套接字的附加进程数。
+标志：这通常设置为ACC，表示SO_ACCEPTON，表示套接字正在等待连接请求。SO_WAITDATA显示为W，表示有数据等待读取。SO_NOSPACE(显示为N)表示没有空间将数据写入套接字(即发送缓冲区已满)。
+类型：套接字类型。请参阅下面的类型表。
+状态：套接字的状态。请参阅下面的状态表。
+i-Node：与此套接字关联的文件系统inode。
+路径：套接字的文件系统路径。</p><p>Unix域套接字类型可以是以下类型之一：</p><p>
+DGRAM：套接字正以数据报模式使用，使用固定长度的消息。数据报既不保证可靠、有序，也不保证不复制。
+STREAM：该套接字是一个流套接字。这是常见的“正常”类型的套接字连接。这些套接字旨在提供可靠的分组顺序(按顺序)传递。
+RAW：此套接字正被用作原始套接字。原始套接字在OSI Model 1的网络级别运行，不从传输级别引用TCP和UDP报头。
+RDM：此套接字位于可靠传递的消息连接的一端。
+SEQPACKET：此套接字作为顺序数据包套接字运行，这是提供可靠、有序和无重复的数据包传递的另一种方式。
+Packet：原始接口访问套接字。数据包套接字用于在OSI模型的设备驱动程序(即数据链路层)级别接收或发送原始数据包。</p><p>Unix域套接字状态可以是以下状态之一：</p><p>
+空闲：此套接字未分配。
+侦听：此套接字正在侦听传入的连接请求。
+正在连接中：此插座正在连接中。
+已连接：已建立连接，套接字可以接收和发送数据。
+正在断开连接：连接正在被终止。</p><p>哇，那可是一大堆信息啊！许多netstat选项以这样或那样的方式优化结果，但它们不会对内容进行太多更改。让我们来看看。</p><p>按类型列出套接字</p><p>netstat-a命令可以提供比您需要查看的更多信息。如果您只想或需要查看TCP套接字，可以使用-t(TCP)选项将显示限制为仅显示TCP套接字。</p><p>netstat-at|less</p><img class="content_img" src="/image/da/da49dbbc0141fd94ebbd109291a0a9b1.png" /><p>显示输出大大减少。列出的少数几个套接字都是TCP套接字。</p><img class="content_img" src="/image/ac/ac9683b06d94d156d6a5bc33aa032999.png" /><p>u(UDP)和-x(UNIX)选项的行为类似，将结果限制为命令行上指定的套接字类型。下面是正在使用的-u(Udp)选项：</p><p>netstat-au|较少</p><img class="content_img" src="/image/73/732dd22d95bf042a6b5741e3bce99628.png" /><p>仅列出UDP套接字。</p><img class="content_img" src="/image/7d/7dd3a994164522440f3a8844f8b37a75.png" /><p>按州列出套接字</p><p>要查看处于侦听或等待状态的套接字，请使用-l(侦听)选项。</p><p>netstat-l|更少</p><img class="content_img" src="/image/59/592728d819f1de8faa6bc1a33facc291.png" /><p>列出的套接字是处于侦听状态的套接字。</p><img class="content_img" src="/image/20/201512510259857a3fc0c14fb59ef0ad.png" /><p>这可以与-t(TCP、-u(UDP)和-x(UNIX)选项结合使用，以进一步深入了解感兴趣的套接字。让我们查找侦听TCP套接字：</p><p>netstat-lt|更少</p><img class="content_img" src="/image/1c/1c5ad9fc49b622d5dbf8d8432ec6d623.png" /><p>现在，我们只看到TCP侦听套接字。</p><img class="content_img" src="/image/f9/f968ee5068fc819a06abf0ce4b13ed28.png" /><p>按协议划分的网络统计信息</p><p>要查看协议的统计信息，请使用-s(统计信息)选项并传入-t(TCP)、-u(UDP)或-x(UNIX)选项。如果您只使用-s(统计信息)选项，您将看到所有协议的统计信息。让我们检查一下TCP协议的统计信息。</p><p>netstat-st|LESS</p><img class="content_img" src="/image/d3/d31d3f80dcad232e15fd7311813a8ab3.png" /><p>TCP连接的统计信息集合显示在LESS中。</p><img class="content_img" src="/image/71/713f3fe6145c5e89d0224003431b1a61.png" /><p>显示进程名称和PID</p><p>使用套接字查看进程的进程ID(PID)以及该进程的名称非常有用。p(程序)选项就是这样做的。让我们看看使用处于侦听状态的TCP套接字的进程的PID和进程名称。我们使用sudo来确保收到所有可用的信息，包括通常需要root权限的任何信息。</p><p>sudo netstat-p-at</p><img class="content_img" src="/image/36/36f9ca82b0001003c8f7a10154412f9d.png" /><p>以下是格式化表格中输出：</p><p>活动的Internet连接(服务器和已建立的)。
+Proto Recv-Q Send-Q本地地址外部地址状态PID/程序名称。
+tcp 0 0 localhost：domain 0.0.0.0：*侦听6927/systemd-Resolution。
+TCP 0 0 0.0.0.0：SSH 0.0.0.0：*侦听751/sshd。
+tcp 0 0 localhost：ipp 0.0.0.0：*侦听7687/cupsd。
+TCP 0 0 localhost：SMTP 0.0.0.0：*侦听1176/master。
+tcp6 0 0[：：]：ssh[：：]：*侦听751/sshd。
+tcp6 0 0 ip6-localhost：ipp[：：]：*侦听7687/cupsd。
+tcp6 0 0 ip6-localhost：smtp[：：]：*侦听1176/master</p><p>我们有一个额外的列，名为“PID/程序名”。此列列出使用每个套接字的进程的PID和名称。</p><p>列出数字地址</p><p>我们可以采取的另一个消除歧义的步骤是将本地和远程地址显示为IP地址，而不是其解析的域名和主机名。如果我们使用-n(数字)选项，IPv4地址将以点分十进制格式显示：</p><p>SUDO netstat-AN|LESS</p><img class="content_img" src="/image/34/34c0fa76c08adb48a0f1b1b5497f3c72.png" /><p>IP地址显示为数字值。还会显示端口号，与IP地址之间用冒号“：”分隔。</p><img class="content_img" src="/image/05/05f1d8fe3d332f2cbb19237f2ecdc528.png" /><p>IP地址127.0.0.1表示套接字绑定到本地计算机的环回地址。您可以将IP地址00.0.0.0视为本地地址的“默认路由”，以及外来地址的“任何IP地址”。显示为“：：”的IPv6地址也都是零地址。</p><p>可以很容易地检查列出的端口，以了解它们的通常用途：</p><p>
+22：这是安全外壳(SSH)侦听端口。
+25：这是简单邮件传输协议(SMTP)侦听端口。
+53：这是域名系统(DNS)的侦听端口。
+68：这是最新的动态主机配置协议(DHCP)侦听端口。
+631：这是通用UNIX打印系统(CUPS)侦听端口。</p><p>相关：127.0.0.1和0.0.0.0有什么区别？</p><p>显示路由表</p><p>r(路由)选项显示内核路由表。</p><p>sudo netstat-r</p><img class="content_img" src="/image/dd/dd97068f69028ab985751d00cbca5b20.png" /><p>下面是整齐表格中的输出：</p><p>内核IP路由表。
+目的地址：网关，更新Genask，更新，旗帜，MSS，Window，Inirtt，iFace。
+默认设置为：Vigor.outer：0.0.0.0%；UG：：0.0.0%；UG：：0.0enp0s3。
+LINK-LOCAL**0.0.0.0*255.255.0.0*0enp0s3*0enp0s3。
+192.168.4.0：0.0.0.0美元：255.255.255.0 U：35.00：0：00：0：0：0：0p0s3</p><p>而且，这些专栏的意思是：</p><p>
+目标：目标网络或目标主机设备(如果目标不是网络)。
+网关：网关地址。如果未设置网关地址，则此处会显示星号“*”。
+通用掩码：路由的子网掩码。
+旗帜：见下面的旗帜表。
+MSS：此路由上TCP连接的默认最大段大小-这是一个TCP段中可以接收的最大数据量。
+窗口：此路由上的TCP连接的默认窗口大小，指示在接收缓冲区满之前可以传输和接收的数据包数。实际上，数据包由接收应用程序使用。
+IRTT：初始往返时间。内核引用此值来动态调整响应速度较慢的远程连接的TCP参数。
+iFace：传输通过此路由发送的数据包的网络接口。</p><p>标志值可以是以下值之一：</p><p>
+U：路线已经到了。
+H：目标是主机，也是此路由上可能的唯一目的地。
+旅客：使用网关。
+R：恢复动态路由的路由。
+d：由路由守护进程动态安装。
+m：路由守护进程在收到Internet控制消息协议(ICMP)数据包时进行了修改。
+答：由addrconf安装，它是自动DNS和DHCP配置文件生成器。
+C：缓存条目。
+！：拒绝路由。</p><p>查找进程使用的端口</p><p>如果我们通过grep管道输出netstat，我们可以按名称搜索进程并识别它正在使用的端口。我们使用前面使用的-a(全部)、-n(数字)和-p(程序)选项，并搜索“sshd”。</p><p>SUDO netstat-ANP|grep“sshd”</p><img class="content_img" src="/image/40/402f987e93020e2a7e3cfc08210363a3.png" /><p>grep找到目标字符串，我们看到sshd守护进程正在使用端口22。</p><p>当然，我们也可以反过来做这件事。如果我们搜索“：22”，我们可以找出哪个进程正在使用该端口(如果有的话)。</p><p>SUDO netstat-ANP|grep“：22”</p><img class="content_img" src="/image/51/51e7bc6ec70276ff9b816e7bb7d2adba.png" /><p>这次grep找到“：22”目标字符串，我们看到使用此端口的进程是sshd守护进程，进程ID为751。</p><p>列出网络接口</p><p>-i(接口)选项将显示netstat可以发现的网络接口表。</p><p>SUDO netstat-I</p><img class="content_img" src="/image/5f/5fe34c1c01df444bfba121643ce9df50.png" /><p>以下是更易读的输出：</p><p>内核接口表。
+iFace支持MTU：RX-OK；RX-ERR RX-DRP；RX-OVR；RX-OVR；TX-OK；TX-ERR；TX-DRP；TX-OVR FLG。
+Enp0s3：1，500 4520671 0 0 0 4779773 0 0 0 BMRU。
+LO 65536 30175 0 0 0 30175 0 0 0 LRU</p><p>这就是这些列的含义：</p><p>
+iFace：接口的名称。enp0s3接口为对外网络接口，lo接口为环回接口。回送接口使进程能够使用联网协议在计算机内相互通信，即使计算机未连接到网络也是如此。
+MTU：最大传输单位(MTU)。这是可以发送的最大“数据包”。它由包含路由和协议标志的报头、其他元数据以及实际传输的数据组成。
+RX-OK：接收的数据包数，无错误。
+rx-err：接收的有错误的数据包数。我们希望这个价格尽可能低。
+RX-DRP：丢弃(即丢失)的数据包数。我们还希望这个数字尽可能低。
+RX-OVR：接收时因溢出而丢失的包数。这通常意味着接收缓冲区已满，无法接受更多数据，但收到了更多数据，必须将其丢弃。这个数字越低越好，零是完美的。
+TX-OK：传输的数据包数，无错误。
+RX-ERR：传输的有错误的数据包数。我们希望这个值为零。
+RX-DRP：传输时丢弃的数据包数量。理想情况下，该值应为零。
+RX-OVR：传输时因溢出而丢失的数据包数。这通常意味着发送缓冲区已满，无法接受更多数据，但更多数据已准备好传输，必须丢弃。
+FLG：旗帜。请参阅下面的旗帜表。</p><p>这些旗帜表示以下内容：</p><p>
+广播地址正在使用中。
+L：这个接口是一个环回设备。
+M：正在接收所有分组(即，在混杂模式下)。任何内容都不会被过滤或丢弃。
+O：此接口的地址解析协议(ARP)已关闭。
+P：这是点对点(PPP)连接。
+R：接口正在运行。
+U：接口已打开。</p><p>列出多播组成员身份</p><p>简而言之，组播传输使数据包只发送一次，而不考虑接收者的数量。例如，对于诸如视频流之类的服务，从发送者的角度来看，这会极大地提高效率。</p><p>g(组)选项使netstat列出每个接口上套接字的组播组成员身份。</p><p>sudo netstat-g</p><img class="content_img" src="/image/f0/f0c07c115e965a7faed5364787fd11db.png" /><p>这些列非常简单：</p><p>
+interface：套接字在其上传输的接口的名称。
+RefCnt：引用计数，即附加到套接字的进程数。
+组：组播组的名称或标识符。</p><p>街区上的新孩子们</p><p>route、ip、ifconfig和ss命令可以提供许多netstat能够向您显示的内容。它们都是很棒的命令，值得一查。</p><p>我们将重点放在netstat上，因为无论您使用的是哪种类Unix操作系统，即使是不知名的操作系统，它都是普遍可用的。</p><div class="item_info"><span class="item_key"><a href="/tag/连接/">连接</a></span><span class="item_key"><a href="/tag/接字/">接字</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14603.html">如何在Linux上使用netstat</a><li><a href="/story/14602.html">如何在Linux上使用netstat</a><li><a href="/story/14601.html">如何在Linux上使用netstat</a><li><a href="/story/14600.html">如何在Linux上使用netstat</a><li><a href="/story/14599.html">如何在Linux上使用netstat</a><li><a href="/story/14597.html">如何在Linux上使用netstat</a><li><a href="/story/14596.html">如何在Linux上使用netstat</a><li><a href="/story/14595.html">如何在Linux上使用netstat</a><li><a href="/story/13763.html">如何在Ubuntu上设置远程桌面</a><li><a href="/story/13728.html">什么是反向SSH隧道？(以及如何使用它)</a><li><a href="/story/12722.html">如何在iPhone、iPad或Mac上使用即时热点</a><li><a href="/story/12378.html">如何在iPhone、iPad或Mac上使用即时热点</a><li><a href="/story/12060.html">你真的需要一个“游戏”路由器吗？</a><li><a href="/story/11207.html">如何让任何人将他们的手机连接到您的Google Home</a><li><a href="/story/11189.html">如何让您的流媒体视频不再缓冲太多</a><li><a href="/story/11128.html">如何将Android设备用作PC或Mac的第二个显示器</a><li><a href="/story/10742.html">如何在没有任何额外软件的情况下对朋友的Windows PC进行远程故障排除</a><li><a href="/story/8865.html">在Windows 10上将连接设置为计量的方式、时间和原因</a><li><a href="/story/8395.html">Wi-Fi与以太网：有线连接好多少？</a><li><a href="/story/8378.html">如何更改您的Mac首先连接到哪个Wi-Fi网络</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

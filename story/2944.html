@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>什么是网络引导(PXE)？如何使用它？</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>什么是网络引导(PXE)？如何使用它？</h2></div><div class="content"><img class="content_img" src="/image/90/908dd439b96c3fa71daf4639175ca019.jpg" /><p>您是否曾经需要对有问题的计算机进行故障排除或诊断，但忘记了实用程序CD在哪里？我们将向您展示如何在FOG中使用网络引导(PXE)来解决该问题。</p><p>h.koppdelaney摄</p><p>PXE概述</p><p>PXE(Pre Execution Environment，预执行环境)，亲切地读作Pixie(就像在仙尘中一样)，是一种仅使用其网卡引导终端计算机(客户端)的方法。这种引导方法可以追溯到1999年，只要有问题的计算机连接到网络(并支持该标准)，就可以绕过正常的引导过程(即开机-&gt;BIOS-&gt;HD/CD)，并从故障排除开始，到使用liveOS，甚至重新镜像机器…，都可以做一些很好的事情。。但我们有些言过其实了，让我们回到起点。</p><p>使用PXE时，引导过程从正常顺序更改为：</p><p>开机-&gt;BIOS-&gt;网卡的PXE堆栈-&gt;使用TFTP从服务器下载到客户端RAM的网络引导程序(NBP)-&gt;NBP负责执行下一步(也称为。第二级靴子)。</p><p>使用“PXElinux”NBP，可以为我们的客户端设置多个PXE引导程序的服务器。从某种意义上说，它是一种秘密成分，使我们能够做到以上所有事情，然后再做一些。有关整个过程、它的历史以及它和gPXE(它是更先进的表亲)所支持的一些基础设施选项的更深入的解释，请参阅YouTube上由他们的开发人员提供的这个讲座。另外，下面是一段2008年的设置视频，它快速介绍了一些启动可能性。</p><p>
+注意：在本视频中，已弃用的UDA项目被用作服务器的基础，注释的目的是向一位朋友解释(当时)对其进行的最新添加。</p><p>球门 / 目标 / 期望的结果 / 终点</p><p>本指南将是关于PXEing的系列指南中的第一个。在本指南中，我们将为以后的文章奠定基础。</p><p>建议、假设和前提条件</p><p>
+您正在测试的客户端计算机支持PXE引导，并且您知道如何启用它。
+本指南是使用Debian Squeeze、Ubuntu server 9.10和Linux Mint10编写和测试的。因此，假设您也有一个基于Debian的系统可供使用。
+您可能希望了解如何为简单文件服务器设置软件RAID以及如何设置网络链路聚合(802.3ad)，因为此类服务器上的磁盘和网络带宽需求可能会非常快。强烈建议在具有高弹性的服务器基础上构建其网络和磁盘子系统。
+你会看到我使用VIM作为编辑程序，这只是因为我习惯了…。您可以使用您喜欢的任何其他编辑器。</p><p>安装--利用雾气举起重物</p><p>FOG是由*Chuck Syperski和Jian Zhang创建的免费、开源的计算机克隆解决方案。FOG采用定期可用的软件(如Apache、MySQL和tftpd-HPA等)，并将它们打包成免费的产品化PC生命周期管理(PCLM)解决方案。使用这个免费的PCLM，可以通过对计算机状态进行映像、部署程序和设置(即Firefox、Office、打印机等)和配置策略(例如自动注销和屏幕保护程序设置)来备份计算机状态，仅举几个例子，通过一个中央Web界面。
+注：在Tightwad Tech上可以找到关于雾的Chuck和Jian的采访。</p><p>使用FOG作为您的PXE服务器的基础，是准备好所有必要部件(如TFTP和DHCP(如果需要)而无需手动安装和配置它们)的一个很好的捷径，同时授予您FOG的所有功能作为额外奖励。</p><p>由于我们的目标是为这个已经很棒的系统添加功能，因此我们不会深入讨论如何使用FOG本身，也不会深入介绍它的安装过程。如果你想浏览“雾”的维基，它的文字和视频操作指南足够强大，可以获得深入的信息。总结的步骤包括：</p><p>
+
+sudo mkdir-p/opt/fog-setup。
+CD/OPT/FOG-SETUP。
+
+从SourceForge下载最新雾包到上一步创建的目录。
+解压软件包并开始安装。
+数道焦油-xvzf雾*。
+CD雾*。
+光盘箱。
+sudo./installfog.sh。
+
+安装程序将多次提示您：
+1.您希望为哪个版本的Linux运行安装？-2(同样，假设使用的是基于Debian的系统)。
+2.您希望进行哪种类型的安装？[n]-输入。
+3.此FOG服务器要使用的IP地址是什么？[服务器-IP-在eth0上检测到]-Enter。
+4.是否要为DHCP服务器设置路由器地址？[是/否]-输入。
+5.是否要为DHCP服务器和客户端启动映像设置DNS地址？[是/否]-输入。
+6.是否要将默认网络接口从eth0更改？如果您不确定，请选择否。[是/否]-输入。
+7.您是否希望使用FOG服务器提供dhcp服务？[是/否]-*输入。
+8.此版本的FOG支持国际化，是否要安装其他语言包？[y/n]-n.。
+9.您确定要继续(Y/N)-Y吗？
+10.确认并按照“MySQL”弹幕提示操作。
+11.root账号mysql密码不填。
+12.是否要通知雾组此安装情况？-Y(推荐)。
+
+来自雾维基的图像。
+使用浏览器转到雾地址，然后按照屏幕上的说明进行操作。</p><p>*注意：假设您没有另一个DHCP端口，或者它没有设置为处理PXE。如果要配置现有DHCP，请参阅为PXE配置DHCP。</p><p>就安装雾的情况而言，应该就是这样了。同样，尽管FOG是一个很棒的系统，但使用它并不是本指南的重点，我们鼓励您访问它的wiki，这样您就可以更好地掌握FOG的功能，以及它如何帮助您管理您的客户端生命周期。</p><img class="content_img" src="/image/8e/8e35682329cf11a1e282ef53ed500e59.png" /><p>作为快速“体验一下”，您可以选择“运行Memtest86+”选项，然后会看到我们在“使用Ubuntu Live CD诊断PC硬件问题”指南中介绍的MemTest程序。</p><p>文件和目录结构</p><p>如前所述，我们的目标是扩展FOG的功能，为此，我们需要添加一些文件和目录。</p><p>创建子目录结构：</p><p>这些子目录将作为我们将用于扩展雾的所有图片、程序和配置的模板。</p><p>调整“默认”配置文件</p><p>我们将构建一个新的主菜单，并将所有雾功能放入各自的子菜单中。</p><p>将/tftpboot/pxelinux.cfg/default配置文件复制到Howtogeek/menus/fog.cfg中</p><p>现在编辑原始“默认”文件的内容：</p><p>使其内容看起来如下所示：</p><p>当我们完成时，这个配置会给你三个子菜单：“实用程序”，“手动FOGing”，“Linux内容”。</p><p>创建“主”文件</p><p>主文件允许我们对菜单的外观进行全局更改，而无需一遍又一遍地单独重新输入它们。默认背景图片、边框踏板、位置等内容都将合并到这个master.cfg文件中。</p><p>创建文件：</p><p>使其内容看起来如下所示：</p><p>上面的配置将创建紫色边框和高亮显示，如果您希望拥有不同的外观，只需更改这些值即可。
+要设置背景图片，请将图片放在“/tftproot”目录中，并将“菜单背景”指向图片的相对路径(我们建议使用分辨率为640*480的图片)。例如，上面配置的图片的完整路径为：“/tftproot/fog/bg.png”。</p><p>将雾子菜单连接到主菜单</p><p>因为我们将原始配置文件的简单副本复制到menus子目录(保留其配色方案、超时等)，所以如果您现在从PXE引导的客户端进入此子菜单，它将会正常工作，但您将无法在不重新启动机器的情况下返回主菜单。</p><p>因此，编辑/tftpboot/Howgeek/menus/fog.cfg文件：</p><p>将此条目添加到“菜单颜色标题”条目之后，雾函数之前：</p><p>创建子菜单骨架</p><p>我们已经创建了4个子菜单，其中3个由我们来填充。为此，让我们创建我们将在其上构建的模板。</p><p>创建模板文件：</p><p>让它成为它的内容：</p><p>让我们为其他子菜单做好准备，这些子菜单将在未来的指南中介绍：</p><p>就是这样，基本的布局现在已经准备好了，从现在开始，我们只需要在它的基础上进行构建，我们会在未来的指南中这样做。在这些未来的向导到来之前，我们鼓励你熟悉雾，因为它本身就是一次激动人心的旅行。</p><p>更新：未来的未来就在这里：)</p><p>如何网络引导(PXE)Ubuntu LiveCD。
+如何网络引导BitDefender救援CD(PXE)。
+如何使用PXE设置网络引导实用程序光盘</p><img class="content_img" src="/image/ed/ed6a65c3bbbca396713651eda4b01bf3.png" /><div class="item_info"><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/fog/">fog</a></span><span class="item_key"><a href="/tag/pxe/">pxe</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14584.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14577.html">如何检查Linux上安装了哪个GPU</a><li><a href="/story/14572.html">如何使用Jouralctl读取Linux系统日志</a><li><a href="/story/14555.html">2020年CES最佳：我们今年看到的所有最好的东西</a><li><a href="/story/14467.html">如何在Windows 10上切换到本地用户帐户</a><li><a href="/story/14450.html">如何在Excel中将一长列变为多列</a><li><a href="/story/14438.html">如何在iPhone上创建和使用Memoji和Animoji</a><li><a href="/story/14426.html">如何使用Google Sheets中的查询功能</a><li><a href="/story/14419.html">如何在Linux中获取文件或目录的大小</a><li><a href="/story/14377.html">如何在Google Sheets中使用AND和OR函数</a><li><a href="/story/14353.html">如何使用触摸板、鼠标或键盘右键单击任何Mac</a><li><a href="/story/14296.html">如果您的Windows 10键盘或鼠标无法工作，该怎么办</a><li><a href="/story/14262.html">iPhone11上的Deep Fusion摄像头是什么？</a><li><a href="/story/14257.html">如何在Linux上编写fstab文件</a><li><a href="/story/14202.html">什么是利特语，你是如何使用它的？</a><li><a href="/story/14168.html">刚刚更新到iOS 13吗？立即更改这八个设置</a><li><a href="/story/14142.html">为什么您应该登录Google、Facebook或Apple</a><li><a href="/story/14130.html">如何在Windows 10中的每个显示器上设置不同的墙纸</a><li><a href="/story/14121.html">如何在Linux上使用chroot命令</a><li><a href="/story/14036.html">如何在Chrome中从图像中抓取文本</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>用于有条件地重新启动应用程序的批处理脚本</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>用于有条件地重新启动应用程序的批处理脚本</h2></div><div class="content"><p>常见的系统和/或环境事件(如从待机状态恢复或断开网络连接)可能会导致某些应用程序出现问题，这些应用程序预计将始终处于打开和连接状态。因此，如果您有某个应用程序有点频繁地崩溃或进入“无响应”模式，并且重新启动是唯一的修复方法，我们有一个可定制批处理脚本形式的简单修复方法，可以简单地杀死该应用程序并重新启动它。</p><p>除了上述明显的情况外，此脚本还可用于各种有用的任务，例如：</p><p>
+通过双击或使用热键轻松重新启动应用程序。
+仅当程序挂起或没有响应时才重新启动该程序。
+作为计划任务运行，以确保应用程序始终在运行。
+任何其他您想要自动有条件重新启动应用程序的地方。</p><p>自定义脚本在注释中应该是不言而喻的，所以只需适当地配置脚本，您就都设置好了。</p><p>剧本</p><code>@ECHO OFF
+ECHO Restart Application
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+SETLOCAL EnableExtensions
+
+REM Enter the application information.
+SET AppName=Application Name
+SET ExeFile=FileToLaunch.exe
+SET ExePath=C:PathToApplication
+
+REM Select the conditions to kill the application.
+REM A value of 1 = Yes, 0 = No
+SET KillIfRunning=1
+SET KillIfNotResponding=1
+SET KillIfUnknownStatus=1
+
+REM Specify when to start the application:
+REM 1 = Start only if the process was previous killed.
+REM 0 = Start the application regardless.
+SET StartOnlyIfKilled=1
+
+SET KillStatus="%TEMP%KillStatus.tmp.txt"
+SET Success=0
+
+ECHO Killing existing %AppName% instance...
+IF {%KillIfRunning%}=={1} CALL :CheckKillStatus "%ExeFile%" "RUNNING"
+IF {%KillIfNotResponding%}=={1} CALL :CheckKillStatus "%ExeFile%" "NOT RESPONDING"
+IF {%KillIfUnknownStatus%}=={1} CALL :CheckKillStatus "%ExeFile%" "UNKNOWN"
+ECHO.
+
+IF {%StartOnlyIfKilled%}=={1} (
+	IF {%Success%}=={0} GOTO End
+)
+ECHO Restarting %AppName%...
+START "%ExeFile%" "%ExePath%%ExeFile%"
+ECHO.
+
+IF EXIST %KillStatus% DEL /F /Q %KillStatus%
+
+ENDLOCAL
+
+
+:CheckKillStatus
+ECHO Killing with status: %~2
+TASKKILL /FI "STATUS eq %~2" /IM "%~1" /F > %KillStatus%
+SET /P KillResult= < %KillStatus%
+FOR /F "tokens=1,* delims=:" %%A IN ("%KillResult%") DO (
+	ECHO %%A:%%B
+	IF /I {%%A}=={SUCCESS} SET /A Success=%Success%+1
+)
+
+
+:End
+</code><p>结束 / 结尾 / 结论 / 推论</p><p>虽然您可以找到执行基本相同功能的应用程序，但是使用这样一个简单的脚本可以避免在后台运行“另一个程序”。</p><div class="item_info"><span class="item_key"><a href="/tag/应用程序/">应用程序</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/重新启动/">重新启动</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14813.html">为什么你的iPhone一直询问后台位置使用情况</a><li><a href="/story/14697.html">如何在Windows 10中自动连接到特定应用的VPN</a><li><a href="/story/14656.html">如何在Windows 10中自动连接到特定应用的VPN</a><li><a href="/story/14655.html">如何在Windows 10中自动连接到特定应用的VPN</a><li><a href="/story/14632.html">如何将您的Apple Card交易导出到电子表格</a><li><a href="/story/14631.html">如何将您的Apple Card交易导出到电子表格</a><li><a href="/story/14630.html">如何将您的Apple Card交易导出到电子表格</a><li><a href="/story/14629.html">如何将您的Apple Card交易导出到电子表格</a><li><a href="/story/14578.html">如何在iPhone或iPad上“隐藏”应用程序</a><li><a href="/story/14520.html">如何在三星手机上启用安全文件夹</a><li><a href="/story/14402.html">假期的12条家庭技术支持小贴士</a><li><a href="/story/14352.html">我的iPhone或iPad会感染病毒吗？</a><li><a href="/story/14277.html">如何在Ubuntu上创建桌面快捷方式</a><li><a href="/story/14212.html">MacOS Catalina的新安全功能如何工作</a><li><a href="/story/14198.html">如何在Android上设置应用时限和拦截应用</a><li><a href="/story/14180.html">什么是Windows 10X，它有什么不同？</a><li><a href="/story/14134.html">如何让iPhone应用始终请求位置访问</a><li><a href="/story/14132.html">如何自定义iPhone或iPad上的共享表</a><li><a href="/story/14113.html">如何为Twitter启用双因素身份验证</a><li><a href="/story/14110.html">如何在iPad上使用一个应用程序的多个窗口</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

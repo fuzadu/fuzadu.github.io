@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上使用JOIN命令</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上使用JOIN命令</h2></div><div class="content"><p>如果要通过匹配公共字段来合并两个文本文件中的数据，可以使用Linux JOIN命令。它为您的静态数据文件增添了少许活力。我们将向您演示如何使用它。</p><p>跨文件匹配数据</p><p>数据为王。企业、企业和家庭都在它上面运行。但数据存储在不同的文件中，由不同的人整理，这是一件痛苦的事情。除了知道要打开哪些文件以查找所需信息外，这些文件的布局和格式可能会有所不同。</p><p>您还必须处理令人头疼的管理问题，即哪些文件需要更新、哪些文件需要备份、哪些文件是遗留文件以及哪些文件可以存档。</p><p>此外，如果您需要整合数据或对整个数据集进行一些分析，您还会遇到一个额外的问题。在您可以对数据执行所需操作之前，如何对不同文件中的数据进行合理化？您如何进入数据准备阶段？</p><p>好消息是，如果文件共享至少一个公共数据元素，Linux Join命令可以帮助您摆脱困境。</p><p>数据文件</p><p>我们将用来演示JOIN命令使用的所有数据都是虚构的，从以下两个文件开始：</p><p>CAT文件-1.txt</p><p>CAT文件-2.txt</p><img class="content_img" src="/image/ba/baea09b00cc7006922382544eac496c1.png" /><p>以下是该file-1.txt的内容：</p><p>1 Adore Varian avarian0@newyorker.com女性192.57.150.231。
+2 Nancee Merrell nmerrell1@ted.com，女性22.198.121.181。
+3 Herta Friett hfriett2@dager design.com，女性33.167.32.89。
+4 Torie Venmore tvenmore 3@gmpg.org女性251.9.204.115。
+5 Deni Sealeaf dsealeaf4@nps.gov女性210.53.81.212。
+6菲德尔·贝兹利fbezley 5@lulu.com电话：72.173.218.75。
+7 Ulrikaumeko Standen uStanden6@Geocities.jp女性4.204.0.237。
+8 Odell Jursch oJursch7@utexas.edu男性1.138.85.117</p><p>我们有一组编号行，每行都包含以下所有信息：</p><p>
+一个数字。
+名字。
+一个姓氏。
+电子邮件地址。
+该人的性别。
+IP地址</p><p>以下是file-2.txt的内容：</p><p>1 Varian avarian0@newyorker.com纽约西部女性，535304.73美元。
+2 Merrell nmerrell1@ted.com女性指湖，309，033.10美元。
+3 Friett hfriett2@dager design.com南方女性461，664.44美元(约合人民币461，664.44元)。
+4 Venmore tvenmore 3@gmpg.org纽约市中心女性175，818.02美元。
+5 Sealeaf dsealeaf4@nps.gov北方女性$126，690.15。
+6 Bezley fbezley 5@lulu.com男性莫霍克谷366733.78美元。
+7 Standen uStanden6@Geocities.jp女性首都地区674，634.93美元。
+8 Jursch oJursch7@utexas.edu哈德逊谷男性，663，821.09美元</p><p>file-2.txt中的每一行都包含以下信息：</p><p>
+一个数字。
+一个姓氏。
+电子邮件地址。
+该人的性别。
+纽约的一个地区。
+一美元的价值</p><p>Join命令使用“字段”，在此上下文中，“字段”表示由空格、行首或行尾包围的一段文本。为了使JOIN匹配两个文件之间的行，每行必须包含一个公共字段。</p><p>因此，只有字段同时出现在两个文件中时，我们才能匹配该字段。IP地址只出现在一个文件中，所以这不好。名字只出现在一个文件中，所以我们也不能使用它。姓氏在这两个文件中都有，但这不是一个好的选择，因为不同的人有相同的姓氏。</p><p>您也不能将数据与男性和女性条目联系在一起，因为它们太模糊了。纽约地区和美元价值也只出现在一个文件中。</p><p>但是，我们可以使用电子邮件地址，因为它出现在两个文件中，并且每个文件都是个人唯一的。快速浏览文件还可以确认每个文件中的行对应于同一个人，因此我们可以使用行号作为我们的字段进行匹配(我们稍后将使用不同的字段)。</p><p>注意，这两个文件中有不同数量的字段，这很好-我们可以告诉Join使用每个文件中的哪个字段。</p><p>但是，要注意像纽约地区这样的字段；在空格分隔的文件中，地区名称中的每个单词看起来都像一个字段。由于某些区域的名称由两个或三个单词组成，因此您实际上在同一文件中拥有不同数量的字段。只要您匹配出现在纽约区域之前的行中的字段，就可以这样做。</p><p>JOIN命令</p><p>首先，必须对要匹配的字段进行排序。我们在两个文件中都有升序编号，所以我们符合该标准。默认情况下，Join使用文件中的第一个字段，这正是我们想要的。另一个合理的默认值是Join希望字段分隔符是空格。再说一次，我们已经了解了这一点，所以我们可以继续启动Join。</p><p>因为我们使用所有默认值，所以我们的命令很简单：</p><p>连接文件-1.txt文件-2.txt</p><img class="content_img" src="/image/ed/ed9dded4df852e9132d97a7a2742d3be.png" /><p>Join根据文件在命令行中的列出顺序将其视为“文件一”和“文件二”。</p><p>输出如下：</p><p>1 Adore Varian avarian0@newyorker.com女性192.57.150.231 Varian avarian0@newyorker.com纽约西部女性535，304.73美元。
+2 Nancee Merrell nmerrell1@ted.com女性22.198.121.181 Merrell nmerrell1@ted.com女性指湖$309，033.10。
+3 Herta Friett hfriett2@dager design.com女性33.167.32.89 Friett hfriett2@dager design.com女性南部梯级$461，664.44。
+4 Torie Venmore tvenmore 3@gmpg.org女性251.9.204.115 Venmore tvenmore 3@gmpg.org纽约市中心女性175，818.02美元。
+5 Deni Sealeaf dsealeaf4@nps.gov女性210.53.81.212 Sealeaf dsealeaf4@nps.gov女性北部国家/地区$126，690.15。
+6 Fidel Bezley fbezley 5@lulu.com男72.173.218.75 Bezley fbezley 5@lulu.com男性莫霍克谷366733.78美元。
+7 Ulrikaumeko Standen uStanden6@Geocities.jp女性4.204.0.237 Standen uStanden6@Geocities.jp女性首都地区674，634.93美元。
+8 Odell Jursch oJursch7@utexas.edu男性1.138.85.117 Jursch oJursch7@utexas.edu哈德逊谷男性，663，821.09美元</p><p>输出的格式如下：首先打印行匹配的字段，然后是文件一中的其他字段，然后是文件二中没有匹配字段的字段。</p><p>未排序字段</p><p>让我们试一试我们知道不会奏效的东西。我们将乱放一个文件中的行，这样JOIN将无法正确处理该文件。file-3.txt的内容与file-2.txt相同，但是第八行在第五行和第六行之间。</p><p>以下是file-3.txt的内容：</p><p>1 Varian avarian0@newyorker.com纽约西部女性，535304.73美元。
+2 Merrell nmerrell1@ted.com女性指湖，309，033.10美元。
+3 Friett hfriett2@dager design.com南方女性461，664.44美元(约合人民币461，664.44元)。
+4 Venmore tvenmore 3@gmpg.org纽约市中心女性175，818.02美元。
+5 Sealeaf dsealeaf4@nps.gov北方女性$126，690.15。
+8 Jursch oJursch7@utexas.edu哈德逊谷男性，663，821.09美元。
+6 Bezley fbezley 5@lulu.com男性莫霍克谷366733.78美元。
+7 Standen uStanden6@Geocities.jp女性首都地区674，634.93美元</p><p>我们键入以下命令以尝试将file-3.txt加入file-1.txt：</p><p>连接文件-1.txt文件-3.txt</p><img class="content_img" src="/image/c5/c53b7b49ca756eb7c3cb8b3c120874f1.png" /><p>Join报告file-3.txt中的第七行顺序错误，因此未进行处理。第七行是以数字6开头的行，在正确排序的列表中，数字6应该在8之前。文件中的第六行(以“8Odell”开头)是最后处理的行，因此我们可以看到它的输出。</p><p>如果您希望了解Join是否对文件的排序顺序满意，可以使用--check-order选项-不会尝试合并。</p><p>为此，我们键入以下内容：</p><p>JOIN--检查顺序文件-1.txt文件-3.txt</p><img class="content_img" src="/image/32/327e9ddd0af8aab783e391fd49e921f8.png" /><p>JOIN预先告诉您文件文件3.txt的第七行将会出现问题。</p><p>缺少行的文件</p><p>在file-4.txt中，最后一行已被删除，因此没有第8行。内容如下：</p><p>1 Varian avarian0@newyorker.com纽约西部女性，535304.73美元。
+2 Merrell nmerrell1@ted.com女性指湖，309，033.10美元。
+3 Friett hfriett2@dager design.com南方女性461，664.44美元(约合人民币461，664.44元)。
+4 Venmore tvenmore 3@gmpg.org纽约市中心女性175，818.02美元。
+5 Sealeaf dsealeaf4@nps.gov北方女性$126，690.15。
+6 Bezley fbezley 5@lulu.com男性莫霍克谷366733.78美元。
+7 Standen uStanden6@Geocities.jp女性首都地区674，634.93美元</p><p>我们键入以下内容，令人惊讶的是，Join没有抱怨并处理它能处理的所有行：</p><p>连接文件-1.txt文件-4.txt</p><img class="content_img" src="/image/34/342c01a2be016075eabad62fea047744.png" /><p>输出列出了七个合并的行。</p><p>a(Print Unpaiable)选项告诉JOIN也打印无法匹配的行。</p><p>在这里，我们键入以下命令来告诉JOIN打印文件一中无法与文件二中的行匹配的行：</p><p>JOIN-A 1文件-1.txt文件-4.txt</p><img class="content_img" src="/image/ce/ce17024f1d7b73d7a5d1019c6f5edb10.png" /><p>匹配了7行，打印了文件1中的第8行，没有匹配。没有任何合并的信息，因为file-4.txt没有包含可以匹配的第8行。但是，至少它仍然出现在输出中，所以您知道它在file-4.txt中没有匹配项。</p><p>我们键入以下-v(取消连接的行)命令以显示任何不匹配的行：</p><p>Join-v文件-1.txt文件-4.txt</p><img class="content_img" src="/image/37/37080e537c3446e0b79bcb40ed27bd91.png" /><p>我们看到第八行是文件二中唯一没有匹配项的行。</p><p>匹配其他字段</p><p>让我们在非默认字段(字段1)上匹配两个新文件。以下是file-7.txt的内容：</p><p>邮箱：avarian0@newyorker.com，女性192.57.150.231。
+电子邮箱：dsealeaf4@nps.gov，女性210.53.81.212。
+电子邮箱：fbezley 5@lulu.com，男性72.173.218.75。
+电子邮箱：hfriett2@dager sign.com，女性33.167.32.89。
+nmerrell1@ted.com，女性22.198.121.181。
+邮箱：oJursch7@utexas.edu，男1.138.85.117。
+电子邮箱：tvenmore 3@gmpg.org，女性251.9.204.115。
+邮箱：uStanden6@Geocities.jp，女性4.204.0.237</p><p>下面是file-8.txt的内容：</p><p>女性avarian0@newyorker.com纽约西部535304.73美元。
+女性dsealeaf4@nps.gov北部国家/地区126，690.15美元。
+男性fbezley 5@lulu.com莫霍克谷366733.78美元。
+女性hfriett2@dager sign.com南层461，664.44美元(约合人民币461，664.44元)。
+女性nmerrell1@ted.com指湖，309，033.10美元。
+Male oJursch7@utexas.edu Hudson Valley，663，821.09美元(约合人民币663，821.09元)。
+女性tvenmore 3@gmpg.org纽约中部175，818.02美元。
+女性uStanden6@Geocities.jp首都地区674，634.93美元</p><p>唯一可用于加入的敏感字段是电子邮件地址，它是第一个文件中的字段1和第二个文件中的字段2。为了适应这种情况，我们可以使用-1(文件一字段)和-2(文件二字段)选项。我们将在这些字段后面加上一个数字，指示每个文件中的哪个字段应该用于连接。</p><p>我们键入以下内容来告诉Join使用文件1中的第一个字段和文件2中的第二个字段：</p><p>加入-1 1-2 2文件-7.txt文件-8.txt</p><img class="content_img" src="/image/57/5754e11ae7ea14607d9183f6dac71405.png" /><p>文件在电子邮件地址上联接，该地址显示为输出中每行的第一个字段。</p><p>使用不同的字段分隔符</p><p>如果您的文件包含由空格以外的其他字符分隔的字段，该怎么办？</p><p>以下两个文件以逗号分隔-唯一的空格位于多个单词的地名之间：</p><p>CAT文件-5.txt</p><p>CAT文件-6.txt</p><img class="content_img" src="/image/85/85c14e5fc2d115efc4c53a6e80a6efdb.png" /><p>我们可以使用-t(分隔符)告诉Join使用哪个字符作为字段分隔符。在本例中，它是逗号，因此我们键入以下命令：</p><p>Join-t，file-5.txt file-6.txt</p><img class="content_img" src="/image/38/3802cdd3bd826ca1c839fe24049db73d.png" /><p>所有行都匹配，空格保留在地名中。</p><p>忽略字母大小写</p><p>另一个文件file-9.txt与file-8.txt几乎相同。唯一的区别是有些电子邮件地址使用大写字母，如下所示：</p><p>女性avarian0@newyorker.com纽约西部535304.73美元。
+女性dsealeaf4@nps.gov北部国家/地区126，690.15美元。
+男性Fbezley 5@lulu.com莫霍克谷366733.78美元。
+女性hfriett2@dager sign.com南层461，664.44美元(约合人民币461，664.44元)。
+女性nmerrell1@ted.com指湖，309，033.10美元。
+Male Ojusch7@utexas.edu Hudson Valley，663，821.09美元(约合人民币663，821.09元)。
+女性tvenmore 3@gmpg.org纽约中部175，818.02美元。
+女性uStanden6@Geocities.jp首都地区674，634.93美元</p><p>当我们连接file-7.txt和file-8.txt时，它工作得很好。让我们看看file-7.txt和file-9.txt会发生什么情况。</p><p>我们键入以下命令：</p><p>加入-1 1-2 2文件-7.txt文件-9.txt</p><img class="content_img" src="/image/e8/e8563bb6ae9d89822ae2111a6101e4f4.png" /><p>我们只匹配了六条线。由于大小写字母的差异，其他两个电子邮件地址无法连接。</p><p>但是，我们可以使用-i(忽略大小写)选项强制连接忽略这些差异，并匹配包含相同文本的字段，而不区分大小写。</p><p>我们键入以下命令：</p><p>加入-1 1-2 2-i文件-7.txt文件-9.txt</p><img class="content_img" src="/image/b6/b69405c1d52222a3667f1567d3b4654c.png" /><p>所有八条线路都匹配并成功连接。</p><p>混合匹配</p><p>在JOIN中，当你在与尴尬的数据准备搏斗时，你有了一个强大的盟友。您可能需要分析数据，或者您可能正在尝试将其调整为形状，以执行到不同系统的导入。</p><p>无论情况如何，你都会很高兴能加入你的阵营！</p><div class="item_info"><span class="item_key"><a href="/tag/文件/">文件</a></span><span class="item_key"><a href="/tag/join/">join</a></span><span class="item_key"><a href="/tag/女性/">女性</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14796.html">如何在Linux上使用JOIN命令</a><li><a href="/story/14627.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14624.html">解释的Linux文件时间戳：atime、mtime和ctime</a><li><a href="/story/14550.html">如何在Linux上使用Tail命令</a><li><a href="/story/14514.html">您想知道的关于Linux上的inode的所有信息</a><li><a href="/story/14471.html">如何在Google Drive中更改文件所有者</a><li><a href="/story/14454.html">如何在Linux上使用stat命令</a><li><a href="/story/14347.html">如何使用cURL从Linux命令行下载文件</a><li><a href="/story/14306.html">如何创建USB驱动器的映像</a><li><a href="/story/14240.html">如何在Linux上使用LESS命令</a><li><a href="/story/14188.html">如何最终确定和撤销对共享Google文件的访问</a><li><a href="/story/14167.html">如何共享指向您的Google文件的“复制”链接</a><li><a href="/story/14164.html">如何将Google文档、工作表或幻灯片文件共享为网页</a><li><a href="/story/14127.html">如何在iPhone和iPad上将文件复制和备份到外部存储</a><li><a href="/story/14024.html">如何快速搜索Google Drive</a><li><a href="/story/13983.html">如何在Linux上使用chown命令</a><li><a href="/story/13968.html">如何将音乐复制到Android手机</a><li><a href="/story/13912.html">你能在Windows PC或Android手机上使用AirDrop吗？</a><li><a href="/story/13883.html">如何在PowerPoint演示文稿中使用iTunes音乐</a><li><a href="/story/13864.html">Linux上的stdin、stdout和stderr是什么？</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

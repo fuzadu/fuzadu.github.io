@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>使用Autoruns手动清理受感染的PC</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>使用Autoruns手动清理受感染的PC</h2></div><div class="content"><p>市面上有很多反恶意软件程序可以清除你的系统中的垃圾，但是如果你不能使用这样的程序会发生什么？来自Sysinterals(最近被微软收购)的Autoruns在手动删除恶意软件时是必不可少的。</p><p>您可能需要手动删除病毒和间谍软件的原因有几个：</p><p>
+也许您无法忍受在您的PC上运行耗费资源且具有侵入性的反恶意软件程序。
+你可能需要清理你妈妈的电脑(或者其他人，他们不知道网站上“您的电脑感染了病毒-单击此处删除”的大闪光标志不一定是可以信任的信息)。
+恶意软件的攻击性如此之强，以至于它会抵制所有自动删除它的尝试，甚至不允许您安装反恶意软件。
+你的极客信条的一部分是相信反间谍软件实用程序是为懦夫准备的</p><p>Autoruns对任何极客的软件工具包来说都是无价的补充。*它允许你跟踪和控制所有自动启动Windows(或Internet Explorer)的程序(和程序组件)。*几乎所有恶意软件都是自动启动的，因此很有可能会在Autoruns的帮助下被检测和删除。</p><p>我们在前面的一篇文章中介绍了如何使用Autoruns，如果您需要首先熟悉该程序，您应该阅读这篇文章。</p><p>Autoruns是一个独立的实用程序，不需要在您的计算机上安装。它可以简单地下载、解压缩并运行(下面的链接)。这使得它非常适合添加到您的闪存驱动器上的便携实用程序收藏中。</p><p>在计算机上首次启动Autoruns时，系统会向您显示许可协议：</p><img class="content_img" src="/image/4e/4e993a94a2060cbd53b62b90852066cf.png" /><p>同意条款后，将打开Autoruns主窗口，其中显示计算机启动、登录或打开Internet Explorer时将运行的所有软件的完整列表：</p><img class="content_img" src="/image/ba/ba339475061f7e53188244208654ae4f.png" /><p>要临时禁用程序启动，请取消选中其条目旁边的复选框。1注意：如果该程序当时正在运行，则这不会终止该程序-它只会阻止它下次启动。*要永久阻止程序启动，请完全删除该条目(使用Delete键，或右键单击并从上下文菜单中选择删除)。注意：这不会从您的计算机中删除该程序-要完全删除该程序，您需要卸载该程序(或者从硬盘中删除它)。</p><p>可疑软件</p><p>要熟练地辨别哪些是恶意软件，哪些不是恶意软件，可能需要相当多的经验(阅读“试错”)。*Autoruns中显示的大多数条目都是合法程序，即使它们的名称对您来说并不熟悉。以下是一些帮助您区分恶意软件和合法软件的提示：</p><p>
+如果条目由软件发行商数字签名(即，在发行商列中有条目)或具有“描述”，则它很有可能是合法的。
+如果您认识该软件的名称，则通常没有问题。请注意，有时恶意软件会“冒充”合法软件，但采用与您熟悉的软件相同或相似的名称(例如。“AcrobatLauncher”或“Photoshop Browser”)。此外，请注意，许多恶意软件程序采用通用或听起来无害的名称，如“Diskfix”或“SearchHelper”(均在下文中提及)。
+恶意软件条目通常出现在Autoruns的登录选项卡上(但并非总是！)。
+如果您打开包含EXE或DLL文件的文件夹(下面将对此进行详细说明)，请检查“上次修改”日期，这些日期通常是最近几天的(假设您感染的时间相当近)。
+恶意软件通常位于C：\WINDOWS文件夹或C：\WINDOWS\System32文件夹中。
+恶意软件通常只有一个通用图标(条目名称左侧)</p><p>如果有疑问，请右键单击该条目，然后选择Search Online…</p><p>下面的列表显示了两个看起来可疑的条目：Diskfix和SearchHelper</p><img class="content_img" src="/image/1a/1a4fb4950730a58606054a7fb23db2e2.png" /><p>上面突出显示的这些条目相当典型的恶意软件感染：</p><p>
+它们既没有描述，也没有出版商。
+他们有通用的名字。
+这些文件位于C：\WINDOWS\System32。
+他们有通用图标。
+文件名是随机字符串。
+如果您查看C：\WINDOWS\System32文件夹并找到这些文件，您会发现它们是该文件夹中最近修改过的一些文件(如下所示)</p><img class="content_img" src="/image/5d/5d7c8f98eee34c07a44393b28562fd9b.png" /><p>双击这些项目将带您转到其对应的注册表项：</p><img class="content_img" src="/image/0d/0da6dd2b29f21d9c872ba1f8959bdfc5.png" /><p>删除恶意软件</p><p>一旦您确定了您认为可疑的条目，您现在需要决定如何处理它们。您的选择包括：</p><p>
+暂时禁用自动运行条目。
+永久删除自动运行条目。
+找到正在运行的进程(使用任务管理器或类似工具)并终止它。
+从磁盘中删除EXE或DLL文件(或至少将其移动到不会自动启动的文件夹)</p><p>或以上所有内容，这取决于您对该程序是恶意软件的确定程度。</p><p>要查看更改是否成功，您需要重新启动计算机，并检查以下任何或全部内容：</p><p>
+Autoruns-查看条目是否已返回。
+任务管理器(或类似)-查看程序在重新启动后是否重新启动。
+检查使您认为您的PC最初被感染的行为。如果这种情况不再发生，则很可能您的PC现在是干净的</p><p>结束 / 结尾 / 结论 / 推论</p><p>这个解决方案并不适合每个人，很可能是针对高级用户的。通常情况下，使用高质量的防病毒应用程序可以做到这一点，但如果没有，Autoruns是您的防恶意软件工具包中的一个有价值的工具。</p><p>请记住，某些恶意软件比其他恶意软件更难删除。有时您需要多次重复上述步骤，每次迭代都需要您更仔细地查看每个自动运行条目。有时，当您删除自动运行条目时，正在运行的恶意软件会替换该条目。当发生这种情况时，我们需要更积极地暗杀恶意软件，包括终止感染了恶意软件DLL的程序(甚至是Explorer.exe这样的合法程序)。</p><p>不久，我们将发表一篇文章，介绍如何识别、定位和终止代表合法程序但正在运行受感染的DLL的进程，以便将这些DLL从系统中删除。</p><p>从Sysinterals下载Autoruns</p><div class="item_info"><span class="item_key"><a href="/tag/程序/">程序</a></span><span class="item_key"><a href="/tag/恶意软件/">恶意软件</a></span><span class="item_key"><a href="/tag/条目/">条目</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/13476.html">如何在Linux上使用超时命令</a><li><a href="/story/11954.html">如何在Windows 10中卸载或修复程序</a><li><a href="/story/11103.html">什么是ASLR，它如何保护您的计算机安全？</a><li><a href="/story/9190.html">帕普斯解释道：什么是“可能有害的程序”？</a><li><a href="/story/8536.html">如何让您的Windows 10 PC启动更快</a><li><a href="/story/7888.html">如何删除可怕的BoBrowser广告软件/恶意软件</a><li><a href="/story/7421.html">如何在Ubuntu 14.04中轻松添加和删除程序</a><li><a href="/story/7219.html">如何将Windows程序重置为其默认设置</a><li><a href="/story/6934.html">Windows之前的PC：使用MS-DOS实际上是什么样子</a><li><a href="/story/6154.html">初学者极客：关于在Windows上禁用启动程序你需要知道的一切</a><li><a href="/story/6121.html">Windows上不需要的10种系统工具和优化程序</a><li><a href="/story/6118.html">为什么旧程序不能在现代版本的Windows上运行(以及如何运行它们)</a><li><a href="/story/6116.html">为什么不能直接将程序的文件夹复制到新的Windows系统(以及何时可以)</a><li><a href="/story/6088.html">您是否应该使用第三方卸载程序？</a><li><a href="/story/5260.html">如何使程序和自定义脚本在引导时运行</a><li><a href="/story/5241.html">初学者极客：在Windows中更改默认应用程序和文件关联的7种方法</a><li><a href="/story/5152.html">如何向Windows应用程序的标题栏添加强大的新选项</a><li><a href="/story/5008.html">Windows程序崩溃时快速自动重新启动</a><li><a href="/story/4785.html">Linux下如何将全局热键绑定到WINE程序</a><li><a href="/story/4764.html">键盘上的系统RQ、滚动锁定和暂停中断键是什么？</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

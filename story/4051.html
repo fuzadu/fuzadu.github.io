@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何使用系统日志远程收集服务器事件</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何使用系统日志远程收集服务器事件</h2></div><div class="content"><img class="content_img" src="/image/a6/a6c688d93790865305e7467fd0445d9c.jpg" /><p>您是否曾希望，无需手动登录服务器即可查看系统日志，只需简单地将事件发送给您？How-to Geek介绍如何设置系统日志收集器。</p><p>概述 / 综述</p><p>系统日志在各种服务器/设备上使用，以向系统管理员提供系统日志信息。出来就是维基入口：</p><p>为了利用这些信息，人们可以：</p><p>
+连接到服务器/设备。在哪里，如何，可以根据设备的不同而改变，如果可能的话，从管理员与保护资产的防火墙的关系中改变。
+找到系统日志文件。其位置可能略有不同，具体取决于被访问的系统/设备。例如，在debian上是“/var/log/syslog”，在DD-wrt上是“/var/log/Messages”(几乎就像是为了让你恼火…)。。
+使用可用的文件查看实用程序。同样，根据系统上的可用内容，可能会略有不同。例如，在Busybox上，“较少”的滚动实用程序并不是完整的GNU实现，因此缺少“向前滚动”(+F)功能。</p><p>另一种方法是设置一个syslog收集器，并让syslog服务器/设备将事件发送给它。</p><p>前提条件和假设</p><p>
+支持远程系统日志记录的设备。在本文中，我们将使用DD-WRT作为示例。
+系统日志使用端口514 UDP，因此必须可以从向收集器发送数据信息的设备访问该端口。
+一些基本的网络知识是假定的。</p><p>设置系统日志收集器</p><p>为了收集事件，需要有一个系统日志服务器。虽然有很多选项，比如“猕猴桃”和“PRTG”，但我们还是选择了“syslog Watcher”。</p><p>注意：建议采集服务器使用不会改变的IP，可以静态分配，也可以保留在DHCP中。</p><p>
+下载最新的Syslog Watcher。
+按照常规的“Next-&gt;Next-&gt;Finish”方式安装。
+从“Start”菜单中打开该程序。
+当提示选择操作模式时，选择：“管理本地syslog服务器”。
+如果Windows UAC提示，请批准管理权限请求。
+点击左上角巨大的“播放”按钮启动这项服务。</p><p>虽然您可以进一步配置程序，例如，如视频教程中所示，但是您没有这样做，它已经准备好开始运行了。</p><p>设置系统日志发送程序</p><p>如上所述，对于此示例，我们将使用DD-WRT。也就是说，远程系统日志是大多数自重设备/操作系统都支持的一项重要功能。有关如何设置它的信息，请参考文档。</p><p>在DD-WRT上：</p><p>
+转到WebGUI并选择“服务”。
+选中“syslogd”的启用复选框。
+
+在远程服务器文本框中，输入收集服务器的IP/DNS。
+保存并应用设置以使其生效。</p><p>就是这样，…。您的系统日志观察器应该开始由系统事件填充。</p><img class="content_img" src="/image/6c/6cbed75b88875b5e33f0e77cc32bd4d7.jpg" /><p>享受：)</p><p>不要试图远程操作或操作任何太空桥…。：P</p><div class="item_info"><span class="item_key"><a href="/tag/系统日志/">系统日志</a></span><span class="item_key"><a href="/tag/服务器/">服务器</a></span><span class="item_key"><a href="/tag/选择/">选择</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

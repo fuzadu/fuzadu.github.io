@@ -1,0 +1,78 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>构建您自己的自动文件更新系统</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>构建您自己的自动文件更新系统</h2></div><div class="content"><p>每个服务器管理员都有一组他们喜欢使用的实用程序。通常，这些工具保存在每台机器上以确保可用性，并且可以来自各种来源，如Sysinterals和NirSoft。</p><p>要将这些工具更新到最新版本，手动更新可能非常乏味和耗时，特别是在混合中有多个服务器的情况下。因此，我们为您提供了一个解决方案：一个易于设置的解决方案，您只需维护一组工具，您的所有计算机就可以将其工具的版本同步到此位置。</p><p>例如，假设您在3个不同的网络上维护系统，并且希望在所有这些机器上使用相同的10个工具集来编写脚本和进行维护。您应该有一个工具的主文件夹(可通过网站获得)，您可以在其中维护要分发到所有系统的发布版本。然后，您的所有其他系统都会“呼叫总部”到这个主文件夹，并在本地下载各自的版本。此过程提供自动解决方案，以始终确保您的实用程序版本在所有系统中保持一致。</p><p>设置环境</p><p>这样做的环境很容易设置，一旦设置好，就是一个真正的“设置好就忘了它”的解决方案。</p><p>
+在您有权访问的网站内创建一个文件夹，该文件夹将作为主文件夹使用(即ToolsFolder)。
+将所有常用实用程序上载到此文件夹。
+在您想要同步到主站点的服务器上，将下面的脚本放入保存工具的本地文件夹中(如果您还没有工具，则放入wget)。
+将url更新为主文件夹(即http://my.site.com/ToolsFolder).。
+安排脚本定期运行，将同步主站点上存在的所有本地工具。</p><p>替代用途</p><p>虽然我们已经介绍了系统管理员对此类型脚本的实际使用，但在许多其他情况下，此脚本可能会派上用场：</p><p>
+用于更新本地计算机上的Sysinterals和NirSoft实用程序(脚本中包含URL)。
+在桌面系统上使用，使一组文档与主副本保持同步。</p><p>该脚本既支持硬编码http://source.site.com/Stuff.zip)，，也支持从命令行提供URL(即UpdateFromWebURL)，因此请发挥您的想象力。</p><p>剧本</p><code>@ECHO OFF
+TITLE Update From Web
+ECHO Update From Web
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+SETLOCAL EnableExtensions
+
+REM Place this script in the folder which contains the utilities to update.
+REM Requires WGet to be in the same folder as this script or in a location set in the PATH variable.
+
+REM URL to look for updates on in the event none is specified as a parameter.
+REM URL's of interest ---
+REM  Sysinternals : http://live.sysinternals.com/tools
+REM  NirSoft      : http://www.nirsoft.net/panel
+SET URL=http://my.site.com/ToolsFolder
+
+REM If a parameter is specified, use that as the URL.
+IF NOT {%1}=={} SET URL=%~1
+
+REM Set this value to 1 to restart tasks that are stopped during the update process.
+SET RestartKilledTasks=0
+
+
+ECHO Detected directory: %~dp0
+%~d0
+CD %~p0
+ECHO.
+ECHO.
+
+SET NewFile=.NEW
+
+FOR /F %%A IN ('DIR /B') DO WGet --output-document="%%A%NewFile%" "%URL%/%%A"
+REM Delete empty (not found) files.
+FORFILES /P . /C "CMD /C IF @fsize==0 DEL /F /Q @path"
+
+SET StartWhenFinished="%TEMP%StartWhenFinished.tmp.txt"
+ECHO ;Terminated tools > %StartWhenFinished%
+
+FOR /F %%A IN ('DIR /B') DO (
+   IF EXIST "%%A%NewFile%" (
+      ECHO Found new version of: %%A
+      REM If the file is running, kill it so it can be replaced.
+      FOR /F %%B IN ('TASKLIST') DO (
+         IF /I [%%A]==[%%B] (
+            ECHO %%B is currently running, killing process.
+            ECHO %%A >> %StartWhenFinished%
+            TASKKILL /IM "%%B" /T /F
+         )
+      )
+      REM Replace with the new version.
+      DEL /F /Q "%%A"
+      RENAME "%%A%NewFile%" "%%A"
+   )
+)
+
+IF {%RestartKilledTasks%}=={1} (
+   ECHO.
+   ECHO Resuming killed tasks
+   FOR /F "usebackq skip=1" %%A IN (%StartWhenFinished%) DO (
+      ECHO Starting %%A
+      START "Restarting %%A" "%%A"
+   )
+)
+
+IF EXIST "%StartWhenFinished%" DEL "%StartWhenFinished%"
+
+ENDLOCAL
+</code><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从SysadminGeek.com下载UpdateFromWeb脚本</p><p>下载Wget</p><div class="item_info"><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/文件夹/">文件夹</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14323.html">如何在Windows上将Caps Lock用作修改键</a><li><a href="/story/13819.html">如何将GUI添加到Linux Shell脚本</a><li><a href="/story/13415.html">如何在Linux上使用yes命令</a><li><a href="/story/13180.html">如何使用脚本编辑器为Google应用程序增压</a><li><a href="/story/13147.html">如何在进程退出时自动关闭MacOS终端</a><li><a href="/story/11555.html">如何在Windows中自动键入带双空格的句点</a><li><a href="/story/10454.html">如何在Windows 10上创建和运行Bash Shell脚本</a><li><a href="/story/7708.html">如何配置Windows以更轻松地使用PowerShell脚本</a><li><a href="/story/7704.html">如何使用批处理文件使PowerShell脚本更易于运行</a><li><a href="/story/7410.html">愚蠢的极客小把戏：如何让你的电脑与你对话</a><li><a href="/story/7370.html">在Windows上使窗口始终在最上面的3种最佳方法</a><li><a href="/story/6987.html">如何用PowerShell生成随机姓名和电话号码</a><li><a href="/story/4528.html">如何在Ubuntu上交换两个和三个手指触摸板轻击动作</a><li><a href="/story/3339.html">使用此简单脚本通过右键单击将文件上载到FTP站点</a><li><a href="/story/3166.html">Shell脚本初学者指南2：for循环</a><li><a href="/story/3146.html">Shell脚本初学者指南：基础知识</a><li><a href="/story/3024.html">如何在Ubuntu中使用热键关闭显示器</a><li><a href="/story/2913.html">使用自动热键脚本的初学者指南</a><li><a href="/story/2841.html">轻松保留所有网络计算机上本地文件的镜像备份</a><li><a href="/story/2839.html">使用简单的脚本诊断Linux服务器负载问题</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

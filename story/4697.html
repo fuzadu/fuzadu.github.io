@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>谁为我的互联网服务提供商提供互联网服务？</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>谁为我的互联网服务提供商提供互联网服务？</h2></div><div class="content"><img class="content_img" src="/image/58/5820f0a33a41375dab8e94ad8ab142fa.jpg" /><p>你向你的互联网服务提供商(ISP)支付互联网接入费用，他们就会为你打开甜蜜的、甜蜜的、消防的数据水龙带。但是谁为您的ISP提供流量呢？请继续阅读，了解全球数据交付的细节。</p><p>今天的问答环节是由超级用户提供的，这是Stack Exchange的一个分支，Stack Exchange是一个社区驱动的问答网站群。</p><p>问题</p><p>超级用户阅读器Kronos一度提出了许多极客都会问的问题：</p><p>到底是谁？它的所有网络都是向下的，但并不是所有的网络对最终用户都是立即可见的。</p><p>答案</p><p>感谢超级用户贡献者汤姆·威斯曼(Tom Wijsman)，我们将详细了解如何确定谁专门为我们的ISP提供互联网接入，以及成为提供商到提供商网络的一部分意味着什么。</p><p>我怎么才能弄清楚互联网的基础设施呢？</p><p>让我们假设我们不知道互联网的历史，也不能访问任何可以解释这一点的在线资源。那么，要了解互联网基础设施是如何建设的，唯一的办法就是追根溯源。使用现有的协议来发现我们的互联网是如何构建的。</p><p>具体地说，互联网控制消息协议(ICMP)定义了回声请求和回声应答。通过在每次迭代中将IP数据包的生存时间增加1，您可以找到通向目标的路径上的每个下一跳。这使您可以获得您和您的目标(经典的traceroute)之间的跳数列表。</p><p>在Windows上，您可以使用tracert；在Linux和MacOSX上，您可以使用traceroute。</p><p>因此，让我们执行从比利时到美国的Traceroute；Stack Exchange看起来是一个很好的目标。</p><code>Tracing route to stackexchange.com [64.34.119.12] over a maximum of 30 hops:
+
+  ... redacted ...
+
+  5    10 ms    12 ms    12 ms  te-3-3.car2.Brussels1.Level3.net [212.3.237.53]
+  6    11 ms    11 ms    15 ms  ae-0-11.bar2.Brussels1.Level3.net [4.69.148.178]
+  7    20 ms    13 ms    15 ms  ae-7-7.ebr1.London1.Level3.net [4.69.148.182]
+  8    16 ms    16 ms    18 ms  vlan101.ebr2.London1.Level3.net [4.69.143.86]
+  9    83 ms    84 ms    87 ms  ae-44-44.ebr1.NewYork1.Level3.net [4.69.137.78]
+ 10    84 ms    93 ms    97 ms  ae-71-71.csw2.NewYork1.Level3.net [4.69.134.70]
+ 11    87 ms    96 ms    83 ms  ae-2-70.edge1.NewYork1.Level3.net [4.69.155.78]
+ 12    84 ms    93 ms    84 ms  gig2-0.nyc-gsr-b.peer1.net [216.187.123.5]
+ 13    87 ms    84 ms    85 ms  gwny01.stackoverflow.com [64.34.41.58]
+ 14    87 ms    82 ms    87 ms  stackoverflow.com [64.34.119.12]
+</code><p>有趣的是，我们现在知道比利时、伦敦和纽约都与3级相连。3级可以被视为ISP的ISP，它们只是将多个ISP互连。下面是一张它是如何连接的图片：</p><img class="content_img" src="/image/b4/b44d20d3a553fdbc8fa18065c5f1419c.jpg" /><p>让我们走相反的方向，中国！我能找到的第一件事就是搜索引擎百度。</p><code>Tracing route to baidu.com [123.125.114.144] over a maximum of 30 hops:
+
+  ... redacted ...
+
+  5    12 ms    10 ms    12 ms  ae0.anr11.ip4.tinet.net [77.67.65.177]
+  6   167 ms   167 ms   167 ms  xe-5-1-0.sjc10.ip4.tinet.net [89.149.185.161]
+  7   390 ms   388 ms   388 ms  as4837.ip4.tinet.net [77.67.79.150]
+  8   397 ms   393 ms   397 ms  219.158.30.41
+  9   892 ms     *      392 ms  219.158.97.13
+ 10   407 ms   403 ms   403 ms  219.158.11.197
+ 11   452 ms   451 ms   452 ms  219.158.15.5
+ 12     *      434 ms   434 ms  123.126.0.66
+ 13   449 ms   450 ms   450 ms  61.148.3.34
+ 14   432 ms   433 ms   431 ms  202.106.43.66
+ 15   435 ms   435 ms   436 ms  123.125.114.144
+</code><p>嗯，关于那里的中国互联网服务提供商的信息不多，但我们至少找到了Tinet。下面是他们网站的一张漂亮图片，显示了他们是如何与各种ISP连接的：</p><img class="content_img" src="/image/4c/4cfaac056d82fdd369ff80a8b17bb0dd.jpg" /><p>它们只需在其服务的相关区域内散布一大堆跳数，然后在终端连接到互联网服务提供商(ISP)即可。它们有一大堆跳数的原因是为了可靠性，因为当一些跳数掉出来的时候。</p><p>如果你把这个重复几次，你就能了解每件事是如何联系在一起的。</p><img class="content_img" src="/image/8b/8ba9abd6b00945b6f62f0417d61ee469.jpg" /><p>那么，有哪些网络层呢？</p><p>我们通过跟踪路由找到的巨大网络称为第1层网络。</p><p>如果从Internet主干页面单击进入第1层网络，您将看到当前第1层网络的列表：</p><p>目前尚不清楚AOL传输数据网络(ATDN)是否仍是第1层网络。</p><p>等等，什么…。什么是偷窥？</p><p>这些网络通过称为“对等”的过程相互连接。大多数流量需要通过至少2个不同的顶层网络才能到达目的地，并且这些网络使用对等安排进行桥接。通常的工作方式是，协议的每一方都将承诺在其网络上为另一方路由x数量的流量，反之亦然。在这些安排中通常不交换金钱，除非一方发送或接收的数据比另一方多得多。</p><p>大公司也可以走出去，安排自己的同行关系。例如，Netflix已经安排了自己的对等和网络基础设施，直接与多个一级网络连接，这样它的流量既更便宜，也更接近每一家流行的美国宽带ISP的最终用户。</p><p>请看这个关于窥视的维基百科页面。</p><p>在这些页面上有更多要读的内容；这个答案给出了一个大致的概念，发现所有的细节都留给读者作为练习。</p><p>对解释有什么补充吗？在评论中发声。想阅读其他精通技术的Stack Exchange用户的更多答案吗？点击这里查看完整的讨论主题。</p><div class="item_info"><span class="item_key"><a href="/tag/网络/">网络</a></span><span class="item_key"><a href="/tag/互联网/">互联网</a></span><span class="item_key"><a href="/tag/isp/">isp</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14679.html">如何确定Mac上Wi-Fi网络的优先级</a><li><a href="/story/14678.html">如何确定Mac上Wi-Fi网络的优先级</a><li><a href="/story/14677.html">如何确定Mac上Wi-Fi网络的优先级</a><li><a href="/story/14675.html">如何确定Mac上Wi-Fi网络的优先级</a><li><a href="/story/14064.html">如何在不打开iPhone设置的情况下连接Wi-Fi</a><li><a href="/story/13625.html">如何在Windows 10上查看您保存的所有Wi-Fi密码</a><li><a href="/story/11957.html">科技成瘾让我们不那么快乐。这是一个市场机会。</a><li><a href="/story/11705.html">如何在Android上限制计费Wi-Fi网络的后台数据</a><li><a href="/story/11336.html">什么是“热点2.0”网络？</a><li><a href="/story/11224.html">如何让访客访问您的Eero Wi-Fi网络</a><li><a href="/story/11003.html">如何使用Android的Wi-Fi助手安全连接公共Wi-Fi网络(并保存数据)</a><li><a href="/story/10627.html">如何在Windows 10中重置整个网络并从头开始</a><li><a href="/story/10095.html">如何忘记iPhone或iPad上的Wi-Fi网络</a><li><a href="/story/9798.html">如何在Windows 10上删除保存的Wi-Fi网络</a><li><a href="/story/9791.html">Windows中的专用网络和公共网络有什么不同？</a><li><a href="/story/9422.html">如何查找任何设备的IP地址、MAC地址和其他网络连接详细信息</a><li><a href="/story/9348.html">如何在OS X中手动添加或删除Wi-Fi网络</a><li><a href="/story/9257.html">如何在任何计算机、智能手机或平板电脑上查找路由器的IP地址</a><li><a href="/story/8754.html">如何在Windows 10中监控您的网络使用情况</a><li><a href="/story/8501.html">如何避免窥探酒店Wi-Fi和其他公共网络</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

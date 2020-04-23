@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Excel中按字母顺序对工作表选项卡进行排序</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Excel中按字母顺序对工作表选项卡进行排序</h2></div><div class="content"><img class="content_img" src="/image/6c/6cb1db75da254101674e180c016518b5.png" /><p>如果Excel工作簿中有大量工作表，则可能很难找到特定的工作表。按字母顺序对工作表选项卡进行排序可以更容易地找到您要查找的内容。</p><p>相关：如何在Excel中重命名工作表选项卡</p><p>除了通过对工作表选项卡应用颜色来组织它们之外，您还可以按字母顺序或字母数字顺序对它们进行排序，只要您对工作表应用了自定义名称即可。遗憾的是，Excel中没有内置按字母顺序对工作表选项卡进行排序的功能，但您可以在工作簿中添加一个宏，使您可以按升序或降序对选项卡进行排序。我们将向您展示如何将Microsoft支持网站上提供的宏添加到Excel工作簿中，该工作簿将对工作表选项卡进行排序。</p><img class="content_img" src="/image/31/313897623fec606a53aa4fd5a3a37078.png" /><p>要开始，请按Alt+F11打开Microsoft Visual Basic for Applications(VBA)编辑器。然后，转到Insert(插入)&gt;Module(模块)。</p><img class="content_img" src="/image/06/06e926a5c8d7634b1ee42a843aefed2d.png" /><p>将以下宏从Microsoft复制并粘贴到显示的模块窗口中。</p><code>Sub Sort_Active_Book()
+Dim i As Integer
+Dim j As Integer
+Dim iAnswer As VbMsgBoxResult
+'
+' Prompt the user as which direction they wish to
+' sort the worksheets.
+'
+   iAnswer = MsgBox("Sort Sheets in Ascending Order?" & Chr(10) _
+     & "Clicking No will sort in Descending Order", _
+     vbYesNoCancel + vbQuestion + vbDefaultButton1, "Sort Worksheets")
+   For i = 1 To Sheets.Count
+      For j = 1 To Sheets.Count - 1
+'
+' If the answer is Yes, then sort in ascending order.
+'
+         If iAnswer = vbYes Then
+            If UCase$(Sheets(j).Name) > UCase$(Sheets(j + 1).Name) Then
+               Sheets(j).Move After:=Sheets(j + 1)
+            End If
+'
+' If the answer is No, then sort in descending order.
+'
+         ElseIf iAnswer = vbNo Then
+            If UCase$(Sheets(j).Name) < UCase$(Sheets(j + 1).Name) Then
+               Sheets(j).Move After:=Sheets(j + 1)
+            End If
+         End If
+      Next j
+   Next i
+End Sub</code><p></p><p>VBA编辑器会自动为每个模块命名，并在末尾加上一个数字，例如Module1、Module2等。您只需接受模块的默认名称即可。但是，如果您计划将其他宏添加到工作簿中，最好重命名每个模块，以便您知道它们是什么。我们将重命名我们的模块，向您展示如何使用。</p><img class="content_img" src="/image/35/354bf3ebb5e99a2a4d4f273cd48f432e.png" /><p>要重命名模块，请在左窗格的“属性”下选择模块的“名称”框中的文本。</p><img class="content_img" src="/image/6d/6d985aa79b481c8557434b47ab83e76d.png" /><p>在“名称”框中键入模块的名称，然后按Enter键。请注意，模块名称不能包含空格。</p><img class="content_img" src="/image/da/dafb3bab1d2928db99f9996f51fe2bee.png" /><p>在左窗格中Project下的Modules列表中，模块名称会更改。</p><img class="content_img" src="/image/71/71026d8df40f4e0d1111d5a02b0c7939.png" /><p>通过转到文件&gt;关闭并返回到Microsoft Excel来关闭VBA编辑器。</p><img class="content_img" src="/image/28/288eb9e1d655325228f9d0efb14a9711.png" /><p>现在，我们将运行宏来对选项卡进行排序。按Alt+F8可访问“宏”对话框中的宏列表。在列表中选择宏(在我们的示例中只有一个宏)，然后单击“Run”。</p><img class="content_img" src="/image/cc/cca64d2f403e84dfc51e9a2e9536f5f4.png" /><p>将显示以下对话框，允许您选择是按升序还是降序对工作表进行排序。我们希望按升序对它们进行排序，因此单击“是”。</p><img class="content_img" src="/image/2c/2c656228b4a2edc87d022bae0ae0336c.png" /><p>工作表选项卡现在按字母顺序排列。</p><img class="content_img" src="/image/df/df10fc4832ad4c162c4caa287ace582d.png" /><p>您添加的宏现在是工作簿的一部分，但是当您保存它时，您可能会看到以下对话框。这是因为您将工作簿另存为.xlsx文件，该文件是不包含宏的普通Excel工作簿格式。若要在工作簿中包含宏并能够运行它们，必须将工作簿另存为启用宏的工作簿或.xlsm文件。要执行此操作，请在此对话框上单击“否”。</p><img class="content_img" src="/image/c5/c52ddae6a08ee8b15392ab330198cafc.png" /><p>此时将显示另存为对话框。导航到要保存启用宏的工作簿的位置(如果您尚未位于该文件夹中)。从“保存类型”下拉列表中选择“启用Excel宏的工作簿(*.xlsm)”。</p><img class="content_img" src="/image/e3/e36bb5f464b882aa3109837714044452.png" /><p>单击“保存”。</p><img class="content_img" src="/image/f3/f3af76f527fd73bca86504396ea60993.png" /><p>如果不将工作簿另存为启用宏的工作簿(.xlsm文件)，则您添加的宏将被删除。您可能希望删除工作簿的.xlsx版本，这样，如果您想要添加更多工作表选项卡并使用宏对其重新排序，则不会忘记使用工作簿的.xlsm版本。如果您不想再使用宏，可以随时将工作簿再次另存为.xlsx文件。</p><div class="item_info"><span class="item_key"><a href="/tag/模块/">模块</a></span><span class="item_key"><a href="/tag/工作/">工作</a></span><span class="item_key"><a href="/tag/microsoft/">microsoft</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/13475.html">如何将Alexa添加到您的Smart Mirror</a><li><a href="/story/5292.html">极客学校：了解如何扩展PowerShell</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

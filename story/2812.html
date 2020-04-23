@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>自动更新系统内部工具的批处理脚本</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>自动更新系统内部工具的批处理脚本</h2></div><div class="content"><p>虽然Microsoft Sysinterals工具非常强大和有用，但它们缺少的一个功能是检查新版本的能力。目前，您必须定期查看Sysinterals站点，并将您的系统与最新官方发布的版本进行比较，以保持最新。</p><p>作为更好的解决方案，我们创建了一个批处理脚本，它将自动更新您系统上的Sysinterals工具。您所要做的就是将批处理脚本文件放入您的Sysinterals工具所在的文件夹中，剩下的工作由脚本完成，不需要配置。</p><p>以下是它的工作原理：</p><p>
+将下载来自Sysinterals的当前工具列表，并将其与系统上的文件进行比较。
+如果找到匹配项，则会将Sysinterals中的当前版本复制到您的系统中。
+如果工具当前正在运行，则该工具将被关闭，然后在脚本完成后重新启动。</p><p>剧本</p><code>@ECHO OFF
+TITLE Sysinternals Updater
+ECHO Sysintenals Updater
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+SETLOCAL ENABLEDELAYEDEXPANSION
+
+SET SysInternalsTools="%Temp%SysInternalsTools.tmp.txt"
+SET CurrentTasks="%Temp%CurrentTasks.tmp.txt"
+SET StartWhenFinished="%Temp%StartWhenFinished.tmp.txt"
+
+ECHO Detected directory: %~dp0
+%~d0
+CD %~p0
+ECHO.
+ECHO.
+
+ECHO Downloading current tool list...
+SET LiveShare=\live.sysinternals.comtools
+START /MIN %LiveShare%
+DIR %LiveShare% /B > %SysInternalsTools%
+TASKLIST > %CurrentTasks%
+ECHO ;Terminated tools > %StartWhenFinished%
+
+ECHO.
+ECHO Updating installed SysInternals tools
+FOR /F %%A IN ('DIR /B') DO (
+   FOR /F "usebackq" %%B IN (%SysInternalsTools%) DO (
+      IF /I [%%A]==[%%B] (
+         ECHO Updating %%A
+         FOR /F "usebackq" %%C IN (%CurrentTasks%) DO (
+            IF /I [%%A]==[%%C] (
+               ECHO %%C is currently running, killing process - queue restart
+               ECHO %%C >> %StartWhenFinished%
+               TASKKILL /IM %%A /T /F
+            )
+         )
+         XCOPY %LiveShare%%%B %%A /Y
+         ECHO.
+      )
+   )
+)
+
+ECHO.
+ECHO Resuming killed tasks
+FOR /F "usebackq skip=1" %%A IN (%StartWhenFinished%) DO (
+   ECHO Starting %%A
+   START "Sysinternals Tool" "%%A"
+)
+
+IF EXIST %SysInternalsTools% DEL %SysInternalsTools%
+IF EXIST %CurrentTasks% DEL %CurrentTasks%
+IF EXIST %StartWhenFinished% DEL %StartWhenFinished%
+
+ENDLOCAL
+
+ECHO.
+PAUSE</code><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从sysadmin Geek下载Sysinterals Updater脚本</p><div class="item_info"><span class="item_key"><a href="/tag/sysinterals/">sysinterals</a></span><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/版本/">版本</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/6754.html">像专业人士一样使用系统内部工具</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

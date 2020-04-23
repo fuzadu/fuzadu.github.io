@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>在Windows Server和IIS上设置AWStats</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>在Windows Server和IIS上设置AWStats</h2></div><div class="content"><p>当谈到收集网站上的统计数据时，你永远都不会满足。虽然最流行的跟踪统计数据的方法之一是通过Google Analytics等服务，但日志文件分析仍然是跟踪访问者的可靠方法，因为他们不受脚本阻止程序的影响。广泛使用的日志文件分析工具是开源工具AWStats。</p><p>在设置AWStats之前，您需要确保您的Windows Server2003/IIS6或Windows Server2008/IIS7计算机上安装了Perl。</p><p>配置网站日志记录</p><p>为了捕获数据AWStats跟踪，您的站点必须记录以下字段：</p><p>
+日期。
+时差。
+C-IP。
+CS-用户名。
+CS-方法。
+cs-uri-词干。
+SC-状态。
+SC字节。
+CS-版本。
+CS(用户代理)。
+CS(推荐人)</p><p>IIS 6安装程序</p><p>要在IIS 6中配置日志记录，请打开IIS管理器，右键单击“网站”文件夹，然后选择“属性”。</p><img class="content_img" src="/image/54/548273fa10c8d4c0c13c1c0ae970f9f4.png" /><p>在“网站”选项卡上，单击“启用日志记录”部分中的“属性”按钮。</p><img class="content_img" src="/image/71/712d91f7ea461f82682ef698cc0d6776.png" /><p>在“日志记录属性”中，将计划配置为每天，并将本地时间用于文件命名和转存。</p><img class="content_img" src="/image/5e/5e2f517ca9e2ba582b9e8357a1ae208b.png" /><p>在“高级”选项卡上，配置要记录的必填字段。</p><img class="content_img" src="/image/c2/c22ea752bcf0f2e710bbe689dbc8ef91.png" /><img class="content_img" src="/image/09/095258aa842cd790494b00fc0c40b28f.png" /><p>应用您的更改。</p><p>IIS 7安装程序</p><p>要在IIS 7中配置日志记录，请打开IIS管理器，然后从服务器配置选项中选择日志记录。</p><img class="content_img" src="/image/3c/3c2fd20f267871d1a58069f6c2bdfd1a.png" /><p>在日志记录配置中，为每个站点设置单个日志文件，该文件使用文件命名的本地时间每天转存。</p><img class="content_img" src="/image/24/245644d2fe14a6cdf8bf78114b9cc1b2.png" /><p>单击选择字段按钮，然后选中必填字段旁边的复选框。</p><img class="content_img" src="/image/80/807c4687137a6e2d2b147c64c0e64518.png" /><p>应用您的更改。</p><p>设置AWStats</p><p>从Sourceforge下载AWStats压缩包。在‘C：inetpubwwwroot’文件夹中创建一个名为‘awstats’的文件夹，并将以下文件从下载的zip文件解压缩到此文件夹：</p><p>
+/wwwroot/icon。
+/wwwroot/cgi-bin/lang。
+/wwwroot/cgi-bin/lib。
+/wwwroot/cgi-bin/plugins。
+/wwwroot/cgi-bin/awredir.pl。
+/wwwroot/cgi-bin/awstats.mod.conf。
+/wwwroot/cgi-bin/awstats.pl</p><img class="content_img" src="/image/bc/bca54594dbe58a5b61d15bacfb8abfad.png" /><p>解压文件后，将“awstats.mod.conf”文件复制到名为“awstats.domain.com.conf”的文件中(其中domain.com是要跟踪的站点)，在记事本中打开它，然后根据需要配置选项。</p><p>您需要配置的第一件事是日志文件位置，默认情况下位于以下位置：</p><p>
+服务器2003：C：WINDOWSsystem32LogFilesW3SVC[IIS_ID]。
+服务器2008：C：inetPublogsLogFilesW3SVC[IIS_ID]</p><p>您可以通过查看IIS管理器中的主站点列表并注意各个站点旁边的ID列中的值来查找IIS ID。</p><img class="content_img" src="/image/24/2451ad8a6007dc1e492cd80f0f925414.png" /><p>在配置文件中设置选项。此文件很好地解释了每个选项的作用，因此请花几分钟时间查看它们。根据上面的设置，以下是一些感兴趣的设置：</p><p>
+LogFile=”C:inetpublogsLogFilesW3SVC1u_ex%YY-24%MM-24%DD-24.log”(Server2008/IIS7，其中每天计算统计数据)。
+LogFile=”C:WINDOWSsystem32LogFilesW3SVC1ex%YY-4%MM-4%DD-4.log”(Server2003/IIS6，其中每4小时计算一次统计数据，以便全天更新)。
+LogFormat=“date time cs-method cs-uri-stem cs-username c-ip cs-version cs(User-Agent)cs(Referer)sc-Status sc-Bytes”
+SiteDomain=“domain.com”
+HostAliases=“www.domain.com 11.22.33.44”(指向您站点的任何其他URL)。
+DirIcons=“图标”
+DefaultFile=“index.php index.html”</p><p>保存配置文件后，运行AWStats Perl脚本来编译统计数据。该命令如下所示：</p><img class="content_img" src="/image/80/8084802379316af96efa1139c2149f96.png" /><p>上面的命令假定有以下条件(本文使用的配置)：</p><p>
+文件夹“C：inetpubwwwrootawstats”通过IIS提供统计信息。
+Perl被安装到“C：perl”目录。
+配置文件名为“awstats.domain.com.conf”。</p><p>最后，您可以通过浏览器访问统计数据。除非您通过IIS配置安全性，否则任何人都可以公开查看此URL。要测试我们的配置，只需浏览到：</p><img class="content_img" src="/image/32/326c5a893238ab672c4a57f03202821d.png" /><p>计划统计信息更新</p><p>我们在配置文件中设置的配置之一是“logfile”位置，它定义要从文件的日期部分减去的小时数。因此，要自动编译统计信息的过程，请设置一个Windows计划任务，该任务运行上面使用的命令，以您配置的时间间隔构建统计信息。</p><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>下载AWStats(压缩包)</p><div class="item_info"><span class="item_key"><a href="/tag/cs/">cs</a></span><span class="item_key"><a href="/tag/配置/">配置</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

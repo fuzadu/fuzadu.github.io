@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在键盘上重新映射Office键</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在键盘上重新映射Office键</h2></div><div class="content"><img class="content_img" src="/image/1d/1d7a7a6e5aa23d2efaa41167610f17e6.png" /><p>Office键是您可以在Microsoft键盘上找到的新键。它可以让你快速启动像Word这样的应用程序，但你可以用自动热键重新映射它，作为一个额外的修改键，或者完全禁用应用程序快捷键。</p><p>办公室钥匙是什么？</p><p>您可以在10月15日之后发布的新Microsoft键盘上找到此键。你可能也听说过微软随其一起添加的专用表情符号键；这两个键都位于Windows键和Menu键曾经所在的位置，位于Right Alt和Right Control之间：</p><img class="content_img" src="/image/bd/bd8b02f881f28d345265402ed7c04ea5.png" /><p>开箱即用的Office键可以打开Office应用程序，并且有几个热键可以打开特定的Microsoft应用程序。有一些基本的热键可以打开Word和Excel，比如Office+W和Office+X，但也有一些比较难懂的热键-Office+L、Office+T和Office+Y可以打开LinkedIn、Microsoft Teams和Yammer。</p><p>Office键发送Shift+Control+Alt+Windows</p><p>这很方便，但您可能会认为这是Microsoft创建的新密钥，类似于Windows密钥。但微软关心的是向后兼容性，而发明一个全新的密钥将是一件麻烦的事情，所以它走了一条捷径。</p><p>你可能听说过“超级”钥匙。Hyper是一个很久以前的老修改键，曾用于Lisp机器的太空学员键盘。它几乎是化石。你在任何现代键盘上都找不到它，而且目前的任何操作系统都不支持它。但这个名字很酷，而且它一直是一个模糊的修饰键的术语，任何应用程序都不会使用它。</p><p>现在，超级键是用每个修改键的组合来模拟的。在MacOS上，它映射到Shift+Control+Option+Command。在Windows上，使用Shift+Control+Alt+Windows模拟Hyper键。</p><p>相关：如何将Mac的Caps Lock变成额外的修改键</p><p>这种映射背后的思想是，任何用户体验设计师都不会疯狂到设计一个需要用户同时按下所有四个修改键的应用程序。这基本上给了你一个完整的键盘价值的修改键，让你随心所欲地绑定，这是很棒的。</p><p>或者，至少是这样-在Windows 10 2019年5月的更新中，微软在Office Key向公众发布之前增加了对Office Key的初步操作系统支持。猜猜Office密钥映射到什么？</p><img class="content_img" src="/image/4f/4f319bbdd25a4097724b1c4d85676e66.png" /><p>我是海珀。Office键充当所有四个修改键，而不是实现新的键。表情符号键本身并不是一个键；它映射到快捷键Office+Space，你可以自己按这个键来打开表情符号查看器。(您可以按Windows+。或者Windows+；也可以打开表情符号面板。)</p><p>如果你的键盘上有一个专用的超级键，那就太棒了。大多数人改变了Caps Lock的用途，但Office键将取代无用的Windows键，并将其变成有用的东西。不幸的是，在27个可用的字母键和空格键中，Office键快捷键正在使用其中的10个，微软未来可能会添加更多。目前，还没有内置的方法来关闭这些快捷键。“设置”中没有选项，没有注册表调整，也没有组策略。</p><p>当然，如果不被带到Yammer的营销页面，你就不能再按Hyper+Y，这一事实让Hyper Key用户相当不安。但是，您可以自己进行一些调整，以重新映射关键点或完全关闭快捷键。在开始使用AutoHotkey之前，您需要通过在PowerShell中运行以下命令来启用一个注册表调整。右键单击开始按钮，然后单击“PowerShell”将其打开：</p><code>REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32</code><p>通常，当您单独按Office键时，它会打开Office应用程序。这会修改打开的位置，防止应用程序在按下该键时启动。不幸的是，我们在注册表中没有找到类似的允许禁用应用程序特定热键的内容，因此您需要手动重新映射这些热键。如果您找到从注册表中禁用特定于应用程序的快捷方式的方法，请在评论中让我们知道，我们将更新这篇文章。</p><p>如何使用AutoHotKey重新映射Office键</p><p>自动热键是用于将键盘键重新映射到特定操作的程序。它可以做更多的事情，但在本例中，我们实际上只想使用它从Office键组合中删除Windows键。</p><p>AutoHotkey安装一个低级键盘钩子，该钩子在系统的其余部分到达键盘事件之前拦截它们。如果它与配置的热键匹配，则自动热键会截获该事件。然后，自动热键可以发送自己修改的键盘事件。但是，这不允许您发送Shift+Control+Alt+Win+W热键，因为这仍然会触发单词快捷键。不过，您可以发送Shift+Control+Alt+W。尽管您必须仔细检查以确保您的应用程序没有使用它，但这仍然很笨拙，足以被认为是您通常不会按下的超级键。</p><p>以下脚本将Office+W重新映射为Shift+Control+Alt+W。只需将文本另存为AutoHotKey脚本并运行：</p><code>#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
+SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
+#UseHook
+#InstallKeybdHook
+#SingleInstance force
+SendMode Input
+
+#^!+W::
+Send ^!+W
+return</code><p>字符序列“#^！+”分别是Windows、Control、Alt和Shift的自动热键速记。此脚本与Office+W匹配，并发回更正后的序列，解决了单词开头的问题。</p><p>当然，您还需要重新映射其他键T、Y、O、P、D、L、X、N和空格，因此完整的脚本要长得多：</p><code>#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
+SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
+#UseHook
+#InstallKeybdHook
+#SingleInstance force
+SendMode Input
+
+#^!+W::
+Send ^!+W
+return
+
+#^!+T::
+Send ^!+T
+return
+
+#^!+Y::
+Send ^!+Y
+return
+
+#^!+O::
+Send ^!+O
+return
+
+#^!+P::
+Send ^!+P
+return
+
+#^!+D::
+Send ^!+D
+return
+
+#^!+L::
+Send ^!+L
+return
+
+#^!+X::
+Send ^!+X
+return
+
+#^!+N::
+Send ^!+N
+return
+
+#^!+Space::
+Send ^!+Space
+return</code><p>您可以对Office键使用的十个键中的每个键使用更正后的热键，但对于每个不使用的键，您将能够使用完整的超级键。你还可以将这些热键映射到AHK功能，这样你就可以完全自由地控制它们，只要你以某种方式处理它们，使Office应用程序不会打开。</p><p>这个解决方案对大多数人来说可能已经足够好了，直到微软决定允许关闭它(如果有的话)。但是，如果你真的想要完全禁用Office应用程序快捷方式，有一个老套的解决方案。</p><p>如何完全删除Office密钥集成</p><p>警告：以下是一个有点难看的黑客攻击。此解决方案实际上只适用于高级用户，因此如果您不知道自己在做什么，请坚持使用AutoHotkey解决方案。</p><p>但是，如果您想使用Shift-Control-Alt-Win组合键作为Hyper键，并且希望Microsoft从一开始就不添加Office热键，那么有一个解决方案可以完全解决这个问题。</p><p>在Windows中，必须使用系统函数RegisterHotKey向操作系统注册系统范围的热键。在幕后，Office键热键是由资源管理器以这种方式注册的，资源管理器是负责桌面、任务栏和文件资源管理器的进程。它是Windows不可或缺的一部分，因此在这里注册热键是有意义的；使用RegisterHotKey创建的热键将在注册它们的进程关闭时自动取消注册。由于资源管理器始终处于打开状态，因此热键将是永久性的。</p><p>我们的第一个想法是通过注册我们自己的来覆盖Office热键。但是，如果您创建一个运行RegisterHotKey的程序，您会发现它无法工作。您不能注册已由其他程序注册的热键。</p><p>但是，当程序退出时，它们会自动注销其热键。这意味着如果您可以关闭注册热键的程序，您就可以禁用它们。不幸的是，关闭资源管理器不是一个非常可行的解决方案，因为如果没有可用的计算机，您将陷入困境。如果您重新启动资源管理器，它会在重新启动时重新注册热键。</p><p>所以这个解决方案是这样工作的：Office键修复程序关闭资源管理器，从而释放要被覆盖的热键。然后，它会注册我们要禁用的每个与Office键相关的热键，并重新启动资源管理器。当资源管理器重新启动时，它会像正常一样尝试注册Office键热键，但会被阻止，因为我们的程序已经注册了它们。*它只会在启动时尝试这样做，所以我们所要做的就是等待几秒钟，然后退出程序。这将注销进程中的热键，从而允许其他程序使用它们。</p><p>此解决方案运行良好，允许实际的Office键或模拟的Hyper键使用键盘上的每个快捷键，而不会有打开随机Microsoft应用程序的风险。它完全切断了Office键热键。当您按下这些组合键时，资源管理器甚至不会收到消息。</p><p>唯一的缺点是，因为我们正在重新启动Explorer，所以当这个程序在启动时运行时，它会在重新启动之前瞬间闪烁桌面黑色。它不是超级侵入性的，但足以引起注意。如果你的电脑需要一秒钟来加载启动应用程序，它将关闭你打开的任何文件资源管理器窗口。好处是你可以高枕无忧，因为你知道在与微软市场部争夺键盘控制权的竞争中，你的战绩是1比0。</p><p>无论如何，该脚本是相对较短的C++代码：</p><code>#include <windows.h>
+#include <stdio.h>
+#include <thread>
+#include <chrono>
+#include <iostream>
+
+int main(int argc, wchar_t* argv[])
+{
+	//Build Array Of Keys To Unregister
+	//These map to W, T, Y, O, P, D, L, X, N, and Space, respectively.
+	UINT offendingKeys[10] = { 0x57, 0x54, 0x59, 0x4F, 0x50, 0x44, 0x4C, 0x58, 0x4E, 0x20 };
+
+	//Kill Explorer
+	system("taskkill /IM explorer.exe /F");
+
+	//Register hotkey
+	for (int i = 0; i < 10; i++) {
+		RegisterHotKey(NULL, i, 0x1 + 0x2 + 0x4 + 0x8 | MOD_NOREPEAT, offendingKeys[i]);
+	}
+
+	//Restart Explorer
+	system("start C:/Windows/explorer.exe");
+
+	/* Sleep for a few seconds to make sure Explorer has time to
+	   attempt to register the Office hotkeys, and get blocked by 
+	   our hotkeys */
+	std::this_thread::sleep_for(std::chrono::milliseconds(4000));
+	 
+	//deregister hotkeys by ID
+	for (int i = 0; i < 10; i++) {
+		UnregisterHotKey(NULL, i);
+	}
+
+	return 1;
+}</code><p>你也可以在GitHub上找到它。你将不得不自己编译它，但无论如何，你不应该真的运行你在互联网上找到的随机可执行文件。将其作为二进制文件保存后，将其放在C：\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup中，这样它就可以在您的计算机引导后运行。</p><p>放在启动文件夹中的可执行文件需要一些时间才能打开，因此程序可能会在您看到桌面后5-10秒运行。它会关闭你已经打开的所有文件资源管理器窗口，但不会关闭其他应用程序，比如Chrome。</p><p>如果任何阅读本文的人都知道有一种方法可以防止Explorer在不重新启动的情况下注册热键-或者如果不知何故可以取消注册由另一个线程创建的热键-请随时在评论中让我们知道。</p><div class="item_info"><span class="item_key"><a href="/tag/热键/">热键</a></span><span class="item_key"><a href="/tag/office/">office</a></span><span class="item_key"><a href="/tag/应用程序/">应用程序</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/847.html">创建快捷键或热键以在Linux上将扬声器静音</a><li><a href="/story/518.html">分配键盘媒体键以在Winamp中工作</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

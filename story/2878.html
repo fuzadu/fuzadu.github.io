@@ -1,0 +1,19 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>只需很少的编程技能即可构建下载调度器</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>只需很少的编程技能即可构建下载调度器</h2></div><div class="content"><p>我们都喜欢从互联网上下载东西，有很多很棒的下载管理器工具可以用来安排我们的下载。使用下载管理器可能会更容易，但是探索一下我们的Ubuntu附带的工具并充分利用它并没有什么坏处。</p><p>在本文中，我们将向您展示Ubuntu中的一个内置软件，我们可以使用它通过wget从互联网上下载东西。最重要的是，我们将向您展示如何使用Cron安排下载。</p><p>使用WGET下载</p><p>Wget是使用HTTP、HTTPS和FTP这三种最广泛使用的互联网协议检索文件的免费软件包。它是一个非交互式命令行工具，因此可以很容易地从脚本、cron作业、没有X-Windows支持的终端等调用它。</p><p>打开您的终端，让我们探索一下如何使用wget从网上下载内容。使用wget下载的基本语法如下：</p><p>WGET[选项]…。[url]…</p><p>此命令会将wget手册下载到本地驱动器中</p><p>WGET http://www.gnu.org/software/wget/manual/wget.pdf</p><p>Linux Cron</p><p>Ubuntu附带了一个cron守护进程，用于调度要在特定时间执行的任务。Crontab允许您指定应该执行的操作和时间。这就是您通常使用命令行工具计划任务的方式。</p><p>打开一个终端窗口并输入crontab-e。</p><img class="content_img" src="/image/d9/d9b621b5539441cb20d42fb3f6fa0777.png" /><p>crontab中的每个部分由空格分隔，最后一个部分中有一个或多个空格。cron条目由分钟(0-59)、小时(0-23，0=午夜)、日(1-31)、月(1-12)、工作日(0-6，0=星期日)、命令组成。上面的crontab中的第三个条目在凌晨2点下载wget.pdf。第一个条目(0)和第二个条目(2)表示2：00。第三项至第五项(*)指一天、一个月或一周的任何时间。最后一个条目是wget命令，用于从指定的URL下载wget.pdf。</p><p>这是关于wget和Cron如何工作的基础。让我们来看看如何安排下载的真实例子。</p><p>计划下载</p><p>我们将在凌晨2点下载Firefox 3.6。由于我们的ISP只提供有限的数据量，我们需要在上午8点停止下载。这就是设置的样子。</p><img class="content_img" src="/image/fc/fc16e4eebd379508144729bd540f6b69.png" /><p>忽略上述crontab中的前2个条目。第三个和第四个命令是您唯一需要的两个命令。第三个命令设置一个任务，该任务将在凌晨2点下载Firefox：</p><p>[守则]。
+0 2*wget-c http://download.mozilla.org/?product=firefox-3.6.6&os=win&lang=en-GB。
+[/守则]</p><p>c选项表示，如果现有下载尚未完成，wget应该恢复现有下载。</p><p>第四个命令将在上午8点停止wget。“Killall”是按名称终止进程的Unix命令。</p><p>[守则]。
+0 8*删除所有wget。
+[/守则]</p><p>KILLALL wget告诉Ubuntu在上午8点停止wget下载文件</p><p>其他有用的wget命令</p><p>1.指定下载文件的目录</p><p>[守则]。
+wget-output-document=/home/zainul/downloads/wget manual.pdf http://www.gnu.org/software/wget/manual/wget.pdf。
+[/守则]</p><p>选项-output-document允许您指定下载的文件的目录和名称</p><p>2.下载网站</p><p>Wget还可以下载网站。</p><p>[守则]。
+wget-m http://www.google.com/profiles/zainul.franciscus。
+[/守则]</p><p>上面的命令将下载我的整个Google个人资料网页。选项‘-m’告诉wget下载指定URL的‘镜像’映像。</p><p>另一个重要的选择是告诉wget在下载网站时应该关注多少个链接。</p><p>[守则]。
+WGET-r-L1 http://www.google.com/profiles/zainul.franciscus。
+[/守则]</p><p>上面的wget命令使用两个选项。第一个选项‘-r’告诉wget递归下载指定的网站。第二个选项‘-L1’告诉wget只从指定网站获取第一级链接。我们可以设置三个级别‘-L2’和‘-L3’。</p><p>3.忽略机器人进入</p><p>网站管理员维护一个名为Robot.txt的文本文件。“Robot.txt”维护网页爬行器(如wget)不应爬行的URL列表。我们可以用‘-erobots=off’选项告诉wget忽略‘Robot.txt’。下面的命令告诉wget下载我的Google个人资料的第一页并忽略‘Robot.txt’。</p><p>[守则]。
+wget-erobots=关闭http://www.google.com/profiles/zainul.franciscus。
+[/守则]</p><p>另一个有用的选项是-U。此选项将把wget屏蔽为浏览器。请注意，将应用程序屏蔽为其他应用程序可能会违反Web服务提供商的条款和服务。</p><p>[守则]。
+wget-erobots=OFF-U mozilla http://www.google.com/profiles/zainul.franciscus。
+[/守则]</p><p>结束 / 结尾 / 结论 / 推论</p><p>WGET是一个非常老式但可破解的GNU软件包，我们可以用它来下载文件。Wget是一个交互式命令行工具，这意味着我们可以让它在我们的计算机后台运行，而不必启动任何应用程序。查看wget手册页</p><p>[守则]。
+$man wget。
+[/守则]</p><p>了解我们可以与wget一起使用的其他选项。</p><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>WGET手册。
+wget中途失败时如何合并两个下载的文件。
+Linux快速提示：一步完成下载和解包</p><div class="item_info"><span class="item_key"><a href="/tag/wget/">wget</a></span><span class="item_key"><a href="/tag/下载/">下载</a></span><span class="item_key"><a href="/tag/命令/">命令</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/11233.html">如何使用终极命令行下载工具wget</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

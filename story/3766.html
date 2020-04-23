@@ -1,0 +1,56 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在您的家庭路由器上安装附加软件(DD-WRT)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在您的家庭路由器上安装附加软件(DD-WRT)</h2></div><div class="content"><img class="content_img" src="/image/8c/8c05e0bc387843c9c4bed000f072e008.jpg" /><p>你有没有想过在你的路由器上直接安装额外的功能，比如电子邮件、Bit-Torrent，甚至MySQL？嗯，也许现在你可以了。How-to Geek深入研究如何在DD-WRT上安装Opkg软件。</p><p>Jean Spector和Aviad Raviv摄</p><p>如果您还没有，请务必阅读本系列的前几篇文章：</p><p>
+使用DD-WRT将您的家庭路由器打造成超强功能的路由器。
+如何在DD-WRT上使用Pixelserv删除广告</p><p>假设您熟悉这些主题，请继续阅读。请记住，本指南技术含量较高，初学者在修改路由器时应格外小心。</p><p>磨难</p><p>我最近买了一辆新的Buffalo WZR-HP-AG300H，它带有一个重新命名的DD-WRT版本。由于这款路由器有USB接口，我立即连接了硬盘，并尝试使用“Optware，Right Way”维基指南。不幸的是，我很快发现我得到的路由器是基于Atheros的，维基页面上的脚本不支持它。所以我开始挖掘(就像我一直做的那样)，遇到了几个指南(1，2，3，4)，它们旨在解释如何让Opkg手动工作。虽然他们(在网络上的其他来源)对这本指南的贡献是无价的，但其中一些说明(IMHO)就是不够直截了当。例如，给您“lib”文件fish，但不教您如何从源文件中钓鱼。还必须使用Linux格式化的硬盘或至少一个分区(实际上，这甚至在我测试过的固件上都不起作用)。这就是为什么，我觉得有必要创建下面的简明、易于遵循和可重现的过程，让OpenWRT Opkg包管理器在这样的路由器上工作。</p><p>更新：在17798 Alpha Build上，已将不断安装的分区和功能重新引入到最新的重新命名的版本中。</p><p>奥普克是什么？</p><p>Opkg是一个包管理器，就像apt/apitty和yum一样。它充当ipkg包管理器的替代品，并可用于安装软件，例如：传输BitTorrent守护进程、ssmtp电子邮件发送器和Knockd守护进程，该守护进程按照指定的端口触发序列执行脚本，仅举几例。从OpenWRT站点：</p><p>因此，使用Opkg，我们可以像“从您的家庭路由器释放更多能量”指南中的ipkg一样安装东西。主要区别在于：</p><p>
+为了给出SSMTP和Knockd的示例，您必须手动计算依赖项。手动执行此操作的过程很麻烦，而且不是很直接。opkg会自动执行此操作。
+这一次，我们将在现有固件之上添加软件，而不是替换它。虽然更换它是一个极好的极客练习，但毫无疑问：危险，容易出现问题，不可逆转，最糟糕的是特定于路由器。不用说，这要简单得多，也更安全。</p><p>先决条件</p><p>要完成本指南，请注意以下事项：</p><p>
+如上所述，本指南是在Buffalo的“专业”固件版本17135的Buffalo WZR-HP-AG300H上创建和测试的。它应该可以在任何基于Atheros(Ar71xx)的路由器上使用相同版本或更高版本的DD-WRT，但是您的里程数可能非常高。
+您需要在路由器上启用SSH，并安装和使用WinSCP管理器来连接到它。这在“如何使用DD-WRT上的Pixelserv删除广告”指南中进行了解释。实际上，我们假设您能够执行该指南中说明的所有操作。
+您需要能够使用终端连接到路由器(建议使用SSH)。DD-WRT维基上有一些关于如何做到这一点的提示。
+用于JFFS的空间和用于基本设置的大约4MB的格式化后空间。JFFS空间不仅是一个前提条件，它还是一个阻挡因素。这是因为，如果您的路由器没有至少上述4MB的格式化后空间，您将不会从本指南中获得任何真正的好处，最好使用“从您的家庭路由器释放更多电力”指南将ipkg包直接安装到固件中或手动安装ipkg包。按照“如何使用DD-WRT上的Pixelserv删除广告”指南中的说明启用JFFS，并查看格式化后实际有多少空闲空间。</p><p>注意：只有2MB的安装空间就可以做到这一点，但是这样我们就会失去“/etc”变得可读写的结果，并且必须调用opkg，同时在每次…时手动指定配置文件。这就像是如此蹩脚的…</p><p>让我们开始行动吧</p><p>此时，您应该已经启用了JFFS，并且能够通过SSH/WinSCP进入路由器。</p><p>
+打开到路由器的终端会话。
+创建我们将在其中工作的临时目录：
+mkdir/tmp/1。
+cd/tmp/1</p><p>使用ipkg安装Opkg。
+虽然我们将取代ipkg作为包管理器，但我们将使用它手动安装Opkg安装包。</p><p>
+为此，请从OpenWRT项目主干下载ar71xx架构的Opkg安装包：
+WGET http://downloads.openwrt.org/snapshots/trunk/ar71xx/packages/opkg_618-2_ar71xx.ipk。
+注1：在撰写本文时，618是最新版本，未来可能会有变化，因此进行相应调整。
+注2：要使本指南适用于其他体系结构，唯一的区别可能是从适用于您的路由器…的体系结构中获取Opkg安装程序。然而，这确实是未经您检验的。
+使用以下命令调用ipkg手动安装Opkg：
+ipkg安装opkg_618-2_ar71xx.ipk。
+注意：如果需要，您也可以通过这种方式手动安装存储库中的每个软件包。但是，这意味着您必须解决您自己的…上的依赖关系。这样做有什么乐趣呢？</p><p>获取动态库文件(“lib”)。
+使Opkg工作所需的“lib”文件是OpenWRT发行版的一部分。要获得它们，必须从所述发行版的“根文件系统”中提取它们。</p><p>
+为此，请从OpenWRT项目主干下载OpenWRT发行版的最新基本“根文件系统”，其中包含所需的“lib”：
+WGET http://downloads.openwrt.org/snapshots/trunk/ar71xx/openwrt-ar71xx-generic-rootfs.tar.gz。
+
+使用以下命令将其解压缩：
+tar xvzf OpenWRT-ar71xx-Generic-rootfs.tar.gz。
+
+将“libs”文件从上面解压的“rootfs”复制到JFFS上的“libs”目录，同时保留它们的属性和符号链接：
+cp-PP/tmp/1/lib/*/jffs/usr/lib/。
+注意：您将收到消息，说明子目录将被省略。因为我们只需要“lib”文件，所以这很好，您可以安全地忽略这些消息。</p><p>正在修复LD_LIBRARY“路径”
+我们需要告诉路由器，在哪里查找我们刚刚“安装”的共享库(Lib)，并且它需要在固件附带的共享库(Lib)之前执行此操作。</p><p>
+为此，手动设置LD_LIBRARY环境变量(目前)，使其成为我们复制新lib文件的位置将是“路径”中的第一个位置：
+出口LD_LIBRARY_PATH=/jffs/usr/lib：$LD_LIBRARY_PATH</p><p>可读写“/etc”
+我们将“/etc”复制到JFFS，然后创建常规的“/etc”挂载点，指向它。这样做既可以打开一个充满可能性的世界，因为“/etc”将变得可读可写(我个人已经等待了7年)，并使期望这种行为的包能够正常工作。</p><p>
+创建存放“/etc”的目录：
+mkdir-p/jffs/geek/等。
+
+递归复制整个“/etc”，同时保留所有子目录、文件属性和符号链接。
+cp-a/etc/*/jffs/geek/etc/。
+
+手动(目前)将“/etc”目录“绑定挂载”到JFFS One：
+mount-o bind/jffs/geek/etc//etc/</p><p>设置Optware目录(“/opt”)。
+OpenWRT的Opkg，预计在构建路由器固件时使用。此时，文件系统还不在路由器上，因此仍然可能发生更改，因此安装到文件系统上的任何位置都没有问题。这就是为什么Opkg配置文件将软件包指向文件系统的“根”(/)。但是，我们在构建固件并将其安装在路由器上之后使用Opkg，并且由于我们不能将文件系统的根目录更改为可读写，因此我们将所有安装都指向“/opt”下。但是，目前“/opt”还指向路由器固件上的一个只读位置。为了克服这个问题，我们将使“/opt”指向JFFS，它是可读写的。</p><p>
+为此，请创建将包含Optware软件包的目录：
+mkdir-p/jffs/opt。
+
+手动(目前)将“/opt”目录“绑定挂载”到JFFS One：
+mount-o bind/jffs/opt//opt/。
+注意：虽然超出了本指南的范围，但更高级的用户可能希望更改此挂载点，以指向硬盘。</p><p>调整Opkg配置文件。
+我们希望Opkg配置文件成为Opkg默认搜索的位置(即“/etc”)，并将其调整为安装为“/opt”。</p><p>
+为此，请将Opkg软件包安装的opkg配置文件移动到可读写的“/etc”位置：
+mv/jffs/etc/opkg.conf/etc/。
+
+将Optware安装的目标更改为“/opt”而不是“root”(/)。
+为此，使用“vi”编辑器或WinSCP导航到“/etc/”并创建“opkg.conf”文件的内容：</p><div class="item_info"><span class="item_key"><a href="/tag/路由器/">路由器</a></span><span class="item_key"><a href="/tag/opkg/">opkg</a></span><span class="item_key"><a href="/tag/安装/">安装</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14214.html">您的旧路由器是否仍在进行安全更新？</a><li><a href="/story/13847.html">如何保护您的Smarthome免受攻击</a><li><a href="/story/13787.html">如何出厂重置路由器</a><li><a href="/story/13755.html">如何重新启动路由器和调制解调器</a><li><a href="/story/13716.html">将路由器放置在何处以获得最佳Wi-Fi速度</a><li><a href="/story/13493.html">为什么Windows10说您的Wi-Fi网络“不安全”</a><li><a href="/story/11786.html">解决Wi-Fi问题的最简单方法：(认真)移动路由器</a><li><a href="/story/11142.html">如何转发路由器上的端口</a><li><a href="/story/10153.html">如何同时使用您的路由器和ISP的调制解调器/路由器组合</a><li><a href="/story/10152.html">如何启用(和故障排除)对Plex Media Server的远程访问</a><li><a href="/story/9670.html">为什么您应该升级您的路由器(即使您有较旧的小工具)</a><li><a href="/story/9301.html">什么是802.11ac，我需要它吗？</a><li><a href="/story/9230.html">如何更改Wi-Fi网络的名称和密码</a><li><a href="/story/8972.html">HTG评论Google OnHub：Wi-Fi和Smarthome技术的融合(如果你愿意等待)</a><li><a href="/story/8901.html">如何检查您的路由器是否有恶意软件</a><li><a href="/story/8805.html">HTG回顾D-Link AC3200超Wi-Fi路由器：满足您Wi-Fi需求的快速太空船</a><li><a href="/story/8655.html">2.4 GHz和5 GHz Wi-Fi有什么不同(我应该使用哪种)？</a><li><a href="/story/8640.html">将您的家庭路由器连接到VPN以绕过审查、过滤等</a><li><a href="/story/8565.html">什么是双频和三频路由器？</a><li><a href="/story/8099.html">如何修复冲突的国家代码并改善Mac的Wi-Fi</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

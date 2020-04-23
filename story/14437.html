@@ -1,0 +1,47 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何将任何智能设备连接到HomeKit(使用树莓PI)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何将任何智能设备连接到HomeKit(使用树莓PI)</h2></div><div class="content"><p>许多智能设备跳过Apple HomeKit支持，只与Alexa、Google和其他平台集成。不过，有了这个Raspberry PI黑客功能，您可以将HomeKit支持添加到任何具有开源Homebridge软件的智能设备上。</p><p>适用于任何智能设备的家庭工具包</p><p>如果你全力以赴使用HomeKit，那么一个大问题就是很少有智能设备支持它。例如，唯一阻碍一些廉价智能灯泡的是它们缺乏HomeKit支持。亚马逊的“智能灯泡”选择是TECKIN的四盒装，在撰写本文时，它的价格约为40美元-比一个LIFX灯泡还低。</p><img class="content_img" src="/image/f9/f9342bc0d99bddd415205089cb032f0b.png" /><p>当然，它们没有LIFX那么高级；颜色没有LIFX那么鲜艳，而且它们在浴室里会发出嗡嗡声，但只要10美元一瓶，它们的价值是相当无与伦比的。</p><p>然而，主要的问题是他们没有HomeKit支持。他们并不完全愚蠢--他们使用谷歌主页、Alexa、IFTTT和制造商的应用程序。它们对只有TECKIN智能灯泡的人来说很好。</p><p>然而，因为你不能从HomeKit访问它们，所以你不能从Home应用程序、控制中心的小工具或Siri来控制它们。您也不能将它们包含在使用其他品牌的灯泡的场景中，也不能在自动化中使用它们。如果你已经投资了HomeKit，这很可能会破坏你的交易。</p><p>认识Homebridge</p><p>幸运的是，有一种方法可以让这些特殊的灯泡变得更有用。HomeKit API允许称为网桥的设备，如飞利浦色调的这一台，连接在其他协议上运行的子设备。您只需将桥作为设备添加到HomeKit中，它就会在HomeKit中注册连接到它的每个灯光。每当您请求更新灯光时，您的手机都会与桥通话，而桥也会与灯光通话。</p><p>因此，网桥只是将信息从一个API转发到另一个API。因为你可以通过互联网控制TECKIN灯泡，所以完全可以通过软件将它们连接到HomeKit-不需要专有硬件。</p><p>如果你周围有一个树莓PI(5美元的PI Zero就可以了)，你可以把它设置成一个带有Homebridge框架的桥。这个轻量级的NodeJS应用程序模拟HomeKit API，并将请求转发到您的非HomeKit智能设备。</p><p>基本上，你在PI上运行它，它会将每个“哑巴”设备添加到Home应用程序中。当你试图通过Home应用程序或Siri控制灯泡时，Homebridge会为你与这些设备对话。在您设置之后，就像设备一开始就支持HomeKit一样。</p><p>这要求设备始终运行HomeBridge，因此您不会将其安装在笔记本电脑上。Raspberry PI是理想的，但如果你有一台旧设备，你可以将其重新定位为始终运行的服务器或台式机，你可以将其安装在上面。</p><p>HomeBridge是一个框架，您可以使用插件对其进行扩展。它有相当大的社区支持，所以任何给定的智能设备都很有可能有Homebridge插件来添加对它的支持。如果你的设备没有插件，但你的智能设备有API，而且你又精通技术，你可以自己编写一个。</p><p>然而，对于大多数人来说，安装只是安装Homebridge和设备的品牌插件，以及一些配置。如果您可以使用命令行，并且有一点时间，那就相当容易了。</p><p>安装和配置HomeBridge</p><p>Homebridge是一款NodeJS应用，所以必须安装NodeJS和NPM才能使用。如果您的机器运行Linux，您可能可以从包管理器那里获得它。</p><p>在Ubuntu上，您需要输入以下命令手动设置Node repo，然后安装NodeJS：</p><code>curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
+sudo apt-get install -y nodejs</code><p>否则，您可以参考Node的下载页面，以获取有关如何为您的特定操作系统安装它的信息。</p><p>如果您使用的是Linux，还需要安装一些依赖项，如下图所示：</p><code>sudo apt-get install libavahi-compat-libdnssd-dev</code><p>之后，您可以通过NPM全局安装Homebridge，如下图所示：</p><code>sudo npm install -g --unsafe-perm homebridge</code><p>您还需要安装所需的品牌插件，因为Homebridge只是一个框架。例如，对于TECKIN灯泡，插件是同样在全球安装的home bridge-tuya-web。</p><p>您可以键入以下内容：</p><code>npm i homebridge-tuya-web -g</code><p>一切安装完毕后，您就可以实际使用它了！键入以下命令以运行一次HomeBridge并初始化所有内容：</p><code>homebridge</code><p>它会抱怨您必须创建的配置不足。默认目录为~/.homebridge/，但如果要移动它，可以使用-U参数。</p><p>键入以下内容以在此文件夹中创建新的JSON配置文件：</p><code>nano ~/.homebridge/config.json</code><p>无论您使用哪种插件，您都需要以下基本配置：</p><code>{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "CC:22:3D:E3:CE:30",
+    "port": 51826,
+    "pin": "031-45-154"
+  },
+
+  "description": "Custom HomeBridge Server",
+
+  "ports": {
+    "start": 52100,
+    "end": 52150,
+  },
+
+  "platforms": [
+
+  ]
+}</code><p>这将使用可分配给其他设备的默认端口、名称、PIN和端口范围配置HomeBridge。</p><p>在空的平台数组中，放置每个插件的配置。您应该能够在每个插件的GitHub页面上找到这方面的说明和示例。</p><p>在下面的示例中，TECKIN灯泡的home bridge-tuya-web插件希望知道我的用户名和密码以连接到灯泡应用程序的API，以及其他一些事情：</p><code>  "platforms": [
+     {
+       "platform": "TuyaWebPlatform",
+       "name": "TuyaWebPlatform",
+       "options":
+         {
+           "username": "username",
+           "password": "password",
+           "countryCode": "1",
+           "platform": "smart_life",
+           "pollingInterval": 10
+         }
+     }
+   ]</code><p>一旦这些都配置好了，Homebridge就应该可以运行了。再次运行它，您的终端应该会显示一个巨大的二维码，可能会迫使您缩小。使用Home应用程序扫描此应用程序，将其和所有连接的设备添加到HomeKit。</p><img class="content_img" src="/image/53/53899acb935492878d0a666f72396998.png" /><p>HomeBridge会加载您的插件，并应为找到的每个设备在屏幕上记录一条消息。添加后，您应该会在HomeKit中看到它们全部，并且它们应该功能齐全。</p><p>与我的LIFX灯泡相比，我确实注意到了轻微的延迟。这可能是因为灯泡是通过API控制的，而不是直接控制的。起初，灯泡也不能正确显示一些白色和暖白色，但经过一点调整，我可以设置适当的场景。</p><p>您始终可以在设备自己的应用程序中配置设备，等待Home应用程序更新，然后使用预先设置的配置在HomeKit中设置场景。</p><p>如果你需要重新添加Homebridge，你需要删除config目录中的Persistent/文件夹，然后从HomeKit中删除网桥，并将其从“Bridge”选项卡下的任何连接灯泡的设置中删除。</p><p>将家庭网桥添加为服务</p><p>如果您希望Homebridge始终运行，您可能需要将其配置为在崩溃或Raspberry PI重新启动时重新启动。您可以通过Unix服务执行此操作。请在验证HomeBridge是否按预期工作后设置此设置。</p><p>首先，添加一个新的服务用户，名为home bridge：</p><code>sudo useradd -M --system homebridge</code><p>设置密码：</p><code>sudo passwd homebridge</code><p>接下来，您必须将homebridge配置移出您的个人主目录。/var/lib/home bridge/b应该可以：</p><code>sudo mv ~/.homebridge /var/lib/homebridge/</code><p>确保使用HomeBridge的用户拥有该目录及其所有子文件夹的所有权：</p><code>sudo chown -R homebridge /var/lib/homebridge/</code><p>一旦完成，您就可以创建服务了。为此，请在/etc/systemd/system/中创建一个名为homebridge ge.service的新文件：</p><code>sudo nano /etc/systemd/system/homebridge.service</code><p>然后粘贴以下配置：</p><code>[Unit]
+Description=Homebridge service
+After=syslog.target network-online.target
+
+[Service]
+Type=simple
+User=homebridge
+ExecStart=/usr/bin/homebridge -U /var/lib/homebridge
+Restart=on-failure
+RestartSec=10
+KillMode=process
+
+
+[Install]
+WantedBy=multi-user.target</code><p>重新加载服务守护进程以使用您的更改更新它：</p><code>sudo systemctl daemon-reload</code><p>现在，您应该能够启用您的服务(将其设置为在引导时运行)：</p><code>sudo systemctl enable homebridge</code><p>然后启动它：</p><code>sudo systemctl start homebridge</code><p>如果需要调试服务配置产生的错误，可以通过键入以下命令查看服务的日志：</p><code>journalctl -fn 50 -u homebridge</code><div class="item_info"><span class="item_key"><a href="/tag/homebridge/">homebridge</a></span><span class="item_key"><a href="/tag/设备/">设备</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span></div></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

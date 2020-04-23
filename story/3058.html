@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何强制您的浏览器记住密码</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何强制您的浏览器记住密码</h2></div><div class="content"><img class="content_img" src="/image/95/95da4a1c110ff5969ed62b0367a8a5a3.png" /><p>如果你使用浏览器内置的密码管理器来记住你所有的网络登录，或者根据LastPass最近发生的事件来考虑它，你会不可避免地遇到某些网站，这些网站根本不允许你保存密码。但是，只需单击一两下鼠标，您就可以绕过此限制，并强制您的浏览器记住这些不合作站点上的密码。</p><p>编者按：当然，如果你使用的是LastPass，这个功能就是内置的。本文面向那些喜欢使用内置浏览器保存密码而不是将密码放入云中的用户。</p><p>为什么有些网站不允许我保存密码？</p><p>这个答案非常简单，这是因为表单和/或输入元素上的“autoComplete”属性被设置为“off”。此属性是由Internet Explorer 5引入的，顾名思义，它可以防止自动完成功能应用于任何已显式关闭它的字段。</p><p>正如您在PayPal的网站上看到的(不允许您保存密码)，登录部分将密码字段的自动完成值设置为OFF。因此，浏览器不会为其自动完成密码数据库选取此字段。</p><img class="content_img" src="/image/8c/8c4501371034a9f24d8e1a3cdcbf1632.png" /><p>解决方法：一个简单的JavaScript函数</p><p>幸运的是，解决办法也同样简单。我们只需要将该属性的值更改为“on”，无论它出现在哪里。多亏了JavaScript操作DOM(文档对象模型)的能力，您可以通过单击书签轻松地做到这一点。</p><p>JavaScript函数嵌入在下面的链接中。您可以将链接拖到书签栏上，也可以右键单击并为目标链接添加书签。完成此操作后，只需单击书签即可在当前页面上运行“允许保存密码”脚本。</p><p>如果上面的链接不起作用，那么这里是链接的源代码。您可以使用以下内容作为书签的源URL来创建书签：</p><p>根据我们的测试(使用PayPal作为测试站点)，这在Firefox4和Internet Explorer9中都能正常工作。不幸的是，尽管有启用自动完成的成功消息，我们还是无法让它在Chrome中工作。</p><p>在每个浏览器中使用它的步骤几乎相同，而Internet Explorer需要一个额外的步骤。</p><p>在Firefox中的使用</p><p>当您访问不允许您保存密码的站点时，请运行“允许保存密码”脚本。您应该会看到如下所示的通知。</p><img class="content_img" src="/image/da/da301f8bd8c080f50aaca63fa9cf2717.png" /><p>像正常一样输入您的用户名和密码，在登录时，系统将提示您保存密码。</p><img class="content_img" src="/image/59/5951f8aa016c99f474147d212c7c0f57.png" /><p>下次访问该页面时，系统会自动填写您的用户名，但不会填写密码。为了自动填充密码，您必须首先将焦点放在User Name字段中。如果密码字段具有焦点，则可以使用鼠标单击或Ctrl+Tab。</p><img class="content_img" src="/image/33/3330b884d6a831d830ac8044334ea285.png" /><p>现在，当您使用单击或Tab将焦点从User Name字段移动时，您的密码将自动填写。</p><img class="content_img" src="/image/21/21257bd9d9d8fca187a278c3f97421d1.png" /><p>在Internet Explorer中的使用</p><p>当您访问不允许您保存密码的站点时，请运行“允许保存密码”脚本。您应该会看到如下所示的通知。</p><img class="content_img" src="/image/17/171b9a4b2283fa2021daa2d2a0ef11e7.png" /><p>像正常一样输入您的用户名和密码，在登录时，系统将提示您保存密码。</p><img class="content_img" src="/image/3a/3adb222cc05d9f589b2a3079bf73e513.png" /><p>下次访问该页面时，系统会自动填写您的用户名，但不会填写密码。您将需要再次运行“允许保存密码”脚本，您应该会看到与上面相同的通知。</p><img class="content_img" src="/image/9a/9a1af9de17744c8e197a00e464dc2df0.png" /><p>为了自动填充密码，您必须首先将焦点放在User Name字段中。如果密码字段具有焦点，则可以使用鼠标单击或Ctrl+Tab。</p><img class="content_img" src="/image/a7/a71ba2d7241bef893bbd58e8c53fd174.png" /><p>现在，当您使用单击或Tab将焦点从User Name字段移动时，您的密码将自动填写。</p><img class="content_img" src="/image/78/78e2546b9d079e824aff0a7832027e38.png" /><p>JavaScript源</p><p>如果您想知道脚本是如何工作的，这里有一个格式良好且带有注释的源代码。可以根据您认为合适的方式对其进行修改。</p><code>function() {
+   var ac, c, f, fa, fe, fea, x, y, z;
+   //ac = autocomplete constant (attribute to search for)
+   //c = count of the number of times the autocomplete constant was found
+   //f = all forms on the current page
+   //fa = attibutes in the current form
+   //fe = elements in the current form
+   //fea = attibutes in the current form element
+   //x,y,z = loop variables
+
+   ac = "autocomplete";
+   c = 0;
+   f = document.forms;
+
+   //cycle through each form
+   for(x = 0; x < f.length; x++) {
+      fa = f[x].attributes;
+      //cycle through each attribute in the form
+      for(y = 0; y < fa.length; y++) {
+         //check for autocomplete in the form attribute
+         if(fa[y].name.toLowerCase() == ac) {
+            fa[y].value = "on";
+            c++;
+         }
+      }
+
+      fe = f[x].elements;
+      //cycle through each element in the form
+      for(y = 0; y < fe.length; y++) {
+         fea = fe[y].attributes;
+         //cycle through each attribute in the element
+         for(z = 0; z < fea.length; z++) {
+            //check for autocomplete in the element attribute
+            if(fea[z].name.toLowerCase() == ac) {
+               fea[z].value = "on";
+               c++;
+            }
+         }
+      }
+   }
+
+   alert("Enabled '" + ac + "' on " + c + " objects.");
+}</code><div class="item_info"><span class="item_key"><a href="/tag/密码/">密码</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/自动/">自动</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14484.html">如何启用双因素身份验证并保护您的Ring帐户</a><li><a href="/story/14457.html">密码管理器如何保护您免受网络钓鱼诈骗</a><li><a href="/story/14416.html">如何在Windows 10中设置密码过期日期</a><li><a href="/story/14365.html">如何在Linux上更改帐户密码</a><li><a href="/story/14360.html">为什么不应该使用Web浏览器的密码管理器</a><li><a href="/story/14292.html">应对“最后一程”安全挑战的最佳方式</a><li><a href="/story/14276.html">密码管理器有多安全？</a><li><a href="/story/14197.html">如何管理您的iTunes Store和App Store密码首选项</a><li><a href="/story/14187.html">如何更改您的Windows密码</a><li><a href="/story/13886.html">如何在Chrome for Android中查看保存的密码</a><li><a href="/story/13856.html">科技行业想要破解密码。还是真的是这样？</a><li><a href="/story/13816.html">为什么公司仍然以明文存储密码？</a><li><a href="/story/13769.html">每日新闻综合报道：SLACK将重置部分用户密码</a><li><a href="/story/13654.html">如何使用Google Chrome生成安全密码</a><li><a href="/story/13531.html">如何从Linux Shell创建和安装SSH密钥</a><li><a href="/story/13516.html">每日新闻综述：体育场定价、游戏和数据上限谋杀案</a><li><a href="/story/13379.html">如何在iPhone之间共享Wi-Fi密码</a><li><a href="/story/13259.html">每日新闻综合报道：您的密码可能是垃圾</a><li><a href="/story/12996.html">如何在Chrome中管理保存的密码</a><li><a href="/story/12911.html">又来了：又有8个网站的1.27亿账户被盗</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

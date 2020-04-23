@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>如何在Linux上使用vmstat命令</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>如何在Linux上使用vmstat命令</h2></div><div class="content"><p>您的Linux或MacOS计算机正在使用虚拟内存。了解它如何影响您的系统对物理内存、CPU和硬盘资源的使用。</p><p>什么是虚拟内存？</p><p>您的计算机安装了有限数量的物理内存，称为随机存取内存(RAM)。该RAM需要由内核管理，并在操作系统和任何正在运行的应用程序之间共享。如果这些组合要求的内存比您计算机上实际安装的内存更多，内核能做什么呢？</p><p>Linux和类似Unix的操作系统(如MacOS)可以使用硬盘上的空间来帮助它们管理内存需求。称为“交换空间”的硬盘驱动器空间的保留区域可以作为RAM的扩展来使用。这是虚拟内存。</p><p>Linux内核可以将内存块的内容写入交换空间，并释放该RAM区域供另一个进程使用。换出的内存-也称为“分页”出内存-可以从交换空间中检索出来，并在需要时恢复到RAM中。</p><p>当然，页出内存的访问速度比RAM中保存的内存慢，而且这并不是唯一的权衡。虽然虚拟内存确实为Linux提供了一种管理其内存需求的方法，但是使用虚拟内存会增加计算机上其他地方的负担。</p><p>您的硬盘必须执行更多的读写操作。内核-因此，CPU-必须做更多的工作，因为它换出内存，换入内存，并保持所有盘的旋转，以满足不同进程的内存需求。</p><p>Linux以vmstat命令的形式提供了一种监视所有这些活动的方法，该命令报告虚拟内存统计信息。</p><p>vmstat命令</p><p>如果您键入vmstat作为不带参数的命令，它将向您显示一组值。这些值是自上次重新启动计算机以来每个统计数据的平均值。这些数字并不是“目前”价值的快照。</p><code>vmstat</code><img class="content_img" src="/image/00/001e00b755ebefcdf12977b748261aa7.png" /><p>将显示一个简短的值表。</p><img class="content_img" src="/image/a3/a38bec592a3b1b22674b2968be7e5fb8.png" /><p>有标题为PROCS、MEMORY、SWAP、IO、SYSTEM和CPU的列。最后一列(最右边的列)包含与CPU相关的数据。</p><img class="content_img" src="/image/bb/bb57631a2948dfd107a9e84d89ea80b9.png" /><p>以下是每列中的数据项列表。</p><p>普鲁克</p><p>
+R：可运行的进程数。这些进程已经启动，或者正在运行，或者正在等待下一个CPU周期的时间片突发。
+B：处于不间断休眠状态的进程数。该进程没有休眠，它正在执行阻塞的系统调用，并且在完成当前操作之前不能中断。通常，该进程是一个等待资源释放的设备驱动程序。当该进程恢复其正常活动时，将处理该进程的任何排队中断。</p><p>记忆力 / 记忆中事物 / 回忆 / 存储器</p><p>
+swpd：使用的虚拟内存量。换句话说，换出了多少内存。
+空闲：空闲(当前未使用)的内存量。
+Buff：用作缓冲区的内存量。
+缓存：用作缓存的内存量。</p><p>交换 / 适合交换的东西 / 互惠信贷 / 交换之物</p><p>
+SI：从交换空间换入的虚拟内存量。
+因此：换出用于交换空间的虚拟内存量。</p><p>&lt;希腊神话&gt;艾奥</p><p>
+BI：从块设备接收的块。用于将虚拟内存交换回RAM的数据块数。
+BO：发送到块设备的块。表示用于将虚拟内存从RAM交换到交换空间的数据块数。</p><p>制度 / 体制 / 系统 / 方法</p><p>
+in：每秒中断数，包括时钟。
+cs：每秒上下文切换次数。上下文切换是指内核从系统模式处理切换到用户模式处理。</p><p>中央处理机</p><p>这些值都是总CPU时间的百分比。</p><p>
+US：运行非内核代码所花费的时间。也就是说，在用户时间处理和良好时间处理上花费了多少时间。
+SY：运行内核代码所花费的时间。
+ID：空闲时间。
+WA：等待输入或输出所花费的时间。
+ST：从虚拟机窃取的时间。这是虚拟机在返回并处理此虚拟机之前必须等待虚拟机管理程序完成对其他虚拟机的服务的时间。</p><p>使用时间间隔</p><p>我们可以让vmstat使用延迟值定期更新这些数字。延迟值以秒为单位提供。要使统计信息每5秒更新一次，我们将使用以下命令：</p><code>vmstat 5</code><img class="content_img" src="/image/36/365a4bb6cbe90e148f32d74ace7673cc.png" /><p>每隔5秒，vmstat会向表中添加另一行数据。您需要按Ctrl+C来停止此操作。</p><img class="content_img" src="/image/4e/4ee8e384f75ab8481d3f5beac4bcd2cb.png" /><p>使用计数值</p><p>使用太低的延迟时间值会给您的系统带来额外的压力。如果您需要快速更新以尝试诊断问题，建议您使用计数值和延迟值。</p><p>Count值告诉vmstat在退出之前要执行多少次更新，并返回到命令提示符。如果未提供计数值，vmstat将一直运行，直到通过Ctrl+C停止为止。</p><p>要让vmstat每五秒提供一次更新(但仅提供四次更新)，请使用以下命令：</p><code>vmstat 5 4</code><img class="content_img" src="/image/e5/e5724aae9a7565e2b5a6185b8532175f.png" /><p>在四次更新之后，vmstat会自动停止。</p><img class="content_img" src="/image/7b/7b0b0e438e02762aca1e9183465efe05.png" /><p>更改单位</p><p>您可以使用-S(单位字符)选项选择以千字节或兆字节显示内存和交换统计信息。后面必须跟k、K、m、c或m中的一个。这些表示：</p><p>
+K：1000字节。
+K：1024字节。
+M：1000000字节。
+M：1048576字节</p><p>要使统计信息每10秒更新一次，并以MB为单位显示内存和交换统计信息，请使用以下命令：</p><code>vmstat 10 -S M</code><img class="content_img" src="/image/29/29a5c94b6c0a251e13910cbd10a6fe39.png" /><p>内存和交换统计信息现在以MB为单位显示。请注意，-S选项不会影响IO块统计信息。它们始终以块为单位显示。</p><img class="content_img" src="/image/c6/c696ae265248c0044ea5f9076433e6c8.png" /><p>活动和非活动内存</p><p>如果使用-a(活动)选项，则缓冲区和高速缓存内存列将替换为“inact”和“active”列。正如他们所建议的那样，这些数据显示了不活跃和活跃的内存量。</p><p>要查看这两列而不是缓冲区和缓存列，请包括-a选项，如下所示：</p><code>vmstat 5 -a -S M</code><img class="content_img" src="/image/ae/aeb375d702e959b4e19d3941abac0fca.png" /><p>非活动列和活动列受-S(单位字符)选项的影响。</p><img class="content_img" src="/image/df/dfd16781a39d2b182ab6cd6418712668.png" /><p>叉子</p><p>-f开关显示自计算机启动以来发生的分叉次数。</p><p>换句话说，这显示了自系统启动以来已经启动(并且对于大部分任务，再次关闭)的任务的数量。*从命令行启动的每个进程都会增加这个数字。每次任务或进程派生或克隆新任务时，此数字都会增加。</p><code>vmstat -f</code><img class="content_img" src="/image/0e/0e5da030725719511e9bf9a69ae8c8e6.png" /><p>叉子显示不会更新。</p><p>显示Slabinfo</p><p>内核需要担心自己的内存管理以及操作系统和所有应用程序的内存管理。</p><p>正如您可能想象的那样，内核一次又一次地为它必须处理的许多不同类型的数据对象分配和释放内存。为了尽可能高效地实现这一点，它使用了一个称为slabs的系统。这是一种缓存形式。</p><p>为特定类型的内核数据对象分配的、使用的和不再需要的存储器可以被重新用于相同类型的另一数据对象，而无需解除分配和重新分配存储器。可以将片看作是为内核自己的需要预先分配的、量身定做的RAM段。</p><p>要查看平板的统计信息，请使用-m(平板)选项。您需要使用sudo，系统将提示您输入密码。由于输出可能相当长，我们正在通过较少的管道传输它。</p><code>sudo vmstat -m | less</code><img class="content_img" src="/image/98/984c0898c04f27ff61f9fa6f647bcd10.png" /><p>输出有五列。它们是：</p><p>
+Cache：缓存的名称。
+Num：表示此缓存中当前活动的对象数。
+总数：表示此高速缓存中可用对象的总数。
+大小：设置缓存中每个对象的大小。
+Pages：表示当前具有(至少)一个对象与此缓存关联的内存页面总数。</p><img class="content_img" src="/image/a7/a7aa7fba40da93beb12775264fe8c01c.png" /><p>按Q键可留下较少的空间。</p><p>显示事件计数器和内存统计信息</p><p>要显示事件计数器和内存统计信息的页面，请使用-s(Stats)选项。注意那是一个小写的“s”。</p><code>vmstat -s</code><img class="content_img" src="/image/9e/9e302cc9335034427727a53fa0fcf2c3.png" /><p>尽管报告的统计信息与组成默认vmstat输出的信息基本相同，但其中一些信息会更详细地进行划分。</p><p>例如，默认输出将NICE和非NICE用户CPU时间合并到“us”列。-s(Stats)显示单独列出这些统计信息。</p><img class="content_img" src="/image/b0/b057e1b65f17bd4693a5a3c0a51e485d.png" /><p>显示磁盘统计信息</p><p>您可以使用-d(磁盘)选项获得类似的磁盘统计信息列表。</p><code>vmstat -d | less</code><img class="content_img" src="/image/fd/fd46ef7fffa61c3cee1286e4582b3ce5.png" /><p>对于每个磁盘，将显示三列，即读取、写入和IO。</p><img class="content_img" src="/image/25/255eb21a96b81a341888959ecb47785b.png" /><p>IO是最右边的一列。请注意，IO中的sec列是以秒为单位测量的，但读和写列中基于时间的统计信息是以毫秒为单位测量的。</p><img class="content_img" src="/image/9e/9e085078bd77d602b0687d1adb9e4f5e.png" /><p>这就是这些列的含义：</p><p>朗诵</p><p>
+总数：磁盘读取的总计数。
+已合并：分组读取的总计数。
+扇区：已读入的扇区总数。
+ms：从磁盘读取数据所用的总时间计数(以毫秒为单位)。</p><p>写字</p><p>
+总数：磁盘写入的总计数。
+已合并：分组写入的总计数。
+扇区：写入的扇区总数。
+ms=将数据写入磁盘所用的总时间计数(以毫秒为单位)。</p><p>&lt;希腊神话&gt;艾奥</p><p>
+cur：当前磁盘读取或写入的次数。
+秒：任何正在进行的读取或写入所花费的时间(以秒为单位)。</p><p>显示摘要磁盘统计信息</p><p>要快速显示磁盘活动的摘要统计信息，请使用-D(磁盘和)选项。注意大写的“D”。</p><code>vmstat -D</code><img class="content_img" src="/image/bd/bd6082d36e0261a846754a93f4243267.png" /><p>磁盘数量可能看起来异常高。用于研究本文的计算机运行的是Ubuntu。使用Ubuntu，每次您从快照安装应用程序时，都会创建一个附加到/dev/loop设备的squashfs伪文件系统。</p><p>令人恼火的是，许多Linux命令和实用程序都将这些设备条目视为硬盘驱动器设备。</p><img class="content_img" src="/image/ec/ec7d42d31dba1a504a31090236ec3203.png" /><p>显示分区统计信息</p><p>要查看与特定分区相关的统计信息，请使用-p(分区)选项并提供分区标识符作为命令行参数。</p><p>这里，我们将查看分区sda1。数字1表示这是设备SDA上的第一个分区，设备SDA是此计算机的主硬盘驱动器。</p><code>vmstat -p sda1</code><img class="content_img" src="/image/58/58e56fbfd92dc6c571ed3ac76b185421.png" /><p>返回的信息显示对该分区的磁盘读取和磁盘写入的总计数，以及磁盘读取和磁盘写入操作中包括的扇区数。</p><img class="content_img" src="/image/ec/ec4f94b1439bd5140e16d69aa2f904ea.png" /><p>引擎盖下的窥视</p><p>知道如何掀开引擎盖，看看下面发生了什么总是很好的。有时你会试着解决问题，有时你不感兴趣，因为你想知道你的计算机是如何运转的。</p><p>vmstat可以为您提供大量有用的信息。现在您知道了如何访问它以及它的含义。而且预先警告是预先准备的-当您确实需要卷起袖子进行一些诊断时，您就会知道您有vmstat支持您。</p><div class="item_info"><span class="item_key"><a href="/tag/内存/">内存</a></span><span class="item_key"><a href="/tag/使用/">使用</a></span><span class="item_key"><a href="/tag/显示/">显示</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14499.html">如何在Linux上使用免费命令</a><li><a href="/story/3031.html">Firefox内存清理器真的有效吗？</a><li><a href="/story/2362.html">如何判断您的Linux PC安装了哪种类型的内存</a><li><a href="/story/513.html">我的计算机安装了哪种内存？</a><li><a href="/story/180.html">使用Windows Vista内存诊断工具测试计算机内存</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>Bash的最佳键盘快捷键(也就是Linux和MacOS终端)</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>Bash的最佳键盘快捷键(也就是Linux和MacOS终端)</h2></div><div class="content"><img class="content_img" src="/image/1f/1fecc017b4831b21c575b5aab2ccfb26.png" /><p>Bash是大多数Linux发行版(从Ubuntu和Debian到Red Hat和Fedora)上的默认命令行shell。bash也是MacOS附带的默认shell，您可以在Windows10上安装基于Linux的bash环境。</p><p>bash shell提供了您可以使用的各种键盘快捷键。这些都可以在任何操作系统上运行。如果您通过SSH或telnet会话远程访问bash，则根据您的键映射方式，其中一些可能不起作用。</p><p>使用进程</p><p>使用以下快捷方式管理正在运行的进程。</p><p>
+Ctrl+C：中断(终止)终端当前运行的前台进程。这会向进程发送SIGINT信号，从技术上讲，这只是一个请求-大多数进程都会接受它，但有些进程可能会忽略它。
+Ctrl+Z：暂停当前在bash中运行的前台进程。这将向进程发送SIGTSTP信号。若要稍后将进程返回到前台，请使用fg process_name命令。
+Ctrl+D：关闭bash shell。这将向bash发送一个EOF(文件结束)标记，bash在收到该标记时退出。这类似于运行exit命令。</p><img class="content_img" src="/image/d5/d50f95f2e67a102c534c2c3d54002494.png" /><p>控制屏幕</p><p>使用以下快捷键可以控制屏幕上显示的内容。</p><p>
+Ctrl+L：清除屏幕。这类似于运行“CLEAR”命令。
+Ctrl+S：停止所有屏幕输出。当运行具有大量冗长输出的命令时，这特别有用，但是您不希望使用Ctrl+C来停止命令本身。
+Ctrl+Q：按Ctrl+S停止后继续输出到屏幕。</p><p>移动光标</p><p>键入命令时，可以使用以下快捷键在当前行周围快速移动光标。</p><p>
+Ctrl+A或Home：转到行首。
+Ctrl+E开始或结束：转到行尾。
+Alt+B：向左(向后)一个单词。
+Ctrl+B：向左(向后)一个字符。
+Alt+F：向右(向前)一个单词。
+Ctrl+F：向右(向前)移动一个字符。
+Ctrl+XX：在行首和光标当前位置之间移动。这允许您按Ctrl+XX返回到行首，更改某些内容，然后按Ctrl+XX返回到原始光标位置。要使用此快捷键，请按住Ctrl键并轻击X键两次。</p><p>删除文本</p><p>使用以下快捷键可以快速删除字符：</p><p>
+Ctrl+D删除：删除光标下的字符。
+Alt+D：删除当前行光标后的所有字符。
+Ctrl+H或Backspace：删除光标前的字符。</p><p>修复打字错误</p><p>这些快捷键允许您修复打字错误和撤消按键操作。</p><p>
+Alt+T：将当前单词与上一个单词互换。
+Ctrl+T：互换光标前的最后两个字符。当您以错误的顺序键入两个字符时，您可以使用此功能快速修复打字错误。
+Ctrl+_：撤消上次的按键操作。您可以重复此操作以多次撤消。</p><p>剪切和粘贴</p><p>Bash包括一些基本的剪切和粘贴功能。</p><p>
+Ctrl+W：剪切光标前面的单词，将其添加到剪贴板。
+Ctrl+K：剪切光标后的那部分行，将其添加到剪贴板。
+Ctrl+U：剪切光标之前的那部分行，将其添加到剪贴板。
+Ctrl+Y：粘贴您从剪贴板上剪切的最后一项内容。这里的y代表“美国佬”。</p><p>大写字符</p><p>bash shell可以快速将字符转换为大写或小写：</p><p>
+Alt+U：将从光标到当前单词末尾的每个字符大写，将字符转换为大写。
+Alt+L：取消从光标到当前单词末尾的每个字符的大写，将字符转换为小写。
+Alt+C：将光标下的字符大写。您的光标将移动到当前单词的末尾。</p><p>制表符完成</p><p>相关：在任何操作系统上使用Tab键完成都可以更快地键入命令</p><p>制表符补全是一个非常有用的bash功能。在键入文件、目录或命令名的同时，如果可能，按Tab键，bash将自动完成您键入的内容。如果没有，bash将向您显示各种可能的匹配项，您可以继续键入并按Tab键完成键入。</p><p>
+Tab：自动完成您键入的文件、目录或命令。</p><p>例如，如果您在/home/chris/中有一个名为REAL_LONG_FILE_NAME的文件，并且它是该目录中唯一以“r”开头的文件名，那么您可以键入/HOME/chris/r，按Tab键，bash将自动为您填写/home/chris/REAL_LONG_FILE_NAME。如果您有多个以“r”开头的文件或目录，bash将通知您您的可能性。您可以开始键入其中一个，然后按“Tab”键继续。</p><img class="content_img" src="/image/ba/ba839b2c36baee9c861abed1ad0635f2.png" /><p>使用命令历史记录</p><p>相关：如何在Linux或MacOS终端中使用Bash History</p><p>您可以快速滚动您最近使用的命令，这些命令存储在您的用户帐户的bash历史文件中：</p><p>
+Ctrl+P键或向上箭头：转到命令历史记录中的上一个命令。多次按快捷键可回顾历史记录。
+Ctrl+N或向下箭头：转到命令历史记录中的下一个命令。多次按快捷键可向前浏览历史记录。
+Alt+R：如果编辑过历史记录中的命令，则恢复对该命令所做的任何更改。</p><p>Bash还有一个特殊的“Recall”模式，您可以使用它来搜索以前运行过的命令：</p><p>
+Ctrl+R：调用与您提供的字符匹配的最后一个命令。按此快捷键并开始键入以在bash历史记录中搜索命令。
+Ctrl+O：使用Ctrl+R运行找到的命令。
+Ctrl+G：在不运行命令的情况下退出历史搜索模式。</p><img class="content_img" src="/image/3c/3c0b624e1e0b003efa55487e5c8b5a49.png" /><p>Emacs与vi键盘快捷键</p><p>以上说明假定您使用的是bash中的默认键盘快捷键配置。默认情况下，bash使用emacs样式的密钥。如果您更习惯使用vi文本编辑器，可以切换到vi风格的键盘快捷键。</p><p>以下命令将使bash进入vi模式：</p><code>set -o vi</code><p>以下命令会将bash重新置于默认emacs模式：</p><code>set -o emacs</code><img class="content_img" src="/image/32/32c7f74d17e78956e9f2389941185f96.png" /><p>在你的工具带里有几个这样的东西，你很快就会成为一名码头大师。</p><div class="item_info"><span class="item_key"><a href="/tag/bash/">bash</a></span><span class="item_key"><a href="/tag/ctrl/">ctrl</a></span><span class="item_key"><a href="/tag/命令/">命令</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14251.html">如何在MacOS Catalina上将默认Shell更改为Bash</a><li><a href="/story/10821.html">如何从Windows10的文件资源管理器快速启动Bash Shell</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>

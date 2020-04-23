@@ -1,0 +1,64 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><title>通过批处理脚本将文件上载到FTP站点</title><link rel="stylesheet" href="/css.css"></head><body><div id="header"><a class="site_title" href="http://www.fuzadu.com">复杂度</a></div><div><div><h2>通过批处理脚本将文件上载到FTP站点</h2></div><div class="content"><p>在电子邮件之外，向远程方发送文件的最常见方式可能是通过FTP。虽然有太多的FTP客户端可供选择，但Windows有一个鲜为人知且未得到充分利用的内置命令行FTP实用程序。这个工具的美妙之处在于它的脚本化能力，我们已经在下面的批处理脚本中利用了这一点。</p><p>可以从命令行使用此脚本作为“不问问题”的方法，使用单个命令上载一个或多个文件。此外，您还可以从批处理文件中调用此脚本来执行自动文件上载。此功能的几个用途包括(但当然不限于)：</p><p>
+包括在备份脚本中以将数据发送到异地。
+只需一个命令即可将html/php/等文件上传到Web服务器。
+创建快捷方式以发送一组通用文件(如网站的源页)。</p><p>配置 / 构造 / 布局 / 外形</p><p>唯一需要的配置是设置FTP服务器连接信息。在“连接信息”行下，设置以下内容：</p><p>
+服务器-您要上载到的FTP服务器。您可以输入DNS名称(ftp.myserver.com)或IP地址(1.2.3.4)。
+用户名-您用于连接到FTP服务器的用户名。
+密码-连接到FTP服务器的密码。</p><p>根据您的防火墙设置，在您第一次运行此脚本时，系统可能会提示您允许FTP连接到Internet。将此设置为从不再次提示您应该会删除将来的警告。</p><p>剧本</p><code>@ECHO OFF
+ECHO Upload to FTP
+ECHO Written by: Jason Faulkner
+ECHO SysadminGeek.com
+ECHO.
+ECHO.
+
+REM Usage:
+REM UploadToFTP [/L] FileToUpload
+REM
+REM Required Parameters:
+REM  FileToUpload
+REM      The file or file containing the list of files to be uploaded.
+REM
+REM Optional Parameters:
+REM  /L  When supplied, the FileToUpload is read as a list of files to be uploaded.
+REM      A list of files should be a plain text file which has a single file on each line.
+REM      Files listed in this file must specify the full path and be quoted where appropriate.
+
+SETLOCAL EnableExtensions
+
+REM Connection information:
+SET Server=
+SET UserName=
+SET Password=
+
+REM ---- Do not modify anything below this line ----
+
+SET Commands="%TEMP%SendToFTP_commands.txt"
+
+REM FTP user name and password. No spaces after either.
+ECHO %UserName%> %Commands%
+ECHO %Password%>> %Commands%
+
+REM FTP transfer settings.
+ECHO binary >> %Commands%
+
+IF /I {%1}=={/L} (
+   REM Add file(s) to the list to be FTP'ed.
+   FOR /F "usebackq tokens=*" %%I IN ("%~dpnx2") DO ECHO put %%I >> %Commands%
+) ELSE (
+   ECHO put "%~dpnx1" >> %Commands%
+)
+
+REM Close the FTP connection.
+ECHO close  >> %Commands%
+ECHO bye    >> %Commands%
+
+REM Perform the FTP.
+FTP -d -i -s:%Commands% %Server%
+
+ECHO.
+ECHO.
+
+REM Clean up.
+IF EXIST %Commands% DEL %Commands%
+
+ENDLOCAL</code><p>高尔夫球场 / 链接 / 沙地 / 沙丘</p><p>从sysadmin Geek下载上传到FTP脚本</p><div class="item_info"><span class="item_key"><a href="/tag/脚本/">脚本</a></span><span class="item_key"><a href="/tag/ftp/">ftp</a></span><span class="item_key"><a href="/tag/文件/">文件</a></span></div></div><div class="relate_story"><div><h3>相关文章</h3></div><ul><li><a href="/story/14323.html">如何在Windows上将Caps Lock用作修改键</a><li><a href="/story/13819.html">如何将GUI添加到Linux Shell脚本</a><li><a href="/story/13415.html">如何在Linux上使用yes命令</a><li><a href="/story/13180.html">如何使用脚本编辑器为Google应用程序增压</a><li><a href="/story/13147.html">如何在进程退出时自动关闭MacOS终端</a><li><a href="/story/11555.html">如何在Windows中自动键入带双空格的句点</a><li><a href="/story/10454.html">如何在Windows 10上创建和运行Bash Shell脚本</a><li><a href="/story/7708.html">如何配置Windows以更轻松地使用PowerShell脚本</a><li><a href="/story/7704.html">如何使用批处理文件使PowerShell脚本更易于运行</a><li><a href="/story/7410.html">愚蠢的极客小把戏：如何让你的电脑与你对话</a><li><a href="/story/7370.html">在Windows上使窗口始终在最上面的3种最佳方法</a><li><a href="/story/6987.html">如何用PowerShell生成随机姓名和电话号码</a><li><a href="/story/4528.html">如何在Ubuntu上交换两个和三个手指触摸板轻击动作</a><li><a href="/story/3339.html">使用此简单脚本通过右键单击将文件上载到FTP站点</a><li><a href="/story/3166.html">Shell脚本初学者指南2：for循环</a><li><a href="/story/3146.html">Shell脚本初学者指南：基础知识</a><li><a href="/story/3024.html">如何在Ubuntu中使用热键关闭显示器</a><li><a href="/story/2913.html">使用自动热键脚本的初学者指南</a><li><a href="/story/2843.html">构建您自己的自动文件更新系统</a><li><a href="/story/2841.html">轻松保留所有网络计算机上本地文件的镜像备份</a></ul></div></div><div id="footer">&copy 2020 fuzadu.com</div></body></html>
